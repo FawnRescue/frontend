@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
+    kotlin("plugin.serialization") version "1.9.21"
 }
 
 kotlin {
@@ -15,9 +16,9 @@ kotlin {
             }
         }
     }
-    
+
     jvm("desktop")
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -28,15 +29,15 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     sourceSets {
         val desktopMain by getting
-        
+
         androidMain.dependencies {
             implementation(libs.compose.ui)
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
-            implementation("io.ktor:ktor-client-cio:2.3.6")
+
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -47,16 +48,18 @@ kotlin {
             implementation(compose.material)
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
-            implementation(platform("io.github.jan-tennert.supabase:bom:1.4.7"))
-            implementation("io.github.jan-tennert.supabase:postgrest-kt")
-            implementation("io.github.jan-tennert.supabase:compose-auth-ui")
-            implementation("io.github.jan-tennert.supabase:compose-auth")
-            implementation("io.github.jan-tennert.supabase:gotrue-kt")
-            implementation("io.github.jan-tennert.supabase:realtime-kt")
-            implementation("io.github.jan-tennert.supabase:storage-kt")
-            implementation("io.github.jan-tennert.supabase:functions-kt")
+            implementation(libs.postgrest.kt)
+            implementation(libs.compose.auth.ui)
+            implementation(libs.compose.auth)
+            implementation(libs.gotrue.kt)
+            implementation(libs.realtime.kt)
+            implementation(libs.storage.kt)
+            implementation(libs.functions.kt)
+            implementation(libs.ktor.client.cio)
+            implementation(libs.ktor.client.core)
         }
     }
+
 }
 
 android {

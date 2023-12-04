@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.compose.auth.ComposeAuth
-import io.github.jan.supabase.compose.auth.googleNativeLogin
 import io.github.jan.supabase.compose.auth.ui.ProviderButtonContent
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.GoTrue
@@ -31,7 +30,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun App() {
     MaterialTheme {
-        lateinit var client: SupabaseClient;
+        lateinit var client: SupabaseClient
         LaunchedEffect(Unit) {
             client = getClient()
         }
@@ -51,6 +50,17 @@ fun App() {
                     null
                 )
             }
+            LaunchedEffect(Unit) {
+                try {
+                    val user = client.gotrue.signUpWith(Github)
+                    // Log user details if the signup is successful
+                    println("User signed up successfully: $user")
+                } catch (e: Exception) {
+                    println("test")
+                    // Log any exceptions that occur during signup
+                    e.printStackTrace()
+                }
+            }
 
             OutlinedButton(
                 onClick = {
@@ -69,6 +79,11 @@ fun getClient(): SupabaseClient {
         supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlydnNvcGlkY2htcWZ4YmRweHF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDE3MDI4NDgsImV4cCI6MjAxNzI3ODg0OH0.oaKgHBwqw5WsYhM1_nYNJKGyidmEkIO6GaqjEWtVHI8"
     ) {
         install(Postgrest)
-        install(GoTrue)
+        // TODO figure out the correct gotrue config this is sketchy
+        install(GoTrue){
+            scheme = ""
+            host = ""
+        }
+        install(ComposeAuth)
     }
 }
