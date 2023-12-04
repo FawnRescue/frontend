@@ -36,6 +36,7 @@ kotlin {
             implementation(libs.compose.ui)
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
+            implementation("io.ktor:ktor-client-cio:2.3.6")
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -46,6 +47,14 @@ kotlin {
             implementation(compose.material)
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
+            implementation(platform("io.github.jan-tennert.supabase:bom:1.4.7"))
+            implementation("io.github.jan-tennert.supabase:postgrest-kt")
+            implementation("io.github.jan-tennert.supabase:compose-auth-ui")
+            implementation("io.github.jan-tennert.supabase:compose-auth")
+            implementation("io.github.jan-tennert.supabase:gotrue-kt")
+            implementation("io.github.jan-tennert.supabase:realtime-kt")
+            implementation("io.github.jan-tennert.supabase:storage-kt")
+            implementation("io.github.jan-tennert.supabase:functions-kt")
         }
     }
 }
