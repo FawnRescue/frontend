@@ -33,10 +33,8 @@ import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalResourceApi::class, SupabaseExperimental::class, DelicateCoroutinesApi::class)
 @Composable
-fun App() {
+fun App(client: SupabaseClient) {
     MaterialTheme {
-        val client by remember { mutableStateOf(getClient()) }
-
         var greetingText by remember { mutableStateOf("Hello World!") }
         var showImage by remember { mutableStateOf(false) }
         var text by remember { mutableStateOf("Disconnected") }
@@ -55,7 +53,7 @@ fun App() {
             }
 
             Login(loginGithub = {
-                runBlocking {
+                GlobalScope.launch {
                     val user = client.gotrue.loginWith(Github)
                     // Log user details if the signup is successful
                     println(client.gotrue.currentUserOrNull())
@@ -89,19 +87,4 @@ fun Login(loginGithub: () -> Unit) {
         onClick = loginGithub,
         content = { ProviderButtonContent(Github) }
     )
-}
-
-fun getClient(): SupabaseClient {
-    return createSupabaseClient(
-        supabaseUrl = "https://irvsopidchmqfxbdpxqt.supabase.co",
-        supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlydnNvcGlkY2htcWZ4YmRweHF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDE3MDI4NDgsImV4cCI6MjAxNzI3ODg0OH0.oaKgHBwqw5WsYhM1_nYNJKGyidmEkIO6GaqjEWtVHI8"
-    ) {
-        install(Postgrest)
-        // TODO figure out the correct gotrue config this is sketchy
-        install(GoTrue) {
-            scheme = "app"
-            host = "org.fawnrescue.project"
-        }
-        install(ComposeAuth)
-    }
 }
