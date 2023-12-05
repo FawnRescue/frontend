@@ -81,8 +81,8 @@ fun getClient(): SupabaseClient {
         install(Postgrest)
         // TODO figure out the correct gotrue config this is sketchy
         install(GoTrue) {
-            scheme = ""
-            host = ""
+            scheme = "app"
+            host = "org.fawnrescue.project"
         }
         install(ComposeAuth)
     }
