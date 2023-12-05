@@ -22,22 +22,24 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.GoTrue
 import io.github.jan.supabase.gotrue.gotrue
 import io.github.jan.supabase.gotrue.providers.Github
+import io.github.jan.supabase.gotrue.providers.builtin.Email
 import io.github.jan.supabase.postgrest.Postgrest
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
-@OptIn(ExperimentalResourceApi::class, SupabaseExperimental::class)
+@OptIn(ExperimentalResourceApi::class, SupabaseExperimental::class, DelicateCoroutinesApi::class)
 @Composable
 fun App() {
     MaterialTheme {
-        lateinit var client: SupabaseClient
-        LaunchedEffect(Unit) {
-            client = getClient()
-        }
+        val client by remember { mutableStateOf(getClient()) }
 
         var greetingText by remember { mutableStateOf("Hello World!") }
         var showImage by remember { mutableStateOf(false) }
+        var text by remember { mutableStateOf("Disconnected") }
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             Button(onClick = {
                 greetingText = "Compose: ${Greeting().greet()}"
@@ -54,18 +56,34 @@ fun App() {
 
             Login(loginGithub = {
                 runBlocking {
-                    val user = client.gotrue.signUpWith(Github)
+                    val user = client.gotrue.loginWith(Github)
                     // Log user details if the signup is successful
+                    println(client.gotrue.currentUserOrNull())
                     println("User signed up successfully: $user")
                 }
             })
+            Button(onClick = {
+                GlobalScope.launch {
+                    client.gotrue.logout()
+                }
+            },
+                content = { Text("Logout") }
 
+            )
+            Button(onClick = {
+                runBlocking {
+                    text = client.gotrue.currentUserOrNull()?.email.toString()
+                }
+            },
+                content = { Text(text) }
+
+            )
         }
     }
 }
 
-@OptIn(SupabaseExperimental::class)
 @Composable
+@OptIn(SupabaseExperimental::class)
 fun Login(loginGithub: () -> Unit) {
     OutlinedButton(
         onClick = loginGithub,

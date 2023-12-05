@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
             }
             install(ComposeAuth)
         }
-        client.handleDeeplinks(Intent("https://org.fawnrescue.project")){
+        client.handleDeeplinks(Intent("app://org.fawnrescue.project")){
             println("Login")
         }
 
