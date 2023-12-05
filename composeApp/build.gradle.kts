@@ -57,6 +57,7 @@ kotlin {
             implementation(libs.functions.kt)
             implementation(libs.ktor.client.cio)
             implementation(libs.ktor.client.core)
+
         }
     }
 

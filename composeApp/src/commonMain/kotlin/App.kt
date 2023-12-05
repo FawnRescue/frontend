@@ -23,6 +23,7 @@ import io.github.jan.supabase.gotrue.GoTrue
 import io.github.jan.supabase.gotrue.gotrue
 import io.github.jan.supabase.gotrue.providers.Github
 import io.github.jan.supabase.postgrest.Postgrest
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
@@ -50,27 +51,26 @@ fun App() {
                     null
                 )
             }
-            LaunchedEffect(Unit) {
-                try {
+
+            Login(loginGithub = {
+                runBlocking {
                     val user = client.gotrue.signUpWith(Github)
                     // Log user details if the signup is successful
                     println("User signed up successfully: $user")
-                } catch (e: Exception) {
-                    println("test")
-                    // Log any exceptions that occur during signup
-                    e.printStackTrace()
                 }
-            }
-
-            OutlinedButton(
-                onClick = {
-                },
-                content = { ProviderButtonContent(Github) }
-            )
-
+            })
 
         }
     }
+}
+
+@OptIn(SupabaseExperimental::class)
+@Composable
+fun Login(loginGithub: () -> Unit) {
+    OutlinedButton(
+        onClick = loginGithub,
+        content = { ProviderButtonContent(Github) }
+    )
 }
 
 fun getClient(): SupabaseClient {
@@ -80,7 +80,7 @@ fun getClient(): SupabaseClient {
     ) {
         install(Postgrest)
         // TODO figure out the correct gotrue config this is sketchy
-        install(GoTrue){
+        install(GoTrue) {
             scheme = ""
             host = ""
         }
