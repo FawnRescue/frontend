@@ -57,7 +57,7 @@ kotlin {
             implementation(libs.functions.kt)
             implementation(libs.ktor.client.cio)
             implementation(libs.ktor.client.core)
-
+            implementation(libs.koin.core)
         }
     }
 
@@ -100,6 +100,7 @@ android {
     }
     dependencies {
         debugImplementation(libs.compose.ui.tooling)
+        implementation(libs.koin.android)
     }
 }
 

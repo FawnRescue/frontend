@@ -5,9 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
-import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.compose.auth.ComposeAuth
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.GoTrue
@@ -17,10 +14,30 @@ import io.github.jan.supabase.postgrest.Postgrest
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.koin.core.context.startKoin
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.module
+import org.koin.java.KoinJavaComponent
+import sharedModule
+
+// Desktop-only module to provide our DesktopPrinter
+private val androidModule = module {
+    singleOf(::AndroidPrinter)
+}
+
 
 class MainActivity : ComponentActivity() {
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
+        startKoin {
+            // Start Koin with both modules
+            modules(sharedModule, androidModule)
+        }
+
+        // Now the DesktopPrinter is ready to be retrieved
+        val androidPrinter = KoinJavaComponent.get<AndroidPrinter>(AndroidPrinter::class.java)
+        println("Koin Test: ${androidPrinter.print()}")
+
         super.onCreate(savedInstanceState)
         val client = createSupabaseClient(
             supabaseUrl = "https://irvsopidchmqfxbdpxqt.supabase.co",

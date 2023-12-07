@@ -17,6 +17,7 @@ kotlin = "1.9.21"
 junit = "4.13.2"
 ktorClientCore = "2.3.6"
 postgrestKt = "1.4.7"
+koin-core = "3.5.0"
 
 [libraries]
 compose-auth = { module = "io.github.jan-tennert.supabase:compose-auth", version.ref = "postgrestKt" }
@@ -43,7 +44,8 @@ ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorCli
 postgrest-kt = { module = "io.github.jan-tennert.supabase:postgrest-kt", version.ref = "postgrestKt" }
 realtime-kt = { module = "io.github.jan-tennert.supabase:realtime-kt", version.ref = "postgrestKt" }
 storage-kt = { module = "io.github.jan-tennert.supabase:storage-kt", version.ref = "postgrestKt" }
-
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin-core" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin-core" }
 [plugins]
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 androidApplication = { id = "com.android.application", version.ref = "agp" }
