@@ -4,13 +4,15 @@ import io.github.jan.supabase.compose.auth.ComposeAuth
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.GoTrue
 import io.github.jan.supabase.postgrest.Postgrest
+import koin.DesktopPrinter
+import koin.sharedModule
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.java.KoinJavaComponent.get
 
 
-// Desktop-only module to provide our DesktopPrinter
+// Desktop-only module to provide our koin.DesktopPrinter
 private val desktopModule = module {
     singleOf(::DesktopPrinter)
 }
@@ -21,7 +23,7 @@ fun main() = application {
         modules(sharedModule, desktopModule)
     }
 
-    // Now the DesktopPrinter is ready to be retrieved
+    // Now the koin.DesktopPrinter is ready to be retrieved
     val desktopPrinter = get<DesktopPrinter>(DesktopPrinter::class.java)
     print("Koin Test: ${desktopPrinter.print()}")
     //TODO desktop client wont get the session and redirect doesn't work

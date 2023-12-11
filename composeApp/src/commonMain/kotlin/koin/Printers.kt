@@ -1,5 +1,4 @@
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
+package koin
 
 // Only used in the shared module
 internal class InternalPrinter {
@@ -17,8 +16,3 @@ class SharedPrinter internal constructor(
     }
 }
 
-// Provide the dependencies through a Koin module
-val sharedModule = module {
-    singleOf(::InternalPrinter)
-    singleOf(::SharedPrinter)
-}

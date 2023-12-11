@@ -30,14 +30,18 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.KoinScopeComponent
+import org.koin.dsl.koinApplication
 
 @OptIn(ExperimentalResourceApi::class, SupabaseExperimental::class, DelicateCoroutinesApi::class)
 @Composable
-fun App(client: SupabaseClient) {
+fun App() {
     MaterialTheme {
         var greetingText by remember { mutableStateOf("Hello World!") }
         var showImage by remember { mutableStateOf(false) }
         var text by remember { mutableStateOf("Disconnected") }
+        val supabase = koin
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             Button(onClick = {
                 greetingText = "Compose: ${Greeting().greet()}"

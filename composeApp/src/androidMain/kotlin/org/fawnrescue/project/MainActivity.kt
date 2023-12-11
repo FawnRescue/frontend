@@ -11,18 +11,21 @@ import io.github.jan.supabase.gotrue.GoTrue
 import io.github.jan.supabase.gotrue.gotrue
 import io.github.jan.supabase.gotrue.handleDeeplinks
 import io.github.jan.supabase.postgrest.Postgrest
+import koin.sharedModule
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.fawnrescue.project.koin.AndroidPrinter
+import org.fawnrescue.project.koin.AndroidSupabaseClient
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.java.KoinJavaComponent
-import sharedModule
 
 // Desktop-only module to provide our DesktopPrinter
 private val androidModule = module {
     singleOf(::AndroidPrinter)
+    singleOf(::AndroidSupabaseClient)
 }
 
 
@@ -36,21 +39,10 @@ class MainActivity : ComponentActivity() {
 
         // Now the DesktopPrinter is ready to be retrieved
         val androidPrinter = KoinJavaComponent.get<AndroidPrinter>(AndroidPrinter::class.java)
+        val supabase = KoinJavaComponent.get<AndroidSupabaseClient>(AndroidSupabaseClient::class.java).supabase
         println("Koin Test: ${androidPrinter.print()}")
-
         super.onCreate(savedInstanceState)
-        val client = createSupabaseClient(
-            supabaseUrl = "https://irvsopidchmqfxbdpxqt.supabase.co",
-            supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlydnNvcGlkY2htcWZ4YmRweHF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDE3MDI4NDgsImV4cCI6MjAxNzI3ODg0OH0.oaKgHBwqw5WsYhM1_nYNJKGyidmEkIO6GaqjEWtVHI8"
-        ) {
-            install(Postgrest)
-            install(GoTrue) {
-                scheme = "app"
-                host = "org.fawnrescue.project"
-            }
-            install(ComposeAuth)
-        }
-        client.handleDeeplinks(Intent("app://org.fawnrescue.project")) {
+        supabase.handleDeeplinks(Intent("app://org.fawnrescue.project")) {
             println("Login")
         }
         if (intent.data !== null) {
@@ -59,7 +51,7 @@ class MainActivity : ComponentActivity() {
             val accessToken = data[1].split("&")[0]
             val refreshToken = data[5].split("&")[0]
             GlobalScope.launch {
-                client.gotrue.importAuthToken(
+                supabase.gotrue.importAuthToken(
                     accessToken,
                     refreshToken,
                     retrieveUser = true,
@@ -69,7 +61,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            App(client)
+            App()
         }
     }
 }

@@ -1,3 +1,7 @@
+package koin
+
+import koin.SharedPrinter
+
 internal class DesktopPrinter(
     private val sharedPrinter: SharedPrinter
 ) {
