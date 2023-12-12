@@ -1,10 +1,12 @@
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,54 +28,60 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.KoinContext
 import org.koin.compose.koinInject
+import ui.AppTheme
 
-@OptIn(ExperimentalResourceApi::class, SupabaseExperimental::class, DelicateCoroutinesApi::class)
+@OptIn(ExperimentalResourceApi::class, DelicateCoroutinesApi::class)
 @Composable
 fun App() {
     KoinContext {
-        MaterialTheme {
-            val client = koinInject<SupabaseClient>()
-            var greetingText by remember { mutableStateOf("Hello World!") }
-            var showImage by remember { mutableStateOf(false) }
-            var text by remember { mutableStateOf("Disconnected") }
-            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                Button(onClick = {
-                    greetingText = "Compose: ${Greeting().greet()}"
-                    showImage = !showImage
-                }) {
-                    Text(greetingText)
-                }
-                AnimatedVisibility(showImage) {
-                    Image(
-                        painterResource("compose-multiplatform.xml"),
-                        null
+        AppTheme {
+            Surface(color = MaterialTheme.colors.background, modifier = Modifier.fillMaxSize()) {
+                val client = koinInject<SupabaseClient>()
+                var greetingText by remember { mutableStateOf("Hello World!") }
+                var showImage by remember { mutableStateOf(false) }
+                var text by remember { mutableStateOf("Disconnected") }
+                Column(
+                    Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Button(onClick = {
+                        greetingText = "Compose: ${Greeting().greet()}"
+                        showImage = !showImage
+                    }) {
+                        Text(greetingText)
+                    }
+                    AnimatedVisibility(showImage) {
+                        Image(
+                            painterResource("compose-multiplatform.xml"),
+                            null
+                        )
+                    }
+
+                    Login(loginGithub = {
+                        GlobalScope.launch {
+                            val user = client.gotrue.loginWith(Github)
+                            // Log user details if the signup is successful
+                            println(client.gotrue.currentUserOrNull())
+                            println("User signed up successfully: $user")
+                        }
+                    })
+                    Button(onClick = {
+                        GlobalScope.launch {
+                            client.gotrue.logout()
+                        }
+                    },
+                        content = { Text("Logout") }
+
+                    )
+                    Button(onClick = {
+                        runBlocking {
+                            text = client.gotrue.currentUserOrNull()?.email.toString()
+                        }
+                    },
+                        content = { Text(text) }
+
                     )
                 }
-
-                Login(loginGithub = {
-                    GlobalScope.launch {
-                        val user = client.gotrue.loginWith(Github)
-                        // Log user details if the signup is successful
-                        println(client.gotrue.currentUserOrNull())
-                        println("User signed up successfully: $user")
-                    }
-                })
-                Button(onClick = {
-                    GlobalScope.launch {
-                        client.gotrue.logout()
-                    }
-                },
-                    content = { Text("Logout") }
-
-                )
-                Button(onClick = {
-                    runBlocking {
-                        text = client.gotrue.currentUserOrNull()?.email.toString()
-                    }
-                },
-                    content = { Text(text) }
-
-                )
             }
         }
     }
