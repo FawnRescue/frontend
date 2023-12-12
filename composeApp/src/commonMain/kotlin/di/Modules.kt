@@ -1,4 +1,4 @@
-package koin
+package di
 
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -7,4 +7,5 @@ import org.koin.dsl.module
 val sharedModule = module {
     singleOf(::SharedPrinter)
     singleOf(::InternalPrinter)
+    singleOf(::getSupabaseClient)
 }

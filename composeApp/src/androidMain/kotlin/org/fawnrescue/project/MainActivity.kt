@@ -5,19 +5,16 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import io.github.jan.supabase.compose.auth.ComposeAuth
-import io.github.jan.supabase.createSupabaseClient
-import io.github.jan.supabase.gotrue.GoTrue
+import di.sharedModule
+import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.gotrue.gotrue
 import io.github.jan.supabase.gotrue.handleDeeplinks
-import io.github.jan.supabase.postgrest.Postgrest
-import koin.sharedModule
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.fawnrescue.project.koin.AndroidPrinter
-import org.fawnrescue.project.koin.AndroidSupabaseClient
+import di.AndroidPrinter
 import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.java.KoinJavaComponent
@@ -25,13 +22,14 @@ import org.koin.java.KoinJavaComponent
 // Desktop-only module to provide our DesktopPrinter
 private val androidModule = module {
     singleOf(::AndroidPrinter)
-    singleOf(::AndroidSupabaseClient)
 }
 
 
 class MainActivity : ComponentActivity() {
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
+        //TODO only start when not running
+        stopKoin()
         startKoin {
             // Start Koin with both modules
             modules(sharedModule, androidModule)
@@ -39,7 +37,7 @@ class MainActivity : ComponentActivity() {
 
         // Now the DesktopPrinter is ready to be retrieved
         val androidPrinter = KoinJavaComponent.get<AndroidPrinter>(AndroidPrinter::class.java)
-        val supabase = KoinJavaComponent.get<AndroidSupabaseClient>(AndroidSupabaseClient::class.java).supabase
+        val supabase = KoinJavaComponent.get<SupabaseClient>(SupabaseClient::class.java)
         println("Koin Test: ${androidPrinter.print()}")
         super.onCreate(savedInstanceState)
         supabase.handleDeeplinks(Intent("app://org.fawnrescue.project")) {

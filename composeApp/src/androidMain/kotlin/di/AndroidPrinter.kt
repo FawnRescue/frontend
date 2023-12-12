@@ -1,6 +1,6 @@
-package org.fawnrescue.project.koin
+package di
 
-import koin.SharedPrinter
+import di.SharedPrinter
 
 internal class AndroidPrinter(
     private val sharedPrinter: SharedPrinter

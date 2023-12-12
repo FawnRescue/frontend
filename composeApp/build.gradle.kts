@@ -58,6 +58,7 @@ kotlin {
             implementation(libs.ktor.client.cio)
             implementation(libs.ktor.client.core)
             implementation(libs.koin.core)
+            implementation(libs.koin.compose)
         }
     }
 

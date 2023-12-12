@@ -1,6 +1,6 @@
-package koin
+package di
 
-import koin.SharedPrinter
+import di.SharedPrinter
 
 internal class DesktopPrinter(
     private val sharedPrinter: SharedPrinter

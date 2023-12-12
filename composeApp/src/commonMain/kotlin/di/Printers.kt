@@ -1,4 +1,4 @@
-package koin
+package di
 
 // Only used in the shared module
 internal class InternalPrinter {
