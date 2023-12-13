@@ -15,6 +15,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.compose.auth.ui.ProviderButtonContent
@@ -33,8 +35,8 @@ import ui.AppTheme
 @OptIn(ExperimentalResourceApi::class, DelicateCoroutinesApi::class)
 @Composable
 fun App() {
-    KoinContext {
-        AppTheme {
+    AppTheme {
+        KoinContext {
             Surface(color = MaterialTheme.colors.background, modifier = Modifier.fillMaxSize()) {
                 val client = koinInject<SupabaseClient>()
                 var greetingText by remember { mutableStateOf("Hello World!") }

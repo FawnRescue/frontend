@@ -1,6 +1,7 @@
 package org.fawnrescue.project
 
 import App
+import Login
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -64,4 +65,10 @@ class MainActivity : ComponentActivity() {
             App()
         }
     }
+}
+
+@Preview
+@Composable
+fun PreviewApp() {
+    Login {}
 }
