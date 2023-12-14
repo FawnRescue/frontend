@@ -21,6 +21,7 @@ mvvm = "0.16.1"
 postgrestKt = "1.4.7"
 koin-core = "3.5.0"
 material3 = "1.1.2"
+precompose = "1.5.0"
 
 [libraries]
 androidx-core = { module = "androidx.core:core", version.ref = "androidx-core-ktx" }
@@ -49,6 +50,7 @@ mvvm-compose = { module = "dev.icerock.moko:mvvm-compose", version.ref = "mvvm" 
 mvvm-core = { module = "dev.icerock.moko:mvvm-core", version.ref = "mvvm" }
 mvvm-flow-compose = { module = "dev.icerock.moko:mvvm-flow-compose", version.ref = "mvvm" }
 postgrest-kt = { module = "io.github.jan-tennert.supabase:postgrest-kt", version.ref = "postgrestKt" }
+precompose = { module = "moe.tlaster:precompose", version.ref = "precompose" }
 realtime-kt = { module = "io.github.jan-tennert.supabase:realtime-kt", version.ref = "postgrestKt" }
 storage-kt = { module = "io.github.jan-tennert.supabase:storage-kt", version.ref = "postgrestKt" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin-core" }
