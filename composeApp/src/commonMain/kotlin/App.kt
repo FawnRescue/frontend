@@ -9,12 +9,17 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import dev.icerock.moko.mvvm.compose.getViewModel
+import dev.icerock.moko.mvvm.compose.viewModelFactory
+import friends.presentation.FriendListScreen
+import friends.presentation.FriendListViewModel
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.compose.auth.ui.ProviderButtonContent
@@ -28,14 +33,17 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.KoinContext
 import org.koin.compose.koinInject
-import ui.AppTheme
+import ui.FawnRescueTheme
 
 @OptIn(ExperimentalResourceApi::class, DelicateCoroutinesApi::class)
 @Composable
 fun App() {
-    AppTheme {
+    FawnRescueTheme {
         KoinContext {
-            Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
+            Surface(
+                color = MaterialTheme.colorScheme.background,
+                modifier = Modifier.fillMaxSize()
+            ) {
                 val client = koinInject<SupabaseClient>()
                 var greetingText by remember { mutableStateOf("Hello World!") }
                 var showImage by remember { mutableStateOf(false) }
@@ -82,6 +90,32 @@ fun App() {
 
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun AppFriend() {
+    KoinContext {
+        FawnRescueTheme {
+            val viewModel = getViewModel(
+                key = "friend-list-screen",
+                factory = viewModelFactory {
+                    FriendListViewModel()
+                }
+            )
+            val state by viewModel.state.collectAsState()
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colorScheme.background
+            ) {
+                FriendListScreen(
+                    state = state,
+                    newFriend = viewModel.newFriend,
+                    onEvent = viewModel::onEvent
+                )
+
             }
         }
     }

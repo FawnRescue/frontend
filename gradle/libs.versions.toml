@@ -17,11 +17,13 @@ koinCompose = "1.1.0"
 kotlin = "1.9.21"
 junit = "4.13.2"
 ktorClientCore = "2.3.6"
+mvvm = "0.16.1"
 postgrestKt = "1.4.7"
 koin-core = "3.5.0"
 material3 = "1.1.2"
 
 [libraries]
+androidx-core = { module = "androidx.core:core", version.ref = "androidx-core-ktx" }
 compose-auth = { module = "io.github.jan-tennert.supabase:compose-auth", version.ref = "postgrestKt" }
 compose-auth-ui = { module = "io.github.jan-tennert.supabase:compose-auth-ui", version.ref = "postgrestKt" }
 functions-kt = { module = "io.github.jan-tennert.supabase:functions-kt", version.ref = "postgrestKt" }
@@ -42,6 +44,10 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktorClientCore" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorClientCore" }
+mvvm-flow = { module = "dev.icerock.moko:mvvm-flow", version.ref = "mvvm" }
+mvvm-compose = { module = "dev.icerock.moko:mvvm-compose", version.ref = "mvvm" }
+mvvm-core = { module = "dev.icerock.moko:mvvm-core", version.ref = "mvvm" }
+mvvm-flow-compose = { module = "dev.icerock.moko:mvvm-flow-compose", version.ref = "mvvm" }
 postgrest-kt = { module = "io.github.jan-tennert.supabase:postgrest-kt", version.ref = "postgrestKt" }
 realtime-kt = { module = "io.github.jan-tennert.supabase:realtime-kt", version.ref = "postgrestKt" }
 storage-kt = { module = "io.github.jan-tennert.supabase:storage-kt", version.ref = "postgrestKt" }
