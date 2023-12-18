@@ -29,6 +29,9 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import moe.tlaster.precompose.PreComposeApp
+import navigation.presentation.NavigationScreen
+import navigation.presentation.NavigationViewModel
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.KoinContext
@@ -116,6 +119,33 @@ fun AppFriend() {
                     onEvent = viewModel::onEvent
                 )
 
+            }
+        }
+    }
+}
+
+@Composable
+fun AppNav() {
+    PreComposeApp {
+        KoinContext {
+            FawnRescueTheme {
+                val viewModel = getViewModel(
+                    key = "nav-screen",
+                    factory = viewModelFactory {
+                        NavigationViewModel()
+                    }
+                )
+                val state by viewModel.state.collectAsState()
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    NavigationScreen(
+                        state = state,
+                        onEvent = viewModel::onEvent
+                    )
+
+                }
             }
         }
     }

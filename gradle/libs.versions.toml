@@ -21,7 +21,7 @@ mvvm = "0.16.1"
 postgrestKt = "1.4.7"
 koin-core = "3.5.0"
 material3 = "1.1.2"
-precompose = "1.5.0"
+precompose = "1.5.9"
 
 [libraries]
 androidx-core = { module = "androidx.core:core", version.ref = "androidx-core-ktx" }
