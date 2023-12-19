@@ -4,11 +4,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import moe.tlaster.precompose.navigation.BackStackEntry
+import moe.tlaster.precompose.navigation.NavOptions
+import moe.tlaster.precompose.navigation.PopUpTo
 
 class NavigationViewModel : ViewModel() {
     private val _state = MutableStateFlow(NavigationState())
@@ -17,7 +18,6 @@ class NavigationViewModel : ViewModel() {
         private set
 
     init {
-        //TODO this dies when the login screen is finished
         observeNavigationChanges()
     }
 
@@ -29,6 +29,9 @@ class NavigationViewModel : ViewModel() {
 
         }
     }
+
+    //TODO this solves that the view model doesn't get cleared. Little bit sketchy
+    override fun onCleared() {}
 
     private fun updateSelectedItemBasedOnRoute(currentRoute: BackStackEntry?) {
         // Determine the corresponding NavigationEnum entry based on the currentRoute.
@@ -48,6 +51,14 @@ class NavigationViewModel : ViewModel() {
                 if (selectedItem == event.item) return
                 selectedItem = event.item
                 _state.value.navigator.navigate(event.item.path)
+            }
+
+            NavigationEvent.OnSuccessfulLogin -> {
+                selectedItem = NavigationEnum.HOME
+                _state.value.navigator.navigate(
+                    NavigationEnum.HOME.path,
+                    NavOptions(popUpTo = PopUpTo.First(true))
+                )
             }
         }
     }

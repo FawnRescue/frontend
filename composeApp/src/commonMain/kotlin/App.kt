@@ -69,7 +69,7 @@ fun App() {
                     client.gotrue.sessionStatus.collect {
                         println(it.toString())
                         if (it.toString() == "NotAuthenticated") return@collect
-                        viewModel.onEvent(NavigationEvent.OnNavItemClicked(NavigationEnum.HOME))
+                        viewModel.onEvent(NavigationEvent.OnSuccessfulLogin)
                     }
                 }
                 Column(
