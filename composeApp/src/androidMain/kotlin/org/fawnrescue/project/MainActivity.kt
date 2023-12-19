@@ -1,15 +1,13 @@
 package org.fawnrescue.project
 
-import App
-import AppFriend
 import AppNav
-import Login
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import di.AndroidPrinter
 import di.sharedModule
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.gotrue.gotrue
@@ -17,11 +15,6 @@ import io.github.jan.supabase.gotrue.handleDeeplinks
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import di.AndroidPrinter
-import friends.domain.Friend
-import friends.presentation.components.FriendListItem
-import friends.presentation.components.FriendPhoto
-import moe.tlaster.precompose.lifecycle.PreComposeActivity
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.core.module.dsl.singleOf
@@ -75,5 +68,4 @@ class MainActivity : ComponentActivity() {
 @Preview
 @Composable
 fun PreviewApp() {
-    AppFriend()
 }

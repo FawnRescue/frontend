@@ -1,7 +1,6 @@
 package navigation.presentation
 
 import App
-import AppFriend
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Icon
@@ -9,8 +8,14 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import dev.icerock.moko.mvvm.compose.getViewModel
+import dev.icerock.moko.mvvm.compose.viewModelFactory
+import friends.presentation.FriendListScreen
+import friends.presentation.FriendListViewModel
 import moe.tlaster.precompose.navigation.NavHost
 import moe.tlaster.precompose.navigation.transition.NavTransition
 
@@ -34,14 +39,24 @@ fun NavigationScreen(
                         route = it.path,
                         navTransition = NavTransition()
                     ) {
-                        AppFriend()
                     }
 
                     NavigationEnum.FRIENDS -> scene(
                         route = it.path,
                         navTransition = NavTransition()
                     ) {
-                        AppFriend()
+                        val viewModel = getViewModel(
+                            key = "friend-list-screen",
+                            factory = viewModelFactory {
+                                FriendListViewModel()
+                            }
+                        )
+                        val stateFriend by viewModel.state.collectAsState()
+                        FriendListScreen(
+                            state = stateFriend,
+                            newFriend = viewModel.newFriend,
+                            onEvent = viewModel::onEvent
+                        )
                     }
 
                     NavigationEnum.LOGIN -> scene(

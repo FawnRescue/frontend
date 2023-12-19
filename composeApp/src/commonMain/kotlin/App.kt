@@ -119,44 +119,34 @@ fun App() {
     }
 }
 
-@Composable
-fun AppFriend() {
-    KoinContext {
-        FawnRescueTheme {
-            val viewModel = getViewModel(
-                key = "friend-list-screen",
-                factory = viewModelFactory {
-                    FriendListViewModel()
-                }
-            )
-            val state by viewModel.state.collectAsState()
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colorScheme.background
-            ) {
-                FriendListScreen(
-                    state = state,
-                    newFriend = viewModel.newFriend,
-                    onEvent = viewModel::onEvent
-                )
-
-            }
-        }
-    }
-}
-
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun AppNav() {
     PreComposeApp {
         KoinContext {
             FawnRescueTheme {
+
                 val viewModel = getViewModel(
                     key = "nav-screen",
                     factory = viewModelFactory {
                         NavigationViewModel()
                     }
                 )
+
+                // Update selectedItem based on current nav route
                 val state by viewModel.state.collectAsState()
+                LaunchedEffect(Unit) {
+                    state.navigator.currentEntry.collect { currentRoute ->
+                        val correspondingItem =
+                            NavigationEnum.entries.find {
+                                it.path == (currentRoute?.path)
+                            }
+                        if (correspondingItem != null && correspondingItem != viewModel.selectedItem) {
+                            viewModel.onEvent(NavigationEvent.OnRouteChange(correspondingItem))
+                        }
+                    }
+                }
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

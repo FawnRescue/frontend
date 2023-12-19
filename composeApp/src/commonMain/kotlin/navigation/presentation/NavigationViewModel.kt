@@ -17,39 +17,10 @@ class NavigationViewModel : ViewModel() {
     var selectedItem by mutableStateOf(NavigationEnum.entries.first())
         private set
 
-    init {
-        observeNavigationChanges()
-    }
-
-    private fun observeNavigationChanges() {
-        viewModelScope.launch {
-            _state.value.navigator.currentEntry.collect { currentRoute ->
-                updateSelectedItemBasedOnRoute(currentRoute)
-            }
-
-        }
-    }
-
-    //TODO this solves that the view model doesn't get cleared. Little bit sketchy
-    override fun onCleared() {}
-
-    private fun updateSelectedItemBasedOnRoute(currentRoute: BackStackEntry?) {
-        // Determine the corresponding NavigationEnum entry based on the currentRoute.
-        // This logic depends on how your routes are structured.
-        val correspondingItem =
-            NavigationEnum.entries.find {
-                it.path == (currentRoute?.path)
-            }
-        if (correspondingItem != null && correspondingItem != selectedItem) {
-            selectedItem = correspondingItem
-        }
-    }
-
     fun onEvent(event: NavigationEvent) {
         when (event) {
             is NavigationEvent.OnNavItemClicked -> {
                 if (selectedItem == event.item) return
-                selectedItem = event.item
                 _state.value.navigator.navigate(event.item.path)
             }
 
@@ -59,6 +30,10 @@ class NavigationViewModel : ViewModel() {
                     NavigationEnum.HOME.path,
                     NavOptions(popUpTo = PopUpTo.First(true))
                 )
+            }
+
+            is NavigationEvent.OnRouteChange -> {
+                selectedItem = event.item
             }
         }
     }
