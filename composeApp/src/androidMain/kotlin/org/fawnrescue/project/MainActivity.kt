@@ -1,6 +1,6 @@
 package org.fawnrescue.project
 
-import AppNav
+import App
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity() {
             }
         }
         setContent {
-            AppNav()
+            App()
         }
     }
 }

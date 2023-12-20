@@ -1,6 +1,7 @@
 package friends.presentation
 
 import friends.domain.Friend
+import login.presentation.LoginEvent
 
 sealed interface FriendListEvent {
     object OnAddNewFriendClick : FriendListEvent

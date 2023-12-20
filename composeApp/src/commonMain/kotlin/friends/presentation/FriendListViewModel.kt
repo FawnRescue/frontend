@@ -16,7 +16,7 @@ class FriendListViewModel : ViewModel() {
     var newFriend: Friend? by mutableStateOf(null)
         private set
 
-    fun onEvent(event: FriendListEvent){
+    fun onEvent(event: FriendListEvent) {
 
     }
 }

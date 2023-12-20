@@ -121,6 +121,7 @@ compose.desktop {
 
 dependencies {
     implementation(libs.androidx.core)
+    implementation(libs.androidx.material3)
     commonMainApi(libs.mvvm.core)
     commonMainApi(libs.mvvm.compose)
     commonMainApi(libs.mvvm.flow)

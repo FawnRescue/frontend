@@ -4,16 +4,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-import moe.tlaster.precompose.navigation.BackStackEntry
 import moe.tlaster.precompose.navigation.NavOptions
+import moe.tlaster.precompose.navigation.Navigator
 import moe.tlaster.precompose.navigation.PopUpTo
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class NavigationViewModel : ViewModel() {
-    private val _state = MutableStateFlow(NavigationState())
-    val state = _state.asStateFlow()
+class NavigationViewModel : ViewModel(), KoinComponent {
+    private val navigator by inject<Navigator>()
     var selectedItem by mutableStateOf(NavigationEnum.entries.first())
         private set
 
@@ -21,12 +19,12 @@ class NavigationViewModel : ViewModel() {
         when (event) {
             is NavigationEvent.OnNavItemClicked -> {
                 if (selectedItem == event.item) return
-                _state.value.navigator.navigate(event.item.path)
+                navigator.navigate(event.item.path)
             }
 
             NavigationEvent.OnSuccessfulLogin -> {
                 selectedItem = NavigationEnum.HOME
-                _state.value.navigator.navigate(
+                navigator.navigate(
                     NavigationEnum.HOME.path,
                     NavOptions(popUpTo = PopUpTo.First(true))
                 )
