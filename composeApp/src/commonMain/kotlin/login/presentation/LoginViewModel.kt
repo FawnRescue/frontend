@@ -8,6 +8,7 @@ import dev.icerock.moko.mvvm.compose.viewModelFactory
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import friends.domain.Friend
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.exceptions.BadRequestRestException
 import io.github.jan.supabase.gotrue.SessionStatus
 import io.github.jan.supabase.gotrue.authenticatedSupabaseApi
 import io.github.jan.supabase.gotrue.gotrue
@@ -36,11 +37,11 @@ class LoginViewModel : ViewModel(), KoinComponent {
 
     init {
         viewModelScope.launch {
-            supabase.gotrue.sessionStatus.collect {
-                when (it) {
+            supabase.gotrue.sessionStatus.collect { sessionStatus ->
+                when (sessionStatus) {
                     is SessionStatus.Authenticated -> {
                         _state.update {
-                            _state.value.copy(
+                            it.copy(
                                 sessionChecked = false,
                                 errorLogin = null
                             )
@@ -52,20 +53,20 @@ class LoginViewModel : ViewModel(), KoinComponent {
                     }
 
                     SessionStatus.LoadingFromStorage -> _state.update {
-                        _state.value.copy(
+                        it.copy(
                             sessionChecked = false
                         )
                     }
 
                     SessionStatus.NetworkError -> _state.update {
-                        _state.value.copy(
+                        it.copy(
                             sessionChecked = true,
                             errorLogin = "No Network Connection!"
                         )
                     }
 
                     SessionStatus.NotAuthenticated -> _state.update {
-                        _state.value.copy(
+                        it.copy(
                             sessionChecked = true
                         )
                     }
@@ -76,7 +77,8 @@ class LoginViewModel : ViewModel(), KoinComponent {
 
     fun onEvent(event: LoginEvent) {
         when (event) {
-            is LoginEvent.OnRememberLoginClicked -> _state.update { _state.value.copy(rememberLogin = event.remember) }
+            //TODO add storage for credentials to make remember useful
+            is LoginEvent.OnRememberLoginClicked -> _state.update { it.copy(rememberLogin = event.remember) }
             is LoginEvent.OnShowEmailDialog -> _state.update {
                 _state.value.copy(
                     showEmailDialog = event.show,
@@ -84,15 +86,45 @@ class LoginViewModel : ViewModel(), KoinComponent {
                 )
             }
 
-            is LoginEvent.OnShowSignUpDialog -> _state.update { _state.value.copy(showSignUpDialog = event.show) }
-            is LoginEvent.OnEmailChange -> _state.update { _state.value.copy(email = event.email) }
-            is LoginEvent.OnPasswordChange -> _state.update { _state.value.copy(password = event.password) }
+            is LoginEvent.OnShowSignUpDialog -> _state.update { it.copy(showSignUpDialog = event.show) }
+            is LoginEvent.OnEmailChange -> _state.update { it.copy(email = event.email) }
+            is LoginEvent.OnPasswordChange -> _state.update { it.copy(password = event.password) }
             LoginEvent.OnLoginGithub -> viewModelScope.launch {
-                supabase.gotrue.loginWith(Github)
+                try {
+                    supabase.gotrue.loginWith(Github)
+                } catch (e: Exception) {
+                    _state.update { it.copy(errorLogin = "Account doesn't exist! Please sign up.") }
+                }
             }
 
             LoginEvent.OnLoginGoogle -> viewModelScope.launch {
-                supabase.gotrue.loginWith(Google)
+                try {
+                    supabase.gotrue.loginWith(Google)
+                } catch (e: Exception) {
+                    _state.update { it.copy(errorLogin = "Account doesn't exist! Please sign up.") }
+                }
+            }
+
+            is LoginEvent.OnLoginEmail -> viewModelScope.launch {
+                try {
+                    supabase.gotrue.loginWith(Email) {
+                        email = event.email
+                        password = event.password
+                    }
+                } catch (e: BadRequestRestException) {
+                    val errorMessage = when {
+                        e.message?.contains("invalid_grant (Invalid login credentials)") == true -> "Invalid login credentials. Please try again."
+                        e.message?.contains("invalid_grant (Email not confirmed)") == true -> "Email not confirmed. Please check your inbox."
+                        else -> "An unknown error occurred."
+                    }
+                    _state.update { it.copy(errorLogin = errorMessage) }
+                } catch (e: Exception) {
+                    _state.update {
+                        it.copy(
+                            errorLogin = "Unknown error occurred"
+                        )
+                    }
+                }
             }
 
             LoginEvent.OnSignupGithub -> viewModelScope.launch {
@@ -103,18 +135,12 @@ class LoginViewModel : ViewModel(), KoinComponent {
                 supabase.gotrue.signUpWith(Google)
             }
 
-            is LoginEvent.OnLoginEmail -> viewModelScope.launch {
-                supabase.gotrue.loginWith(Email) {
-                    email = event.email
-                    password = event.password
-                }
-            }
-
             is LoginEvent.OnSignupEmail -> viewModelScope.launch {
                 supabase.gotrue.signUpWith(Email) {
                     email = event.email
                     password = event.password
                 }
+                _state.update { it.copy(errorLogin = "Verification Email Sent. Please check your inbox.") }
             }
         }
     }
