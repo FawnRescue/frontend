@@ -3,26 +3,20 @@ package navigation.presentation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
 import friends.presentation.FriendListScreen
 import friends.presentation.FriendListViewModel
-import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.gotrue.gotrue
-import kotlinx.coroutines.launch
+import home.presentation.HomeScreen
 import login.presentation.LoginScreen
 import login.presentation.LoginViewModel
 import moe.tlaster.precompose.navigation.NavHost
@@ -74,18 +68,7 @@ fun NavigationScreen(
                             route = it.path,
                             navTransition = NavTransition()
                         ) {
-                            val supabase = koinInject<SupabaseClient>()
-                            val navigator = koinInject<Navigator>()
-                            val scope = rememberCoroutineScope()
-                            Button(onClick = {
-                                scope.launch {
-                                    supabase.gotrue.logout()
-                                    navigator.navigate(NavigationEnum.LOGIN.path)
-                                }
-
-                            }) {
-                                Text(text = "Logout")
-                            }
+                            HomeScreen()
                         }
 
                         NavigationEnum.FRIENDS -> scene(
