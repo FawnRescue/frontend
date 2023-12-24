@@ -1,6 +1,8 @@
 package di
 
 import io.github.jan.supabase.compose.auth.ComposeAuth
+import io.github.jan.supabase.compose.auth.appleNativeLogin
+import io.github.jan.supabase.compose.auth.googleNativeLogin
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.GoTrue
 import io.github.jan.supabase.postgrest.Postgrest
@@ -14,5 +16,8 @@ actual fun getSupabaseClient() = createSupabaseClient(
         scheme = "app"
         host = "org.fawnrescue.project"
     }
-    install(ComposeAuth)
+    install(ComposeAuth) {
+        googleNativeLogin(serverClientId = "38625036643-ifi68503ctjs83vmmbo29lbst3g24mv6.apps.googleusercontent.com")
+        appleNativeLogin()
+    }
 }

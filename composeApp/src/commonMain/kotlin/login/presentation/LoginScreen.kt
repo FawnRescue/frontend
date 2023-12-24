@@ -30,13 +30,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.annotations.SupabaseExperimental
+import io.github.jan.supabase.compose.auth.composable.NativeSignInResult
+import io.github.jan.supabase.compose.auth.composable.rememberLoginWithGoogle
+import io.github.jan.supabase.compose.auth.composeAuth
 import io.github.jan.supabase.compose.auth.ui.ProviderButtonContent
 import io.github.jan.supabase.gotrue.providers.Github
 import io.github.jan.supabase.gotrue.providers.Google
 import login.presentation.components.EmailEntryDialog
 import login.presentation.components.SignUpDialog
 import login.presentation.components.SignUpEnum
+import org.koin.compose.koinInject
 
 @OptIn(SupabaseExperimental::class)
 @Composable
@@ -44,7 +49,21 @@ fun LoginScreen(
     state: LoginState,
     onEvent: (LoginEvent) -> Unit
 ) {
-
+    val supabase = koinInject<SupabaseClient>()
+    val action = supabase.composeAuth.rememberLoginWithGoogle(
+        onResult = { result -> //optional error handling
+            println(result)
+            when (result) {
+                is NativeSignInResult.Success -> {}
+                is NativeSignInResult.ClosedByUser -> {}
+                is NativeSignInResult.Error -> {}
+                is NativeSignInResult.NetworkError -> {}
+            }
+        },
+        fallback = { // optional: add custom error handling, not required by default
+            println("FAIL")
+        }
+    )
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -72,7 +91,9 @@ fun LoginScreen(
                 Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
                 Spacer(Modifier.height(16.dp))
             }
-            Button(onClick = { onEvent(LoginEvent.OnLoginGoogle) }) {
+            Button(onClick = {
+                action.startFlow()
+            }) {
                 ProviderButtonContent(Google)
             }
             Button(onClick = { onEvent(LoginEvent.OnLoginGithub) }) {
