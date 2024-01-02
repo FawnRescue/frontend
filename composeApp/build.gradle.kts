@@ -67,6 +67,11 @@ kotlin {
 }
 
 android {
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("C:\\Users\\Larsk\\.android\\debug.keystore")
+        }
+    }
     namespace = "org.fawnrescue.project"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
@@ -95,6 +100,9 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
+        }
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
