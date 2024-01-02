@@ -54,14 +54,12 @@ fun LoginScreen(
         onResult = { result -> //optional error handling
             println(result)
             when (result) {
-                is NativeSignInResult.Success -> {}
-                is NativeSignInResult.ClosedByUser -> {}
-                is NativeSignInResult.Error -> {}
-                is NativeSignInResult.NetworkError -> {}
+                is NativeSignInResult.Error -> {
+                    onEvent(LoginEvent.OnSignupGoogle)
+                }
+
+                else -> {}
             }
-        },
-        fallback = { // optional: add custom error handling, not required by default
-            println("FAIL")
         }
     )
     Box(modifier = Modifier.fillMaxSize()) {
