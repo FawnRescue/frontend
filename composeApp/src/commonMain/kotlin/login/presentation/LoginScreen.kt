@@ -122,7 +122,7 @@ fun LoginScreen(
         if (state.showSignUpDialog) {
             SignUpDialog(onSignUpSelected = { method ->
                 when (method) {
-                    SignUpEnum.Google -> onEvent(LoginEvent.OnSignupGoogle)
+                    SignUpEnum.Google -> action.startFlow()
                     SignUpEnum.GitHub -> onEvent(LoginEvent.OnSignupGithub)
                     SignUpEnum.Email -> onEvent(
                         LoginEvent.OnShowEmailDialog(
