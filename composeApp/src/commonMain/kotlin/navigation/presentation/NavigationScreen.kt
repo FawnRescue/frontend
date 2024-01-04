@@ -22,6 +22,7 @@ import login.presentation.LoginViewModel
 import moe.tlaster.precompose.navigation.NavHost
 import moe.tlaster.precompose.navigation.Navigator
 import moe.tlaster.precompose.navigation.transition.NavTransition
+import navigation.presentation.NavigationEnum.*
 import org.koin.compose.koinInject
 
 @Composable
@@ -64,14 +65,14 @@ fun NavigationScreen(
 
                 NavigationEnum.entries.forEach {
                     when (it) {
-                        NavigationEnum.HOME -> scene(
+                        HOME -> scene(
                             route = it.path,
                             navTransition = NavTransition()
                         ) {
                             HomeScreen()
                         }
 
-                        NavigationEnum.FRIENDS -> scene(
+                        FRIENDS -> scene(
                             route = it.path,
                             navTransition = NavTransition()
                         ) {
@@ -89,7 +90,7 @@ fun NavigationScreen(
                             )
                         }
 
-                        NavigationEnum.LOGIN -> scene(
+                        LOGIN -> scene(
                             route = it.path,
                             navTransition = NavTransition()
                         ) {
@@ -104,6 +105,27 @@ fun NavigationScreen(
                                 state = stateLogin,
                                 onEvent = viewModel::onEvent
                             )
+                        }
+
+                        PLANNING -> scene(
+                            route = it.path,
+                            navTransition = NavTransition()
+                        ) {
+
+                        }
+
+                        GROUP -> scene(
+                            route = it.path,
+                            navTransition = NavTransition()
+                        ) {
+
+                        }
+
+                        HANGAR -> scene(
+                            route = it.path,
+                            navTransition = NavTransition()
+                        ) {
+
                         }
                     }
                 }
