@@ -24,6 +24,7 @@ import moe.tlaster.precompose.navigation.Navigator
 import moe.tlaster.precompose.navigation.transition.NavTransition
 import navigation.presentation.NavigationEnum.*
 import org.koin.compose.koinInject
+import planning.presentation.PlanningScreen
 
 @Composable
 fun NavigationScreen(
@@ -111,7 +112,7 @@ fun NavigationScreen(
                             route = it.path,
                             navTransition = NavTransition()
                         ) {
-
+                            PlanningScreen()
                         }
 
                         GROUP -> scene(
