@@ -24,7 +24,8 @@ import moe.tlaster.precompose.navigation.Navigator
 import moe.tlaster.precompose.navigation.transition.NavTransition
 import navigation.presentation.NavigationEnum.*
 import org.koin.compose.koinInject
-import planning.presentation.PlanningScreen
+import planning.presentation.MissionListScreen
+import planning.presentation.MissionListViewModel
 
 @Composable
 fun NavigationScreen(
@@ -112,7 +113,17 @@ fun NavigationScreen(
                             route = it.path,
                             navTransition = NavTransition()
                         ) {
-                            PlanningScreen()
+                            val viewModel = getViewModel(
+                                key = "mission-list-screen",
+                                factory = viewModelFactory {
+                                    MissionListViewModel()
+                                }
+                            )
+                            val stateMissionList by viewModel.state.collectAsState()
+                            MissionListScreen(
+                                state = stateMissionList,
+                                onEvent = viewModel::onEvent
+                            )
                         }
 
                         GROUP -> scene(

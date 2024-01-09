@@ -142,8 +142,6 @@ class LoginViewModel : ViewModel(), KoinComponent {
                 }
                 _state.update { it.copy(errorLogin = "Verification Email Sent. Please check your inbox.") }
             }
-
-            else -> {}
         }
     }
 }
