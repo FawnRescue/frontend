@@ -13,6 +13,7 @@ androidx-material = "1.10.0"
 androidx-constraintlayout = "2.1.4"
 androidx-test-junit = "1.1.5"
 androidx-espresso-core = "3.5.1"
+gson = "2.8.9"
 koinCompose = "1.1.0"
 kotlin = "1.9.21"
 junit = "4.13.2"
@@ -29,6 +30,7 @@ compose-auth = { module = "io.github.jan-tennert.supabase:compose-auth", version
 compose-auth-ui = { module = "io.github.jan-tennert.supabase:compose-auth-ui", version.ref = "postgrestKt" }
 functions-kt = { module = "io.github.jan-tennert.supabase:functions-kt", version.ref = "postgrestKt" }
 gotrue-kt = { module = "io.github.jan-tennert.supabase:gotrue-kt", version.ref = "postgrestKt" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinCompose" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
