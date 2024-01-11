@@ -1,12 +1,7 @@
 package planning.presentation.mission_list
 
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
-import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.realtime.PostgresAction
-import io.github.jan.supabase.realtime.createChannel
-import io.github.jan.supabase.realtime.postgresChangeFlow
-import io.github.jan.supabase.realtime.realtime
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -16,7 +11,6 @@ import moe.tlaster.precompose.navigation.Navigator
 import navigation.presentation.NavigationEnum
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import planning.domain.InsertableMission
 import planning.domain.Mission
 import planning.repository.MissionRepo
 

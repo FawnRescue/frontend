@@ -1,17 +1,10 @@
 package login.presentation
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import dev.icerock.moko.mvvm.compose.getViewModel
-import dev.icerock.moko.mvvm.compose.viewModelFactory
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
-import friends.domain.Friend
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.exceptions.BadRequestRestException
 import io.github.jan.supabase.gotrue.SessionStatus
-import io.github.jan.supabase.gotrue.authenticatedSupabaseApi
-import io.github.jan.supabase.gotrue.gotrue
+import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.Github
 import io.github.jan.supabase.gotrue.providers.Google
 import io.github.jan.supabase.gotrue.providers.builtin.Email
@@ -23,7 +16,6 @@ import moe.tlaster.precompose.navigation.NavOptions
 import moe.tlaster.precompose.navigation.Navigator
 import moe.tlaster.precompose.navigation.PopUpTo
 import navigation.presentation.NavigationEnum
-import navigation.presentation.NavigationViewModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -37,7 +29,7 @@ class LoginViewModel : ViewModel(), KoinComponent {
 
     init {
         viewModelScope.launch {
-            supabase.gotrue.sessionStatus.collect { sessionStatus ->
+            supabase.auth.sessionStatus.collect { sessionStatus ->
                 when (sessionStatus) {
                     is SessionStatus.Authenticated -> {
                         _state.update {
@@ -91,7 +83,7 @@ class LoginViewModel : ViewModel(), KoinComponent {
             is LoginEvent.OnPasswordChange -> _state.update { it.copy(password = event.password) }
             LoginEvent.OnLoginGithub -> viewModelScope.launch {
                 try {
-                    supabase.gotrue.loginWith(Github)
+                    supabase.auth.signInWith(Github)
                 } catch (e: Exception) {
                     _state.update { it.copy(errorLogin = "Account doesn't exist! Please sign up.") }
                 }
@@ -99,7 +91,7 @@ class LoginViewModel : ViewModel(), KoinComponent {
 
             LoginEvent.OnLoginGoogle -> viewModelScope.launch {
                 try {
-                    supabase.gotrue.loginWith(Google)
+                    supabase.auth.signInWith(Google)
                 } catch (e: Exception) {
                     _state.update { it.copy(errorLogin = "Account doesn't exist! Please sign up.") }
                 }
@@ -107,7 +99,7 @@ class LoginViewModel : ViewModel(), KoinComponent {
 
             is LoginEvent.OnLoginEmail -> viewModelScope.launch {
                 try {
-                    supabase.gotrue.loginWith(Email) {
+                    supabase.auth.signInWith(Email) {
                         email = event.email
                         password = event.password
                     }
@@ -128,15 +120,15 @@ class LoginViewModel : ViewModel(), KoinComponent {
             }
 
             LoginEvent.OnSignupGithub -> viewModelScope.launch {
-                supabase.gotrue.signUpWith(Github)
+                supabase.auth.signInWith(Github)
             }
 
             LoginEvent.OnSignupGoogle -> viewModelScope.launch {
-                supabase.gotrue.signUpWith(Google)
+                supabase.auth.signUpWith(Google)
             }
 
             is LoginEvent.OnSignupEmail -> viewModelScope.launch {
-                supabase.gotrue.signUpWith(Email) {
+                supabase.auth.signUpWith(Email) {
                     email = event.email
                     password = event.password
                 }

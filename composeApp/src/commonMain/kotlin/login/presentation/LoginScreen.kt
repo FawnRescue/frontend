@@ -1,6 +1,5 @@
 package login.presentation
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
@@ -23,17 +21,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.compose.auth.composable.NativeSignInResult
-import io.github.jan.supabase.compose.auth.composable.rememberLoginWithGoogle
+import io.github.jan.supabase.compose.auth.composable.rememberSignInWithGoogle
 import io.github.jan.supabase.compose.auth.composeAuth
 import io.github.jan.supabase.compose.auth.ui.ProviderButtonContent
 import io.github.jan.supabase.gotrue.providers.Github
@@ -50,14 +44,13 @@ fun LoginScreen(
     onEvent: (LoginEvent) -> Unit
 ) {
     val supabase = koinInject<SupabaseClient>()
-    val action = supabase.composeAuth.rememberLoginWithGoogle(
+
+    val action = supabase.composeAuth.rememberSignInWithGoogle(fallback = { onEvent(LoginEvent.OnSignupGoogle) },
         onResult = { result -> //optional error handling
             println(result)
             when (result) {
                 is NativeSignInResult.Error -> {
-                    onEvent(LoginEvent.OnSignupGoogle)
                 }
-
                 else -> {}
             }
         }
