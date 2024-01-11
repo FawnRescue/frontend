@@ -12,5 +12,5 @@ val sharedModule = module {
     singleOf(::getSupabaseClient)
     singleOf(::Navigator)
     singleOf(::MissionRepo)
-
+    singleOf(::getMissionChannel)
 }
