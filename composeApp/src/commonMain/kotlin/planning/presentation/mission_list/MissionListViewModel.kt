@@ -1,8 +1,7 @@
-package planning.presentation
+package planning.presentation.mission_list
 
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.decodeIfNotEmptyOrDefault
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.realtime.createChannel
@@ -14,30 +13,23 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 import moe.tlaster.precompose.navigation.Navigator
+import navigation.presentation.NavigationEnum
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import planning.presentation.domain.InsertableMission
-import planning.presentation.domain.Mission
+import planning.domain.InsertableMission
+import planning.domain.Mission
+import planning.repository.MissionRepo
 
 class MissionListViewModel : ViewModel(), KoinComponent {
     private val navigator: Navigator by inject<Navigator>()
-    val supabase: SupabaseClient by inject<SupabaseClient>()
+    val missionRepo: MissionRepo by inject<MissionRepo>()
     private val _state = MutableStateFlow(MissionListState(missions = emptyList()))
     val state = _state.asStateFlow()
 
     init {
         loadMissions()
-        val channel = supabase.realtime.createChannel("")
-
-        val changeFlow = channel.postgresChangeFlow<PostgresAction>(schema = "public") {
-            table = "mission"
-        }
         viewModelScope.launch {
-            supabase.realtime.connect()
-            channel.join()
-        }
-        viewModelScope.launch {
-            changeFlow.collect {
+            missionRepo.getMissionTableChangeFlow().collect {
                 when (it) {
                     is PostgresAction.Delete -> println("Deleted: ${it.oldRecord}")
                     is PostgresAction.Insert -> _state.value = _state.value.copy(
@@ -45,6 +37,7 @@ class MissionListViewModel : ViewModel(), KoinComponent {
                             Json.decodeFromJsonElement<Mission>(it.record)
                         )
                     )
+
                     is PostgresAction.Select -> println("Selected: ${it.record}")
                     is PostgresAction.Update -> println("Updated: ${it.oldRecord} with ${it.record}")
                 }
@@ -55,8 +48,7 @@ class MissionListViewModel : ViewModel(), KoinComponent {
     private fun loadMissions() {
         viewModelScope.launch {
             _state.value = MissionListState(
-                missions = supabase.postgrest.from("mission").select()
-                    .also { println("LOADING MISSIONS") }.decodeList<Mission>()
+                missions = missionRepo.getMissions()
             )
 
         }
@@ -64,8 +56,7 @@ class MissionListViewModel : ViewModel(), KoinComponent {
 
     private fun createMission() {
         viewModelScope.launch {
-            supabase.postgrest.from("mission")
-                .insert(InsertableMission("Neue Mission"))
+            navigator.navigate(NavigationEnum.MISSION_EDITOR.path)
         }
     }
 

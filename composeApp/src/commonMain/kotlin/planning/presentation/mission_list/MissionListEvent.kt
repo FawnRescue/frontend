@@ -1,6 +1,6 @@
-package planning.presentation
+package planning.presentation.mission_list
 
-import planning.presentation.domain.Mission
+import planning.domain.Mission
 
 sealed interface MissionListEvent {
     object CreateNewMission : MissionListEvent

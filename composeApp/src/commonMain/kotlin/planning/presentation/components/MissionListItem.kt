@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import friends.domain.Friend
 import friends.presentation.components.FriendPhoto
-import planning.presentation.domain.Mission
+import planning.domain.Mission
 
 @Composable
 fun MissionListItem(mission: Mission, modifier: Modifier) {

@@ -23,3 +23,4 @@ actual fun getSupabaseClient() = createSupabaseClient(
         appleNativeLogin()
     }
 }
+

@@ -1,4 +1,4 @@
-package planning.presentation
+package planning.presentation.mission_list
 
 
 import androidx.compose.foundation.clickable
@@ -20,10 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import friends.presentation.FriendListEvent
-import friends.presentation.components.FriendListItem
 import planning.presentation.components.MissionListItem
-import planning.presentation.domain.Mission
 
 @Composable
 fun MissionListScreen(onEvent: (MissionListEvent) -> Unit, state: MissionListState) {
