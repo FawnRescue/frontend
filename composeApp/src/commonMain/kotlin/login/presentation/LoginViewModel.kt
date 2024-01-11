@@ -35,7 +35,8 @@ class LoginViewModel : ViewModel(), KoinComponent {
                         _state.update {
                             it.copy(
                                 sessionChecked = false,
-                                errorLogin = null
+                                errorLogin = null,
+                                startNativeLogin = false
                             )
                         }
                         navigator.navigate(
@@ -74,36 +75,31 @@ class LoginViewModel : ViewModel(), KoinComponent {
             is LoginEvent.OnShowEmailDialog -> _state.update {
                 _state.value.copy(
                     showEmailDialog = event.show,
-                    emailFromSignup = event.fromSignUp
                 )
             }
 
-            is LoginEvent.OnShowSignUpDialog -> _state.update { it.copy(showSignUpDialog = event.show) }
             is LoginEvent.OnEmailChange -> _state.update { it.copy(email = event.email) }
             is LoginEvent.OnPasswordChange -> _state.update { it.copy(password = event.password) }
-            LoginEvent.OnLoginGithub -> viewModelScope.launch {
-                try {
-                    supabase.auth.signInWith(Github)
-                } catch (e: Exception) {
-                    _state.update { it.copy(errorLogin = "Account doesn't exist! Please sign up.") }
-                }
+            LoginEvent.OnSignInGithub -> viewModelScope.launch {
+                supabase.auth.signInWith(Github)
             }
 
-            LoginEvent.OnLoginGoogle -> viewModelScope.launch {
-                try {
-                    supabase.auth.signInWith(Google)
-                } catch (e: Exception) {
-                    _state.update { it.copy(errorLogin = "Account doesn't exist! Please sign up.") }
-                }
+            LoginEvent.OnSignInGoogle -> viewModelScope.launch {
+                supabase.auth.signInWith(Google)
             }
 
-            is LoginEvent.OnLoginEmail -> viewModelScope.launch {
+            LoginEvent.OnNativeSignIn -> viewModelScope.launch {
+                _state.update { it.copy(startNativeLogin = true) }
+            }
+
+            is LoginEvent.OnSignInEmail -> viewModelScope.launch {
                 try {
                     supabase.auth.signInWith(Email) {
                         email = event.email
                         password = event.password
                     }
                 } catch (e: BadRequestRestException) {
+                    println(e)
                     val errorMessage = when {
                         e.message?.contains("invalid_grant (Invalid login credentials)") == true -> "Invalid login credentials. Please try again."
                         e.message?.contains("invalid_grant (Email not confirmed)") == true -> "Email not confirmed. Please check your inbox."
@@ -119,15 +115,7 @@ class LoginViewModel : ViewModel(), KoinComponent {
                 }
             }
 
-            LoginEvent.OnSignupGithub -> viewModelScope.launch {
-                supabase.auth.signInWith(Github)
-            }
-
-            LoginEvent.OnSignupGoogle -> viewModelScope.launch {
-                supabase.auth.signUpWith(Google)
-            }
-
-            is LoginEvent.OnSignupEmail -> viewModelScope.launch {
+            is LoginEvent.OnSignUpEmail -> viewModelScope.launch {
                 supabase.auth.signUpWith(Email) {
                     email = event.email
                     password = event.password

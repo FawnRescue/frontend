@@ -12,13 +12,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Android
+import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,8 +33,6 @@ import io.github.jan.supabase.compose.auth.ui.ProviderButtonContent
 import io.github.jan.supabase.gotrue.providers.Github
 import io.github.jan.supabase.gotrue.providers.Google
 import login.presentation.components.EmailEntryDialog
-import login.presentation.components.SignUpDialog
-import login.presentation.components.SignUpEnum
 import org.koin.compose.koinInject
 
 @OptIn(SupabaseExperimental::class)
@@ -44,17 +42,20 @@ fun LoginScreen(
     onEvent: (LoginEvent) -> Unit
 ) {
     val supabase = koinInject<SupabaseClient>()
+    if (state.startNativeLogin) {
+        supabase.composeAuth.rememberSignInWithGoogle(fallback = { onEvent(LoginEvent.OnSignInGoogle) },
+            onResult = { result ->
+                println(result)
+                when (result) {
+                    is NativeSignInResult.Error -> {
+                        onEvent(LoginEvent.OnSignInGoogle)
+                    }
 
-    val action = supabase.composeAuth.rememberSignInWithGoogle(fallback = { onEvent(LoginEvent.OnSignupGoogle) },
-        onResult = { result -> //optional error handling
-            println(result)
-            when (result) {
-                is NativeSignInResult.Error -> {
+                    else -> {}
                 }
-                else -> {}
             }
-        }
-    )
+        ).startFlow()
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -82,54 +83,48 @@ fun LoginScreen(
                 Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
                 Spacer(Modifier.height(16.dp))
             }
-            Button(onClick = {
-                action.startFlow()
-            }) {
-                ProviderButtonContent(Google)
+            Button(onClick = { onEvent(LoginEvent.OnNativeSignIn) }) {
+                ProviderButtonContent(Google, "SignIn with Google")
             }
-            Button(onClick = { onEvent(LoginEvent.OnLoginGithub) }) {
-                ProviderButtonContent(Github)
+            Button(onClick = { onEvent(LoginEvent.OnSignInGithub) }) {
+                ProviderButtonContent(Github, "SignIn with Github")
             }
             Button(onClick = { onEvent(LoginEvent.OnShowEmailDialog(true)) }) {
-                Text(text = "Log In with Email")
+                Icon(Icons.Rounded.Email, "SignIn with Email", Modifier.size(
+                    24.dp
+                ))
+                Spacer(Modifier.width(8.dp))
+                Text(text = "SignIn with Email")
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(
+                    enabled = false,
                     checked = state.rememberLogin,
                     onCheckedChange = { onEvent(LoginEvent.OnRememberLoginClicked(it)) }
                 )
                 Text(
-                    modifier = Modifier.clickable { onEvent(LoginEvent.OnRememberLoginClicked(!state.rememberLogin)) },
+                    //modifier = Modifier.clickable { onEvent(LoginEvent.OnRememberLoginClicked(!state.rememberLogin)) },
                     text = "Remember Login"
                 )
             }
-            Spacer(Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             Divider()
-            Spacer(Modifier.height(20.dp))
-            OutlinedButton(onClick = { onEvent(LoginEvent.OnShowSignUpDialog(true)) }) {
-                Text(text = "Sign Up")
-            }
-
-        }
-
-        if (state.showSignUpDialog) {
-            SignUpDialog(onSignUpSelected = { method ->
-                when (method) {
-                    SignUpEnum.Google -> action.startFlow()
-                    SignUpEnum.GitHub -> onEvent(LoginEvent.OnSignupGithub)
-                    SignUpEnum.Email -> onEvent(
-                        LoginEvent.OnShowEmailDialog(
-                            show = true,
-                            fromSignUp = true
-                        )
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = {
+                onEvent(
+                    LoginEvent.OnShowEmailDialog(
+                        show = true,
+                        fromSignUp = true
                     )
-
-                    SignUpEnum.CANCEL -> onEvent(LoginEvent.OnShowSignUpDialog(false))
-                }
-                onEvent(LoginEvent.OnShowSignUpDialog(false))
-            })
+                )
+            }) {
+                Icon(Icons.Rounded.Email, "SignUp with Email", Modifier.size(
+                    24.dp
+                ))
+                Spacer(Modifier.width(8.dp))
+                Text(text = "SignUp with Email")
+            }
         }
-
         if (state.showEmailDialog) {
             EmailEntryDialog(
                 email = state.email,
@@ -138,8 +133,8 @@ fun LoginScreen(
                 onDismiss = { onEvent(LoginEvent.OnShowEmailDialog(false)) },
                 onEmailEntered = { email, password ->
                     when (state.emailFromSignup) {
-                        true -> onEvent(LoginEvent.OnSignupEmail(email, password))
-                        false -> onEvent(LoginEvent.OnLoginEmail(email, password))
+                        true -> onEvent(LoginEvent.OnSignUpEmail(email, password))
+                        false -> onEvent(LoginEvent.OnSignInEmail(email, password))
                     }
                     onEvent(LoginEvent.OnShowEmailDialog(false))
                 }
