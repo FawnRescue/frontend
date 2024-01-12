@@ -18,7 +18,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.gotrue.gotrue
+import io.github.jan.supabase.gotrue.auth
 import kotlinx.coroutines.launch
 import moe.tlaster.precompose.navigation.Navigator
 import navigation.presentation.NavigationEnum
@@ -45,7 +45,7 @@ fun HomeScreen() {
             val scope = rememberCoroutineScope()
             Button(onClick = {
                 scope.launch {
-                    supabase.gotrue.logout()
+                    supabase.auth.signOut()
                     navigator.navigate(NavigationEnum.LOGIN.path)
                 }
 

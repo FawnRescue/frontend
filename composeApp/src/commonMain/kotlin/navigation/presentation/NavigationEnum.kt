@@ -17,7 +17,8 @@ enum class NavigationEnum(
 ) {
     LOGIN("Login", "/login", null, false, false),
     GROUP("Group", "/group", Icons.Rounded.Groups),
-    PLANNING("Planning", "/planing", Icons.Rounded.NoteAdd),
+    PLANNING("Planning", "/planning", Icons.Rounded.NoteAdd),
+    MISSION_EDITOR("Mission Editor", "/planning/mission_editor", null, false ,false),
     HOME("Home", "/home", Icons.Rounded.Home),
     FRIENDS("Friends", "/friends", Icons.Rounded.Group),
     HANGAR("Hangar", "/hangar", Icons.Rounded.Flight);

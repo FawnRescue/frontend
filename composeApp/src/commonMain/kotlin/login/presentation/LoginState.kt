@@ -9,4 +9,5 @@ data class LoginState(
     val showEmailDialog: Boolean = false,
     val rememberLogin: Boolean = false,
     val emailFromSignup: Boolean = false,
+    val startNativeLogin:Boolean = false
 )

@@ -24,6 +24,10 @@ import moe.tlaster.precompose.navigation.Navigator
 import moe.tlaster.precompose.navigation.transition.NavTransition
 import navigation.presentation.NavigationEnum.*
 import org.koin.compose.koinInject
+import planning.presentation.mission_editor.MissionEditorScreen
+import planning.presentation.mission_editor.MissionEditorViewModel
+import planning.presentation.mission_list.MissionListScreen
+import planning.presentation.mission_list.MissionListViewModel
 
 @Composable
 fun NavigationScreen(
@@ -111,7 +115,34 @@ fun NavigationScreen(
                             route = it.path,
                             navTransition = NavTransition()
                         ) {
+                            val viewModel = getViewModel(
+                                key = "mission-list-screen",
+                                factory = viewModelFactory {
+                                    MissionListViewModel()
+                                }
+                            )
+                            val stateMissionList by viewModel.state.collectAsState()
+                            MissionListScreen(
+                                state = stateMissionList,
+                                onEvent = viewModel::onEvent
+                            )
+                        }
 
+                        MISSION_EDITOR -> scene(
+                            route = it.path,
+                            navTransition = NavTransition()
+                        ) {
+                            val viewModel = getViewModel(
+                                key = "mission-editor-screen",
+                                factory = viewModelFactory {
+                                    MissionEditorViewModel()
+                                }
+                            )
+                            val stateMissionEditor by viewModel.state.collectAsState()
+                            MissionEditorScreen(
+                                state = stateMissionEditor,
+                                onEvent = viewModel::onEvent
+                            )
                         }
 
                         GROUP -> scene(

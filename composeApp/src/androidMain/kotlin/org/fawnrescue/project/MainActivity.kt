@@ -10,7 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import di.AndroidPrinter
 import di.sharedModule
 import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.gotrue.gotrue
+import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.handleDeeplinks
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
             val accessToken = data[1].split("&")[0]
             val refreshToken = data[5].split("&")[0]
             GlobalScope.launch {
-                supabase.gotrue.importAuthToken(
+                supabase.auth.importAuthToken(
                     accessToken,
                     refreshToken,
                     retrieveUser = true,
