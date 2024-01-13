@@ -44,7 +44,7 @@ class MissionEditorViewModel : ViewModel(), KoinComponent {
 
             MissionEditorEvent.Cancel -> {
                 missionRepo.selectedMission.value = null
-                navigator.navigate(NavigationEnum.HOME.path)
+                navigator.navigate(NavigationEnum.PLANNING.path)
             }
 
             MissionEditorEvent.ResetMission -> _state.update {

@@ -17,7 +17,7 @@ fun MissionEditorScreen(onEvent: (MissionEditorEvent) -> Unit, state: MissionEdi
             onEvent(MissionEditorEvent.UpdateMission(state.editedMission.copy(description = it)))
         })
         TextButton(onClick = { onEvent(MissionEditorEvent.SaveMission) }) {
-            Text("Save mission")
+            if (state.selectedMission == null) Text("Save mission") else Text("Edit mission")
         }
         state.selectedMission?.let {
             TextButton(onClick = { onEvent(MissionEditorEvent.ResetMission) }) {

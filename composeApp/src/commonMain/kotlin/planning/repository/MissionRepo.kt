@@ -19,6 +19,7 @@ class MissionRepo : KoinComponent {
     }
 
     suspend fun upsertMission(mission: InsertableMission): Mission {
+        println(mission)
         return supabase.postgrest.from("mission")
             .upsert(mission) { select() }.decodeSingle() // error handling
     }
