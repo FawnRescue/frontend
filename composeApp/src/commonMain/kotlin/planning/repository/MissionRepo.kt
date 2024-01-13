@@ -18,8 +18,8 @@ class MissionRepo : KoinComponent {
             .also { println("LOADING MISSIONS") }.decodeList<Mission>()
     }
 
-    suspend fun createMission(mission: InsertableMission): Mission {
+    suspend fun upsertMission(mission: InsertableMission): Mission {
         return supabase.postgrest.from("mission")
-            .insert(mission) { select() }.decodeSingle() // error handling
+            .upsert(mission) { select() }.decodeSingle() // error handling
     }
 }

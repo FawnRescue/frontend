@@ -19,6 +19,7 @@ enum class NavigationEnum(
     GROUP("Group", "/group", Icons.Rounded.Groups),
     PLANNING("Planning", "/planning", Icons.Rounded.NoteAdd),
     MISSION_EDITOR("Mission Editor", "/planning/mission_editor", null, false ,false),
+    FLIGHT_PLAN_EDITOR("Flight Plan Editor", "/planning/flight_plan_editor", null, false ,false),
     HOME("Home", "/home", Icons.Rounded.Home),
     FRIENDS("Friends", "/friends", Icons.Rounded.Group),
     HANGAR("Hangar", "/hangar", Icons.Rounded.Flight);

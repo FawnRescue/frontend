@@ -16,4 +16,5 @@ data class Mission(
 @Serializable
 data class InsertableMission(
     val description: String,
+    val id: String? = null,
 )
