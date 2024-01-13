@@ -8,6 +8,7 @@ import moe.tlaster.precompose.navigation.Navigator
 import navigation.presentation.NavigationEnum
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import planning.domain.Mission
 import planning.repository.MissionRepo
 
 class MissionListViewModel : ViewModel(), KoinComponent {
@@ -35,10 +36,17 @@ class MissionListViewModel : ViewModel(), KoinComponent {
         }
     }
 
+    private fun editMission(mission: Mission) {
+        missionRepo.selectedMission.value = mission
+        viewModelScope.launch {
+            navigator.navigate(NavigationEnum.MISSION_EDITOR.path)
+        }
+    }
+
     fun onEvent(event: MissionListEvent) {
         when (event) {
             MissionListEvent.CreateNewMission -> createMission()
-            is MissionListEvent.ExistingMissionSelected -> TODO()
+            is MissionListEvent.ExistingMissionSelected -> editMission(event.mission)
         }
     }
 }
