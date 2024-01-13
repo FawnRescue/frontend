@@ -1,6 +1,7 @@
 package planning.presentation.flightplan_editor
 
+import presentation.maps.LatLong
+
 sealed interface FlightPlanEditorEvent {
-    object SampleEvent : FlightPlanEditorEvent
-    data class SampleEventWithData(val data: Unit) : FlightPlanEditorEvent
+    data class MarkerAdded(val location: LatLong) : FlightPlanEditorEvent
 }

@@ -4,6 +4,7 @@ import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import io.github.jan.supabase.SupabaseClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import moe.tlaster.precompose.navigation.Navigator
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -19,8 +20,11 @@ class FlightPlanEditorViewModel : ViewModel(), KoinComponent {
 
     fun onEvent(event: FlightPlanEditorEvent) {
         when (event) {
-
-            else -> {}
+            is FlightPlanEditorEvent.MarkerAdded -> _state.update {
+                it.copy(
+                    boundary = _state.value.boundary.plus(event.location)
+                )
+            }
         }
     }
 }

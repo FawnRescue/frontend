@@ -1,7 +1,16 @@
 package planning.presentation.flightplan_editor
 
 import androidx.compose.runtime.Composable
+import presentation.maps.LatLong
 
 @Composable
-actual fun GoogleMaps() {
+actual fun GoogleMaps(currentPosition: LatLong) {
+}
+
+@Composable
+actual fun GoogleMaps(
+    currentPosition: LatLong,
+    onMapClick: (LatLong) -> Unit,
+    markers: List<LatLong>
+) {
 }
