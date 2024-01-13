@@ -37,10 +37,12 @@ actual fun GoogleMaps(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
         uiSettings = MapUiSettings(
-            mapToolbarEnabled = false
+            mapToolbarEnabled = false,
+            zoomGesturesEnabled = true,
         ),
         properties = MapProperties(
             mapType = MapType.SATELLITE
+
         ),
         onMapClick = { onMapClick(it.toLatLong()) }
     ) {
