@@ -18,8 +18,7 @@ class DiscoverViewModel : ViewModel(), KoinComponent {
 
     fun onEvent(event: DiscoverEvent) {
         when (event) {
-            DiscoverEvent.SampleEvent -> TODO()
-            is DiscoverEvent.SampleEventWithData -> TODO()
+            DiscoverEvent.OnScanDevices -> TODO()
         }
     }
 }
