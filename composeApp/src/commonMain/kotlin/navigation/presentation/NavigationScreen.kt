@@ -16,6 +16,10 @@ import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
 import friends.presentation.FriendListScreen
 import friends.presentation.FriendListViewModel
+import hangar.presentation.HangarScreen
+import hangar.presentation.HangarViewModel
+import hangar.presentation.discover.DiscoverScreen
+import hangar.presentation.discover.DiscoverViewModel
 import home.presentation.HomeScreen
 import login.presentation.LoginScreen
 import login.presentation.LoginViewModel
@@ -156,7 +160,34 @@ fun NavigationScreen(
                             route = it.path,
                             navTransition = NavTransition()
                         ) {
+                            val viewModel = getViewModel(
+                                key = "hangar-screen",
+                                factory = viewModelFactory {
+                                    HangarViewModel()
+                                }
+                            )
+                            val stateHangar by viewModel.state.collectAsState()
+                            HangarScreen(
+                                state = stateHangar,
+                                onEvent = viewModel::onEvent
+                            )
+                        }
 
+                        HANGAR_DISCOVER -> scene(
+                            route = it.path,
+                            navTransition = NavTransition()
+                        ) {
+                            val viewModel = getViewModel(
+                                key = "hangar-discover-screen",
+                                factory = viewModelFactory {
+                                    DiscoverViewModel()
+                                }
+                            )
+                            val stateHangarDiscover by viewModel.state.collectAsState()
+                            DiscoverScreen(
+                                state = stateHangarDiscover,
+                                onEvent = viewModel::onEvent
+                            )
                         }
                     }
                 }

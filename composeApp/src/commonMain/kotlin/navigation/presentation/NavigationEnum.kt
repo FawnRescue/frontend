@@ -21,5 +21,6 @@ enum class NavigationEnum(
     MISSION_EDITOR("Mission Editor", "/planning/mission_editor", null, false ,false),
     HOME("Home", "/home", Icons.Rounded.Home),
     FRIENDS("Friends", "/friends", Icons.Rounded.Group),
-    HANGAR("Hangar", "/hangar", Icons.Rounded.Flight);
+    HANGAR("Hangar", "/hangar", Icons.Rounded.Flight),
+    HANGAR_DISCOVER("Discover Aircraft", "/hangar/discover", null, true ,false),
 }
