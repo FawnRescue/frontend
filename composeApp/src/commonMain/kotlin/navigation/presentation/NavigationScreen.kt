@@ -18,6 +18,11 @@ import friends.presentation.FriendListScreen
 import friends.presentation.FriendListViewModel
 import home.presentation.home.HomeScreen
 import home.presentation.home.HomeViewModel
+import hangar.presentation.HangarScreen
+import hangar.presentation.HangarViewModel
+import hangar.presentation.discover.DiscoverScreen
+import hangar.presentation.discover.DiscoverViewModel
+import home.presentation.HomeScreen
 import login.presentation.LoginScreen
 import login.presentation.LoginViewModel
 import moe.tlaster.precompose.navigation.NavHost
@@ -194,6 +199,34 @@ fun NavigationScreen(
                             val stateProfile by viewModel.state.collectAsState()
                             ProfileEditorScreen(
                                 state = stateProfile, onEvent = viewModel::onEvent
+                            )
+                            val viewModel = getViewModel(
+                                key = "hangar-screen",
+                                factory = viewModelFactory {
+                                    HangarViewModel()
+                                }
+                            )
+                            val stateHangar by viewModel.state.collectAsState()
+                            HangarScreen(
+                                state = stateHangar,
+                                onEvent = viewModel::onEvent
+                            )
+                        }
+
+                        HANGAR_DISCOVER -> scene(
+                            route = it.path,
+                            navTransition = NavTransition()
+                        ) {
+                            val viewModel = getViewModel(
+                                key = "hangar-discover-screen",
+                                factory = viewModelFactory {
+                                    DiscoverViewModel()
+                                }
+                            )
+                            val stateHangarDiscover by viewModel.state.collectAsState()
+                            DiscoverScreen(
+                                state = stateHangarDiscover,
+                                onEvent = viewModel::onEvent
                             )
                         }
                     }
