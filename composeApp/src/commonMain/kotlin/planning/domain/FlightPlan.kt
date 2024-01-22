@@ -2,7 +2,6 @@ package planning.domain
 
 import kotlinx.serialization.Serializable
 import presentation.maps.LatLong
-import presentation.maps.getCenter
 
 @Serializable
 data class FlightPlan(
