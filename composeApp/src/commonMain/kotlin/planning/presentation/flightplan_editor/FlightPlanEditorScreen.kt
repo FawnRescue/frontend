@@ -19,7 +19,8 @@ fun FlightPlanEditorScreen(onEvent: (FlightPlanEditorEvent) -> Unit, state: Flig
         onMarkerClick = {
           onEvent(FlightPlanEditorEvent.MarkerRemoved(it))
         },
-        state.editedBoundary
+        state.editedBoundary,
+        state.editedCheckpoints ?: listOf()
     )
     FloatingActionButton(
         onClick = { onEvent(FlightPlanEditorEvent.SaveBoundary) },

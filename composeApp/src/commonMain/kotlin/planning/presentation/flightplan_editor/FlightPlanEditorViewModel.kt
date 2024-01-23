@@ -14,6 +14,7 @@ import planning.domain.InsertableFlightPlan
 import planning.domain.insertable
 import planning.repository.FlightPlanRepo
 import planning.repository.MissionRepo
+import planning.repository.sortPolarCoordinates
 import presentation.maps.getCenter
 
 class FlightPlanEditorViewModel : ViewModel(), KoinComponent {
@@ -33,7 +34,11 @@ class FlightPlanEditorViewModel : ViewModel(), KoinComponent {
             viewModelScope.launch {
                 val plan = flightPlanRepo.getPath(selectedMission.plan)
                 _state.update {
-                    it.copy(selectedFlightPlan = plan, editedBoundary = plan.boundary)
+                    it.copy(
+                        selectedFlightPlan = plan,
+                        editedBoundary = plan.boundary,
+                        editedCheckpoints = plan.checkpoints
+                    )
                 }
             }
         }
@@ -45,15 +50,27 @@ class FlightPlanEditorViewModel : ViewModel(), KoinComponent {
     fun onEvent(event: FlightPlanEditorEvent) {
         when (event) {
             is FlightPlanEditorEvent.MarkerAdded -> _state.update {
+                val newBoundary = _state.value.editedBoundary.plus(
+                    event.location
+                ).sortPolarCoordinates()
                 it.copy(
-                    editedBoundary = _state.value.editedBoundary.plus(event.location)
+                    editedBoundary = newBoundary,
+                    editedCheckpoints = flightPlanRepo.calculateCheckpoints(
+                        newBoundary
+                    )
                 )
             }
-            is FlightPlanEditorEvent.MarkerRemoved  -> _state.update {
+
+            is FlightPlanEditorEvent.MarkerRemoved -> _state.update {
+                val newBoundary = _state.value.editedBoundary.minus(
+                    event.location
+                ).sortPolarCoordinates()
                 it.copy(
-                    editedBoundary = _state.value.editedBoundary.minus(event.location)
+                    editedBoundary = newBoundary,
+                    editedCheckpoints = flightPlanRepo.calculateCheckpoints(newBoundary)
                 )
             }
+
             FlightPlanEditorEvent.SaveBoundary -> {
                 val selectedMission = missionRepo.selectedMission.value
                 if (selectedMission == null) {
@@ -63,13 +80,14 @@ class FlightPlanEditorViewModel : ViewModel(), KoinComponent {
                 viewModelScope.launch {
                     flightPlanRepo.upsertFlightPlan(
                         selectedMission.insertable(), InsertableFlightPlan(
+                            id = _state.value.selectedFlightPlan?.id,
                             boundary = _state.value.editedBoundary,
-                            location = _state.value.editedBoundary.getCenter()
+                            location = _state.value.editedBoundary.getCenter(),
+                            checkpoints = flightPlanRepo.calculateCheckpoints(_state.value.editedBoundary)
                         )
                     ).also {
                         navigator.navigate(NavigationEnum.PLANNING.path)
                     }
-
                 }
             }
         }

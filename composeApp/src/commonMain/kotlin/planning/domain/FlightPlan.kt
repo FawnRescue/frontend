@@ -21,6 +21,7 @@ data class InsertableFlightPlan(
     val boundary: List<LatLong>,
     val location: LatLong,
     val id: String? = null,
+    val checkpoints: List<LatLong>? = null,
 )
 
 

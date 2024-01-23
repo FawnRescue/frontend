@@ -48,11 +48,6 @@ kotlin {
     }
 
     sourceSets {
-        getByName("androidMain").dependsOn(commonMain.get())
-        getByName("desktopMain").dependsOn(commonMain.get())
-        getByName("iosArm64Main").dependsOn(commonMain.get())
-        getByName("iosX64Main").dependsOn(commonMain.get())
-        getByName("iosSimulatorArm64Main").dependsOn(commonMain.get())
         val desktopMain by getting
 
         androidMain.dependencies {
