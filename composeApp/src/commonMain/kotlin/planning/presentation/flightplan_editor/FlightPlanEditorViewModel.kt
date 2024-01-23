@@ -49,7 +49,11 @@ class FlightPlanEditorViewModel : ViewModel(), KoinComponent {
                     editedBoundary = _state.value.editedBoundary.plus(event.location)
                 )
             }
-
+            is FlightPlanEditorEvent.MarkerRemoved  -> _state.update {
+                it.copy(
+                    editedBoundary = _state.value.editedBoundary.minus(event.location)
+                )
+            }
             FlightPlanEditorEvent.SaveBoundary -> {
                 val selectedMission = missionRepo.selectedMission.value
                 if (selectedMission == null) {

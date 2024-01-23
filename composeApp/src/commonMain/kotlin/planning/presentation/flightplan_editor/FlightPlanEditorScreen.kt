@@ -2,12 +2,9 @@ package planning.presentation.flightplan_editor
 
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.PlusOne
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import presentation.maps.LatLong
 import presentation.maps.getCenter
 
@@ -18,6 +15,9 @@ fun FlightPlanEditorScreen(onEvent: (FlightPlanEditorEvent) -> Unit, state: Flig
         if (state.selectedFlightPlan != null) state.selectedFlightPlan.boundary.getCenter() else testLocation,
         onMapClick = {
             onEvent(FlightPlanEditorEvent.MarkerAdded(it))
+        },
+        onMarkerClick = {
+          onEvent(FlightPlanEditorEvent.MarkerRemoved(it))
         },
         state.editedBoundary
     )

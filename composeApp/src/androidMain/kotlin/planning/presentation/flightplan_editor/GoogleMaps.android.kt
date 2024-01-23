@@ -14,6 +14,8 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polygon
 import com.google.maps.android.compose.rememberCameraPositionState
 import presentation.maps.LatLong
+import presentation.maps.getCenter
+import kotlin.math.atan2
 
 
 fun LatLong.toLatLng(): LatLng {
@@ -24,17 +26,22 @@ fun LatLng.toLatLong(): LatLong {
     return LatLong(this.latitude, this.longitude)
 }
 
+fun sortPolarCoordinates(coordinates: List<LatLong>): List<LatLong> {
+    val centroid = coordinates.getCenter()
+    return coordinates.sortedWith(compareBy { atan2(it.latitude-centroid.latitude, it.longitude-centroid.longitude) })
+}
+
 @Composable
 actual fun GoogleMaps(
     currentPosition: LatLong,
     onMapClick: (LatLong) -> Unit,
-    markers: List<LatLong>
+    onMarkerClick: (LatLong) -> Unit,
+    markers: List<LatLong>,
 ) {
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(currentPosition.toLatLng(), 16f)
     }
-    GoogleMap(
-        modifier = Modifier.fillMaxSize(),
+    GoogleMap(modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
         uiSettings = MapUiSettings(
             mapToolbarEnabled = false,
@@ -44,15 +51,15 @@ actual fun GoogleMaps(
             mapType = MapType.SATELLITE
 
         ),
-        onMapClick = { onMapClick(it.toLatLong()) }
-    ) {
-        markers.forEach {
-            Marker(
-                state = MarkerState(position = it.toLatLng()),
-            )
+        onMapClick = { onMapClick(it.toLatLong()) }) {
+        markers.forEach { pos ->
+            Marker(state = MarkerState(position = pos.toLatLng()), onClick = {
+                onMarkerClick(it.position.toLatLong())
+                true
+            })
         }
         if (markers.isNotEmpty()) {
-            Polygon(points = markers.map(LatLong::toLatLng))
+            Polygon(points = sortPolarCoordinates(markers).map(LatLong::toLatLng), geodesic = true)
         }
     }
 
