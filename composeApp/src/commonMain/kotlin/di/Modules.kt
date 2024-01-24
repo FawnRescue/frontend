@@ -1,5 +1,6 @@
 package di
 
+import hangar.presentation.discover.BluetoothServer
 import moe.tlaster.precompose.navigation.Navigator
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -13,4 +14,6 @@ val sharedModule = module {
     singleOf(::Navigator)
     singleOf(::MissionRepo)
     singleOf(::getMissionChannel)
+    // Throws an error but is correct. Probably because expect classes are in beta
+    singleOf(::BluetoothServer)
 }
