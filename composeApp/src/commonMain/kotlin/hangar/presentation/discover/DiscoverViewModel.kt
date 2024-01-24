@@ -14,6 +14,7 @@ import org.koin.core.component.inject
 class DiscoverViewModel : ViewModel(), KoinComponent {
     private val navigator: Navigator by inject<Navigator>()
     val supabase: SupabaseClient by inject<SupabaseClient>()
+    private val bluetoothServer: BluetoothServer by inject<BluetoothServer>()
 
     private val _state = MutableStateFlow(DiscoverState(emptyList()))
     val state = _state.asStateFlow()
@@ -22,10 +23,15 @@ class DiscoverViewModel : ViewModel(), KoinComponent {
     fun onEvent(event: DiscoverEvent) {
         when (event) {
             DiscoverEvent.OnScanDevices -> {
+                bluetoothServer.startServer()
                 _state.update { it.copy(discoveredDevices = listOf("Drone1", "Drone2")) }
             }
 
-            DiscoverEvent.OnCancelDiscovery -> navigator.goBack()
+            DiscoverEvent.OnCancelDiscovery -> {
+                bluetoothServer.stopServer()
+                navigator.goBack()
+            }
+
             is DiscoverEvent.OnAddDrone -> TODO()
         }
     }

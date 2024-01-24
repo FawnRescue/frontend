@@ -5,6 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
+import di.AndroidContext
 import di.AndroidPrinter
 import di.sharedModule
 import io.github.jan.supabase.SupabaseClient
@@ -13,6 +16,7 @@ import io.github.jan.supabase.gotrue.handleDeeplinks
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.core.module.dsl.singleOf
@@ -22,6 +26,7 @@ import org.koin.java.KoinJavaComponent
 // Desktop-only module to provide our DesktopPrinter
 private val androidModule = module {
     singleOf(::AndroidPrinter)
+    single { AndroidContext(get()) }
 }
 
 
@@ -32,6 +37,7 @@ class MainActivity : ComponentActivity() {
         stopKoin()
         startKoin {
             // Start Koin with both modules
+            androidContext(this@MainActivity)
             modules(sharedModule, androidModule)
         }
 
