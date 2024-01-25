@@ -24,6 +24,8 @@ import moe.tlaster.precompose.navigation.Navigator
 import moe.tlaster.precompose.navigation.transition.NavTransition
 import navigation.presentation.NavigationEnum.*
 import org.koin.compose.koinInject
+import planning.presentation.flightplan_editor.FlightPlanEditorScreen
+import planning.presentation.flightplan_editor.FlightPlanEditorViewModel
 import planning.presentation.mission_editor.MissionEditorScreen
 import planning.presentation.mission_editor.MissionEditorViewModel
 import planning.presentation.mission_list.MissionListScreen
@@ -141,6 +143,23 @@ fun NavigationScreen(
                             val stateMissionEditor by viewModel.state.collectAsState()
                             MissionEditorScreen(
                                 state = stateMissionEditor,
+                                onEvent = viewModel::onEvent
+                            )
+                        }
+
+                        FLIGHT_PLAN_EDITOR -> scene(
+                            route = it.path,
+                            navTransition = NavTransition()
+                        ) {
+                            val viewModel = getViewModel(
+                                key = "fligt-plan-editor-screen",
+                                factory = viewModelFactory {
+                                    FlightPlanEditorViewModel()
+                                }
+                            )
+                            val stateFlightPlanEditor by viewModel.state.collectAsState()
+                            FlightPlanEditorScreen(
+                                state = stateFlightPlanEditor,
                                 onEvent = viewModel::onEvent
                             )
                         }

@@ -18,12 +18,11 @@ class MissionEditorViewModel : ViewModel(), KoinComponent {
 
     private val _state = run {
         val selectedMission = missionRepo.selectedMission.value
-        val editedMission = selectedMission?.let { InsertableMission(it.description) }
-            ?: InsertableMission("")
+        val editedMission =
+            selectedMission?.let { InsertableMission(it.description, it.id) } ?: InsertableMission("")
         MutableStateFlow(
             MissionEditorState(
-                selectedMission,
-                editedMission
+                selectedMission, editedMission
             )
         )
     }
@@ -34,16 +33,18 @@ class MissionEditorViewModel : ViewModel(), KoinComponent {
             is MissionEditorEvent.UpdateMission -> {
                 _state.value = _state.value.copy(editedMission = event.mission)
             }
-
             MissionEditorEvent.SaveMission -> viewModelScope.launch {
-                missionRepo.selectedMission.value =
-                    missionRepo.createMission(_state.value.editedMission)
-                //TODO redirect to pathplanner
+                val selectedMission = missionRepo.selectedMission.value
+                if (selectedMission == null || selectedMission.description != _state.value.editedMission.description) {
+                    missionRepo.selectedMission.value =
+                        missionRepo.upsertMission(_state.value.editedMission)
+                }
+                navigator.navigate(NavigationEnum.FLIGHT_PLAN_EDITOR.path)
             }
 
             MissionEditorEvent.Cancel -> {
                 missionRepo.selectedMission.value = null
-                navigator.navigate(NavigationEnum.HOME.path)
+                navigator.navigate(NavigationEnum.PLANNING.path)
             }
 
             MissionEditorEvent.ResetMission -> _state.update {
