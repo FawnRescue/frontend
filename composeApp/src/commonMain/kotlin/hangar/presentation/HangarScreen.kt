@@ -12,12 +12,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Flight
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.PersonAdd
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -85,12 +88,27 @@ fun HangarScreen(onEvent: (HangarEvent) -> Unit, state: HangarState) {
                 )
             }
             items(state.aircrafts) { aircraft ->
-                Row {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = { onEvent(HangarEvent.OnSelectAircraft(aircraft)) }) {
 
-                        Text(modifier = Modifier.padding(16.dp), text = aircraft.name)
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { onEvent(HangarEvent.OnSelectAircraft(aircraft)) }) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier.background(MaterialTheme.colorScheme.secondaryContainer),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Flight,
+                                contentDescription = aircraft.name,
+                                modifier = Modifier.size(25.dp),
+                                tint = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                        }
+                        Spacer(Modifier.width(16.dp))
+                        Text(text = aircraft.name)
                     }
                 }
             }
@@ -110,6 +128,15 @@ fun HangarScreen(onEvent: (HangarEvent) -> Unit, state: HangarState) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(state.selectedAircraft.name)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        if (state.droneStatus != null) {
+                            Text("State: ${state.droneStatus.state}")
+                            Text("Battery: ${state.droneStatus.battery}")
+                            Text("Location: ${state.droneStatus.location}")
+                        } else {
+                            Text("No Data available")
+                        }
+
                     }
                 }
             }
