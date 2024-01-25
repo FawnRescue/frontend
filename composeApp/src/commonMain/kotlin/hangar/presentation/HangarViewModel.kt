@@ -1,9 +1,19 @@
 package hangar.presentation
 
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
+import hangar.domain.Aircraft
+import hangar.domain.DroneStatus
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.realtime.RealtimeChannel
+import io.github.jan.supabase.realtime.broadcastFlow
+import io.github.jan.supabase.realtime.channel
+import io.github.jan.supabase.realtime.realtime
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import moe.tlaster.precompose.navigation.Navigator
 import navigation.presentation.NavigationEnum
 import org.koin.core.component.KoinComponent
@@ -12,14 +22,49 @@ import org.koin.core.component.inject
 class HangarViewModel : ViewModel(), KoinComponent {
     private val navigator: Navigator by inject<Navigator>()
     val supabase: SupabaseClient by inject<SupabaseClient>()
+    private var channel: RealtimeChannel? = null
 
-    private val _state = MutableStateFlow(HangarState(emptyList()))
+
+    private val _state = MutableStateFlow(HangarState(null, null, null))
     val state = _state.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    aircrafts = supabase.from("aircraft").select().decodeList<Aircraft>()
+                )
+            }
+        }
+    }
 
 
     fun onEvent(event: HangarEvent) {
         when (event) {
             HangarEvent.AddAircraft -> navigator.navigate(NavigationEnum.HANGAR_DISCOVER.path)
+            HangarEvent.OnDismissDialog -> {
+                viewModelScope.launch {
+                    supabase.realtime.removeChannel(channel!!)
+                }
+                _state.update { it.copy(selectedAircraft = null) }
+            }
+
+            is HangarEvent.OnSelectAircraft -> viewModelScope.launch { selectAircraft(event.aircraft) }
         }
+    }
+
+    private suspend fun selectAircraft(aircraft: Aircraft) {
+        _state.update { it.copy(selectedAircraft = aircraft) }
+        channel = supabase.channel(aircraft.token)
+        val broadcastFlow = channel!!.broadcastFlow<DroneStatus>(event = "event")
+        viewModelScope.launch {
+
+            broadcastFlow.collect {
+                println(it)
+            }
+        }
+        println("Subscribing")
+        channel!!.subscribe(blockUntilSubscribed = true)
+        println("Subscribed")
     }
 }

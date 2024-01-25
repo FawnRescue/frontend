@@ -5,7 +5,6 @@ import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGattCharacteristic
-import android.bluetooth.BluetoothGattDescriptor
 import android.bluetooth.BluetoothGattServer
 import android.bluetooth.BluetoothGattServerCallback
 import android.bluetooth.BluetoothGattService
@@ -18,10 +17,8 @@ import android.bluetooth.le.BluetoothLeAdvertiser
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import android.os.ParcelUuid
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
-import org.fawnrescue.project.MainActivity
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.UUID
@@ -31,6 +28,8 @@ actual class BluetoothServer : KoinComponent {
     private val bluetoothManager: BluetoothManager =
         context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
     private val bluetoothAdapter: BluetoothAdapter = bluetoothManager.adapter
+    private val bluetoothLeAdvertiser: BluetoothLeAdvertiser =
+        bluetoothAdapter.bluetoothLeAdvertiser
     private var bluetoothGattServer: BluetoothGattServer? = null
 
     @RequiresApi(Build.VERSION_CODES.S)
@@ -71,8 +70,8 @@ actual class BluetoothServer : KoinComponent {
         // Add characteristics, for example a read characteristic
         val readCharacteristic = BluetoothGattCharacteristic(
             CHARACTERISTIC_UUID,
-            BluetoothGattCharacteristic.PROPERTY_READ,
-            BluetoothGattCharacteristic.PERMISSION_READ
+            BluetoothGattCharacteristic.PROPERTY_WRITE,
+            BluetoothGattCharacteristic.PERMISSION_WRITE
         )
         service.addCharacteristic(readCharacteristic)
 
@@ -90,20 +89,22 @@ actual class BluetoothServer : KoinComponent {
             )
             return
         }
-        bluetoothGattServer?.addService(service)
+        println(bluetoothGattServer?.addService(service))
+
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
     private fun startAdvertising() {
-        val advertiser: BluetoothLeAdvertiser = bluetoothAdapter.bluetoothLeAdvertiser
+
         val settings = AdvertiseSettings.Builder()
-            .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY)
-            .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_MEDIUM)
-            .setConnectable(true)
+            .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_BALANCED)
+            .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH)
+            .setConnectable(false)
             .build()
 
         val data = AdvertiseData.Builder()
             .setIncludeDeviceName(true)
+            .setIncludeTxPowerLevel(true)
             .build()
 
         if (ActivityCompat.checkSelfPermission(
@@ -118,7 +119,8 @@ actual class BluetoothServer : KoinComponent {
             )
             return
         }
-        advertiser.startAdvertising(settings, data, advertiseCallback)
+        bluetoothLeAdvertiser.startAdvertising(settings, data, advertiseCallback)
+
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
@@ -136,6 +138,7 @@ actual class BluetoothServer : KoinComponent {
             return
         }
         bluetoothGattServer?.close()
+        bluetoothLeAdvertiser.stopAdvertising(advertiseCallback)
         // Stop advertising if needed
     }
 
@@ -159,12 +162,15 @@ actual class BluetoothServer : KoinComponent {
             println("Success Connect")
         }
 
+        @RequiresApi(Build.VERSION_CODES.S)
         override fun onStartFailure(errorCode: Int) {
             super.onStartFailure(errorCode)
+            stopServer()
+            startServer()
             println("Failed Connect")
         }
     }
 }
 
-val SERVICE_UUID: UUID = UUID.fromString("c32a2876-a31c-4cf0-a97d-1f003d91ebf8")
-val CHARACTERISTIC_UUID: UUID = UUID.fromString("362b5dee-7a49-4438-8507-91483a32d5d3")
+val SERVICE_UUID: UUID = UUID.fromString("F08A484F-8957-4F21-AA95-B58252D8D707")
+val CHARACTERISTIC_UUID: UUID = UUID.fromString("502E4974-FC68-42B1-8402-33DAF244E46C")
