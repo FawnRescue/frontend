@@ -46,7 +46,7 @@ class HangarViewModel : ViewModel(), KoinComponent {
                 viewModelScope.launch {
                     supabase.realtime.removeChannel(channel!!)
                 }
-                _state.update { it.copy(selectedAircraft = null) }
+                _state.update { it.copy(selectedAircraft = null, droneStatus = null) }
             }
 
             is HangarEvent.OnSelectAircraft -> viewModelScope.launch { selectAircraft(event.aircraft) }
@@ -55,12 +55,12 @@ class HangarViewModel : ViewModel(), KoinComponent {
 
     private suspend fun selectAircraft(aircraft: Aircraft) {
         _state.update { it.copy(selectedAircraft = aircraft) }
+        println(aircraft.token)
         channel = supabase.channel(aircraft.token)
         val broadcastFlow = channel!!.broadcastFlow<DroneStatus>(event = "event")
         viewModelScope.launch {
-
-            broadcastFlow.collect {
-                println(it)
+            broadcastFlow.collect { status ->
+                _state.update { it.copy(droneStatus = status) }
             }
         }
         println("Subscribing")

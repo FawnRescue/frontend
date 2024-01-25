@@ -68,12 +68,12 @@ actual class BluetoothServer : KoinComponent {
         )
 
         // Add characteristics, for example a read characteristic
-        val readCharacteristic = BluetoothGattCharacteristic(
+        val writeCharacteristic = BluetoothGattCharacteristic(
             CHARACTERISTIC_UUID,
-            BluetoothGattCharacteristic.PROPERTY_WRITE,
+            BluetoothGattCharacteristic.PROPERTY_NOTIFY,
             BluetoothGattCharacteristic.PERMISSION_WRITE
         )
-        service.addCharacteristic(readCharacteristic)
+        service.addCharacteristic(writeCharacteristic)
 
         // Add more characteristics as needed
 
@@ -99,7 +99,7 @@ actual class BluetoothServer : KoinComponent {
         val settings = AdvertiseSettings.Builder()
             .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_BALANCED)
             .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH)
-            .setConnectable(false)
+            .setConnectable(true)
             .build()
 
         val data = AdvertiseData.Builder()
