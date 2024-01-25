@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.PinDrop
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -133,7 +134,7 @@ actual fun GoogleMaps(
             }
         }
         if (markers.isNotEmpty() && showBoundary) {
-            Polygon(points = markers.map(LatLong::toLatLng))
+            Polygon(points = markers.map(LatLong::toLatLng), fillColor =MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
         }
         if (checkpoints.isNotEmpty() && showPath) {
             Polyline(points = checkpoints.map(LatLong::toLatLng), color= Color.White, zIndex = 3f)
