@@ -54,11 +54,7 @@ class FlightPlanRepo : KoinComponent {
         flightHeight: Double = 10.0,
         overlap: Double = 0.1,
     ): List<LatLong> {
-        //TODO remove defaults and add checks
-        // 0 < FOV <= 360
-        // 0 < height < 200
-        // 0 <= overlap < 1
-        // boundary.size > 1
+        //TODO remove defaults
 
         // Check 0 < FOV <= 360
         require(cameraFOV > 0 && cameraFOV <= 360) { "Invalid camera FOV" }
@@ -219,11 +215,11 @@ class FlightPlanRepo : KoinComponent {
                 .first
         }
 
-        fun alignPathToPolygon(point: LatLong, polygon: List<LatLong>): LatLong {
-            return if (pointInPolygon(point, polygon)) {
-                point
+        fun alignPathToPolygon(point: Pair<LatLong, Boolean>, polygon: List<LatLong>): LatLong {
+            return if (point.second) {
+                point.first
             } else {
-                getBoundaryMarkerOnPath(point, polygon)
+                getBoundaryMarkerOnPath(point.first, polygon)
             }
         }
 
@@ -236,11 +232,11 @@ class FlightPlanRepo : KoinComponent {
             val newCheckpoints =
                 checkpoints.map { Pair(it, pointInPolygon(it, polygon)) }
 
-            fun isFuturePointInPolygon(
+            fun isAFuturePointInPolygon(
                 index: Int,
                 checkpoints: List<Pair<LatLong, Boolean>>,
             ): Boolean {
-                for (i in index..<checkpoints.size) {
+                for (i in (index+1)..<checkpoints.size) {
                     if (checkpoints[i].first.longitude != checkpoints[index].first.longitude) {
                         return false
                     }
@@ -255,28 +251,26 @@ class FlightPlanRepo : KoinComponent {
                 index: Int,
                 checkpoints: List<Pair<LatLong, Boolean>>,
             ): Boolean {
-                for (i in (0..<index).reversed()) {
-                    if (checkpoints[i].first.longitude != checkpoints[index].first.longitude) {
-                        return false
-                    }
-                    if (checkpoints[i].second) {
-                        return true
-                    }
+                if(index == 0) {
+                    return false
                 }
-                return false
+                if (checkpoints[index-1].first.longitude != checkpoints[index].first.longitude) {
+                    return false
+                }
+                return checkpoints[index-1].second
             }
 
             return newCheckpoints.filter {
-                if (pointInPolygon(it.first, boundary)) {
+                if (it.second) {
                     true
                 } else {
-                    isFuturePointInPolygon(
+                    isAFuturePointInPolygon(
                         newCheckpoints.indexOf(it), newCheckpoints
                     ) && isPreviousPointInPolygon(
                         newCheckpoints.indexOf(it), newCheckpoints
                     )
                 }
-            }.map { it.first }
+            }.map { alignPathToPolygon(it, boundary) }
         }
 
         val spacing = calculateCameraCoverage(cameraFOV, flightHeight)
@@ -285,7 +279,7 @@ class FlightPlanRepo : KoinComponent {
         return removePointsCompletelyOutsidePolygon(
             possibleCheckpoints,
             boundary
-        ).map { alignPathToPolygon(it, boundary) }
+        )
     }
 }
 

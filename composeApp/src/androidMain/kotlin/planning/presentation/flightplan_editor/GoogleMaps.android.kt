@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.PinDrop
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -126,8 +128,8 @@ actual fun GoogleMaps(
             }
         }
         if (showCheckpointMarkers) {
-            checkpoints.forEach { pos ->
-                Marker(state = MarkerState(position = pos.toLatLng()), alpha = 0.5f)
+            checkpoints.forEachIndexed { i, pos ->
+                Marker(state = MarkerState(position = pos.toLatLng()), alpha = 0.5f, title = "$i")
             }
         }
         if (markers.isNotEmpty() && showBoundary) {
@@ -136,5 +138,6 @@ actual fun GoogleMaps(
         if (checkpoints.isNotEmpty() && showPath) {
             Polyline(points = checkpoints.map(LatLong::toLatLng), color= Color.White, zIndex = 3f)
         }
+        Marker(state = MarkerState(position = checkpoints.getCenter().toLatLng()), rotation = 180f)
     }
 }
