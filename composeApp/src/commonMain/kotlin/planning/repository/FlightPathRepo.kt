@@ -137,8 +137,7 @@ class FlightPlanRepo : KoinComponent {
             val spacingWithOverlap = Dimension((1 - overlap) * spacing.x, (1 - overlap) * spacing.y)
 
             var directionDown = true
-            var currentPosition =
-                displaceCoordinate(box.position, -(spacing.y / 2), spacing.x / 2)
+            var currentPosition = displaceCoordinate(box.position, -(spacing.y / 2), spacing.x / 2)
             checkpoints.add(currentPosition)
 
             while (true) {
@@ -201,32 +200,30 @@ class FlightPlanRepo : KoinComponent {
             return inside
         }
 
-        fun getClosestBoundaryLatLong(point: LatLong, boundary: List<LatLong>): LatLong {
+        fun getBoundaryMarkerOnPath(point: LatLong, boundary: List<LatLong>): LatLong {
+            fun getSign(p1: LatLong, p2: LatLong): Boolean {
+                return 0 < p2.longitude - p1.longitude
+            }
+
             fun distance(p1: LatLong, p2: LatLong): Double {
                 val deltaX = p2.longitude - p1.longitude
                 val deltaY = p2.latitude - p1.latitude
                 return sqrt(deltaX * deltaX + deltaY * deltaY)
             }
 
-            var closestLatLong: LatLong = boundary[0]
-            var closestDistance = distance(point, closestLatLong)
-
-            for (marker in boundary) {
-                val currentDistance = distance(point, marker)
-                if (currentDistance < closestDistance) {
-                    closestLatLong = marker
-                    closestDistance = currentDistance
-                }
-            }
-
-            return closestLatLong
+            val centroid = boundary.getCenter()
+            return boundary
+                .filter { getSign(it, centroid) == getSign(point, centroid) }
+                .map { Pair(it, distance(centroid, it)) }
+                .minBy { it.second }
+                .first
         }
 
         fun alignPathToPolygon(point: LatLong, polygon: List<LatLong>): LatLong {
             return if (pointInPolygon(point, polygon)) {
                 point
             } else {
-                getClosestBoundaryLatLong(point, polygon)
+                getBoundaryMarkerOnPath(point, polygon)
             }
         }
 
@@ -234,25 +231,61 @@ class FlightPlanRepo : KoinComponent {
             checkpoints: List<LatLong>,
             polygon: List<LatLong>,
         ): List<LatLong> {
-            //TODO detect wether all the following points that lie an the same x axis do not enter the polygon again
+            //TODO detect whether all the following points that lie an the same x axis do not enter the polygon again
             // if one enters again do nothing else delete the points
-            val newCheckpoints = checkpoints.map { Pair(Pair(it, pointInPolygon(it, polygon)), false) }
-           // for (i in 0..<newCheckpoints.size) {
-               // if (!pointInPolygon(newCheckpoints[i], polygon)){
-                  //  for( k in i..<checkpoints.size){
-                   //     if (pointInPolygon(checkpoints[i], polygon)){
-                   //         i = k
-                  //      }
-                  //  }
-               // }
-            //}
-            return newCheckpoints.map { it.first.first }
+            val newCheckpoints =
+                checkpoints.map { Pair(it, pointInPolygon(it, polygon)) }
+
+            fun isFuturePointInPolygon(
+                index: Int,
+                checkpoints: List<Pair<LatLong, Boolean>>,
+            ): Boolean {
+                for (i in index..<checkpoints.size) {
+                    if (checkpoints[i].first.longitude != checkpoints[index].first.longitude) {
+                        return false
+                    }
+                    if (checkpoints[i].second) {
+                        return true
+                    }
+                }
+                return false
+            }
+
+            fun isPreviousPointInPolygon(
+                index: Int,
+                checkpoints: List<Pair<LatLong, Boolean>>,
+            ): Boolean {
+                for (i in (0..<index).reversed()) {
+                    if (checkpoints[i].first.longitude != checkpoints[index].first.longitude) {
+                        return false
+                    }
+                    if (checkpoints[i].second) {
+                        return true
+                    }
+                }
+                return false
+            }
+
+            return newCheckpoints.filter {
+                if (pointInPolygon(it.first, boundary)) {
+                    true
+                } else {
+                    isFuturePointInPolygon(
+                        newCheckpoints.indexOf(it), newCheckpoints
+                    ) && isPreviousPointInPolygon(
+                        newCheckpoints.indexOf(it), newCheckpoints
+                    )
+                }
+            }.map { it.first }
         }
 
         val spacing = calculateCameraCoverage(cameraFOV, flightHeight)
         val boundingBox = findBoundingBox(boundary)
         val possibleCheckpoints = rasterizeBoundingBox(boundingBox, spacing, overlap)
-        return possibleCheckpoints.map { alignPathToPolygon(it, boundary) }
+        return removePointsCompletelyOutsidePolygon(
+            possibleCheckpoints,
+            boundary
+        ).map { alignPathToPolygon(it, boundary) }
     }
 }
 
