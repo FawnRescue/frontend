@@ -1,0 +1,5 @@
+<resources>
+    <style name="Theme.FawnRescue" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
+</resources>
