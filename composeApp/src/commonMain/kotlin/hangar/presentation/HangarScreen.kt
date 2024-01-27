@@ -39,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import friends.presentation.FriendListEvent
+import hangar.presentation.components.BatteryIndicator
 import io.github.jan.supabase.compose.auth.ui.email.OutlinedEmailField
 import io.github.jan.supabase.compose.auth.ui.password.OutlinedPasswordField
 import io.github.jan.supabase.compose.auth.ui.password.PasswordRule
@@ -130,8 +131,8 @@ fun HangarScreen(onEvent: (HangarEvent) -> Unit, state: HangarState) {
                         Text(state.selectedAircraft.name)
                         Spacer(modifier = Modifier.height(16.dp))
                         if (state.droneStatus != null) {
+                            BatteryIndicator(state.droneStatus.battery)
                             Text("State: ${state.droneStatus.state}")
-                            Text("Battery: ${state.droneStatus.battery}")
                             Text("Location: ${state.droneStatus.location}")
                         } else {
                             Text("No Data available")
