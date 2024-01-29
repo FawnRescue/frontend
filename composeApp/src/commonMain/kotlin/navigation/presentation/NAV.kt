@@ -8,7 +8,7 @@ import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.NoteAdd
 import androidx.compose.ui.graphics.vector.ImageVector
 
-enum class NavigationEnum(
+enum class NAV(
     val label: String,
     val path: String,
     val icon: ImageVector?,
@@ -20,6 +20,7 @@ enum class NavigationEnum(
     PLANNING("Planning", "/planning", Icons.Rounded.NoteAdd),
     MISSION_EDITOR("Mission Editor", "/planning/mission_editor", null, false ,false),
     FLIGHT_PLAN_EDITOR("Flight Plan Editor", "/planning/flight_plan_editor", null, false ,false),
+    FLIGHT_DATE_EDITOR("Flight Date Editor", "/planning/flight_date_editor", null, false ,false),
     HOME("Home", "/home", Icons.Rounded.Home),
     FRIENDS("Friends", "/friends", Icons.Rounded.Group),
     HANGAR("Hangar", "/hangar", Icons.Rounded.Flight);

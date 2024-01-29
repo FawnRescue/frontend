@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import moe.tlaster.precompose.navigation.Navigator
-import navigation.presentation.NavigationEnum
+import navigation.presentation.NAV
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import planning.domain.Mission
@@ -32,14 +32,14 @@ class MissionListViewModel : ViewModel(), KoinComponent {
 
     private fun createMission() {
         viewModelScope.launch {
-            navigator.navigate(NavigationEnum.MISSION_EDITOR.path)
+            navigator.navigate(NAV.MISSION_EDITOR.path)
         }
     }
 
     private fun editMission(mission: Mission) {
         missionRepo.selectedMission.value = mission
         viewModelScope.launch {
-            navigator.navigate(NavigationEnum.MISSION_EDITOR.path)
+            navigator.navigate(NAV.MISSION_EDITOR.path)
         }
     }
 

@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import moe.tlaster.precompose.navigation.Navigator
-import navigation.presentation.NavigationEnum
+import navigation.presentation.NAV
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import planning.domain.InsertableMission
@@ -19,7 +19,8 @@ class MissionEditorViewModel : ViewModel(), KoinComponent {
     private val _state = run {
         val selectedMission = missionRepo.selectedMission.value
         val editedMission =
-            selectedMission?.let { InsertableMission(it.description, it.id) } ?: InsertableMission("")
+            selectedMission?.let { InsertableMission(it.description, it.id) }
+                ?: InsertableMission("")
         MutableStateFlow(
             MissionEditorState(
                 selectedMission, editedMission
@@ -33,18 +34,18 @@ class MissionEditorViewModel : ViewModel(), KoinComponent {
             is MissionEditorEvent.UpdateMission -> {
                 _state.value = _state.value.copy(editedMission = event.mission)
             }
+
             MissionEditorEvent.SaveMission -> viewModelScope.launch {
                 val selectedMission = missionRepo.selectedMission.value
                 if (selectedMission == null || selectedMission.description != _state.value.editedMission.description) {
                     missionRepo.selectedMission.value =
                         missionRepo.upsertMission(_state.value.editedMission)
                 }
-                navigator.navigate(NavigationEnum.FLIGHT_PLAN_EDITOR.path)
             }
 
             MissionEditorEvent.Cancel -> {
                 missionRepo.selectedMission.value = null
-                navigator.navigate(NavigationEnum.PLANNING.path)
+                navigator.navigate(NAV.PLANNING.path)
             }
 
             MissionEditorEvent.ResetMission -> _state.update {
@@ -54,6 +55,9 @@ class MissionEditorViewModel : ViewModel(), KoinComponent {
                     )
                 } ?: InsertableMission(""))
             }
+
+            MissionEditorEvent.EditFlightPlan -> navigator.navigate(NAV.FLIGHT_PLAN_EDITOR.path)
+            MissionEditorEvent.AddFlightDate -> navigator.navigate(NAV.FLIGHT_DATE_EDITOR.path)
         }
     }
 }

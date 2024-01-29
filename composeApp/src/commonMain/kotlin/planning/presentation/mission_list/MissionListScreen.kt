@@ -47,7 +47,7 @@ fun MissionListScreen(onEvent: (MissionListEvent) -> Unit, state: MissionListSta
                         mission = mission,
                         modifier = Modifier.fillMaxWidth().clickable {
                             onEvent(MissionListEvent.ExistingMissionSelected(mission))
-                        }.padding(horizontal = 16.dp)
+                        }.padding(horizontal = 16.dp),
                     )
                 }
             }

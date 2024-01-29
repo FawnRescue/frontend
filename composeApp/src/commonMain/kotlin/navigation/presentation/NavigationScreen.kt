@@ -22,8 +22,10 @@ import login.presentation.LoginViewModel
 import moe.tlaster.precompose.navigation.NavHost
 import moe.tlaster.precompose.navigation.Navigator
 import moe.tlaster.precompose.navigation.transition.NavTransition
-import navigation.presentation.NavigationEnum.*
+import navigation.presentation.NAV.*
 import org.koin.compose.koinInject
+import planning.presentation.flightdate_editor.FlightDateEditorScreen
+import planning.presentation.flightdate_editor.FlightDateEditorViewModel
 import planning.presentation.flightplan_editor.FlightPlanEditorScreen
 import planning.presentation.flightplan_editor.FlightPlanEditorViewModel
 import planning.presentation.mission_editor.MissionEditorScreen
@@ -33,14 +35,14 @@ import planning.presentation.mission_list.MissionListViewModel
 
 @Composable
 fun NavigationScreen(
-    selectedItem: NavigationEnum,
+    selectedItem: NAV,
     onEvent: (NavigationEvent) -> Unit
 ) {
     val navigator = koinInject<Navigator>()
     Scaffold(bottomBar = {
         if (selectedItem.navBar) {
             NavigationBar {
-                NavigationEnum.entries.filter { it.navItem }.forEach { item ->
+                NAV.entries.filter { it.navItem }.forEach { item ->
                     NavigationBarItem(
                         selected = selectedItem == item,
                         onClick = {
@@ -66,10 +68,10 @@ fun NavigationScreen(
                 modifier = Modifier.fillMaxSize(),
                 navigator = navigator,
                 navTransition = NavTransition(),
-                initialRoute = NavigationEnum.entries.first().path
+                initialRoute = NAV.entries.first().path
             ) {
 
-                NavigationEnum.entries.forEach {
+                NAV.entries.forEach {
                     when (it) {
                         HOME -> scene(
                             route = it.path,
@@ -152,7 +154,7 @@ fun NavigationScreen(
                             navTransition = NavTransition()
                         ) {
                             val viewModel = getViewModel(
-                                key = "fligt-plan-editor-screen",
+                                key = "flight-plan-editor-screen",
                                 factory = viewModelFactory {
                                     FlightPlanEditorViewModel()
                                 }
@@ -176,6 +178,23 @@ fun NavigationScreen(
                             navTransition = NavTransition()
                         ) {
 
+                        }
+
+                        FLIGHT_DATE_EDITOR -> scene(
+                            route = it.path,
+                            navTransition = NavTransition()
+                        ) {
+                            val viewModel = getViewModel(
+                                key = "flight-date-editor-screen",
+                                factory = viewModelFactory {
+                                    FlightDateEditorViewModel()
+                                }
+                            )
+                            val stateFlightDateEditor by viewModel.state.collectAsState()
+                            FlightDateEditorScreen(
+                                state = stateFlightDateEditor,
+                                onEvent = viewModel::onEvent
+                            )
                         }
                     }
                 }

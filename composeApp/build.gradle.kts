@@ -78,6 +78,7 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.maps.compose)
+            implementation(libs.kotlinx.datetime)
             api(libs.precompose)
         }
     }

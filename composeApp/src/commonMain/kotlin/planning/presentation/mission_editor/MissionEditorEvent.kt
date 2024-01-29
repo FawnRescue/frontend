@@ -8,4 +8,6 @@ sealed interface MissionEditorEvent {
     data object SaveMission : MissionEditorEvent
     data object ResetMission : MissionEditorEvent
     data object Cancel : MissionEditorEvent
+    data object EditFlightPlan : MissionEditorEvent
+    data object AddFlightDate : MissionEditorEvent
 }

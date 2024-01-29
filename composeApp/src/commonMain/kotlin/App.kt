@@ -9,7 +9,7 @@ import dev.icerock.moko.mvvm.compose.viewModelFactory
 import kotlinx.coroutines.DelicateCoroutinesApi
 import moe.tlaster.precompose.PreComposeApp
 import moe.tlaster.precompose.navigation.Navigator
-import navigation.presentation.NavigationEnum
+import navigation.presentation.NAV
 import navigation.presentation.NavigationEvent
 import navigation.presentation.NavigationScreen
 import navigation.presentation.NavigationViewModel
@@ -35,7 +35,7 @@ fun App() {
                 LaunchedEffect(Unit) {
                     navigator.currentEntry.collect { currentRoute ->
                         val correspondingItem =
-                            NavigationEnum.entries.find {
+                            NAV.entries.find {
                                 it.path == (currentRoute?.path)
                             }
                         if (correspondingItem != null && correspondingItem != viewModel.selectedItem) {

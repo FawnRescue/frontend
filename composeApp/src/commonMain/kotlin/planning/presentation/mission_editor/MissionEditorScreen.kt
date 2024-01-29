@@ -16,12 +16,18 @@ fun MissionEditorScreen(onEvent: (MissionEditorEvent) -> Unit, state: MissionEdi
         TextField(state.editedMission.description, onValueChange = {
             onEvent(MissionEditorEvent.UpdateMission(state.editedMission.copy(description = it)))
         })
-        TextButton(onClick = { onEvent(MissionEditorEvent.SaveMission) }) {
-            if (state.selectedMission == null) Text("Save mission") else Text("Edit mission")
+        TextButton(onClick = { onEvent(MissionEditorEvent.SaveMission) }, enabled = state.selectedMission == null || state.selectedMission.description != state.editedMission.description) {
+            if (state.selectedMission == null) Text("Save Description") else Text("Save new Description")
         }
         state.selectedMission?.let {
+            TextButton(onClick = { onEvent(MissionEditorEvent.EditFlightPlan) }) {
+                Text("Edit Flight Plan")
+            }
+            TextButton(onClick = { onEvent(MissionEditorEvent.AddFlightDate) }) {
+                Text("Add Flight Date")
+            }
             TextButton(onClick = { onEvent(MissionEditorEvent.ResetMission) }) {
-                Text("Reset mission")
+                Text("Reset Description")
             }
         }
         TextButton(onClick = { onEvent(MissionEditorEvent.Cancel) }) {
