@@ -37,6 +37,7 @@ kotlin {
             implementation(libs.compose.ui)
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.blue.falcon.android.debug)
 
         }
         desktopMain.dependencies {

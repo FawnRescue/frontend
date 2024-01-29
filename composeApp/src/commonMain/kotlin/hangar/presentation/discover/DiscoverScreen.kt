@@ -15,7 +15,9 @@ fun DiscoverScreen(onEvent: (DiscoverEvent) -> Unit, state: DiscoverState) {
             Text("Scan for Drones")
         }
         state.discoveredDevices.map {
-            Text(it)
+            Button(onClick = { onEvent(DiscoverEvent.OnAddDrone(it.address)) }) {
+                Text(it.name)
+            }
         }
         Button(onClick = { onEvent(DiscoverEvent.OnCancelDiscovery) }) {
             Text("Cancel Discovery")
