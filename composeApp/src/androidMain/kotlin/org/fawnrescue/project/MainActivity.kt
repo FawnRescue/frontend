@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import di.AndroidApplication
 import di.AndroidContext
 import di.AndroidPrinter
 import di.sharedModule
@@ -24,10 +25,6 @@ import org.koin.dsl.module
 import org.koin.java.KoinJavaComponent
 
 // Desktop-only module to provide our DesktopPrinter
-private val androidModule = module {
-    singleOf(::AndroidPrinter)
-    single { AndroidContext(get()) }
-}
 
 
 class MainActivity : ComponentActivity() {
@@ -35,6 +32,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         //TODO only start when not running
         stopKoin()
+        val androidModule = module {
+            singleOf(::AndroidPrinter)
+            single { AndroidContext(get()) }
+            single { AndroidApplication(application) }
+        }
         startKoin {
             // Start Koin with both modules
             androidContext(this@MainActivity)

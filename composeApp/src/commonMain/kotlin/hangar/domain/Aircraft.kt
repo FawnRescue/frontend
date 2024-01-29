@@ -12,3 +12,14 @@ data class Aircraft(
     val key: String,
     val token: String
 )
+
+@Serializable
+data class InsertableAircraft(
+    val id: String? = null,
+    val owner: String? = null,
+    val name: String,
+    val created_at: String? = null,
+    val description: String? = null,
+    val key: String,
+    val token: String
+)
