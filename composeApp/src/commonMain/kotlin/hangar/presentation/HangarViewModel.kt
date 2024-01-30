@@ -32,7 +32,8 @@ class HangarViewModel : ViewModel(), KoinComponent {
         viewModelScope.launch {
             _state.update {
                 it.copy(
-                    aircrafts = supabase.from("aircraft").select().decodeList<Aircraft>()
+                    aircrafts = supabase.from("aircraft").select { filter { eq("deleted", false) } }
+                        .decodeList<Aircraft>()
                 )
             }
         }
@@ -50,7 +51,25 @@ class HangarViewModel : ViewModel(), KoinComponent {
             }
 
             is HangarEvent.OnSelectAircraft -> viewModelScope.launch { selectAircraft(event.aircraft) }
+            HangarEvent.OnDeleteAircraft -> {
+                viewModelScope.launch {
+                    supabase.from("aircraft").update({ set("deleted", true) }) {
+                        filter {
+                            eq("token", _state.value.selectedAircraft!!.token)
+                        }
+                    }
+                    _state.update {
+                        it.copy(
+                            selectedAircraft = null,
+                            aircrafts = supabase.from("aircraft")
+                                .select { filter { eq("deleted", false) } }
+                                .decodeList<Aircraft>()
+                        )
+                    }
+                }
+            }
         }
+
     }
 
     private suspend fun selectAircraft(aircraft: Aircraft) {
