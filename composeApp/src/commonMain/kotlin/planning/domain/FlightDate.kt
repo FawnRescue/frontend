@@ -45,7 +45,7 @@ data class EditableFlightDate(
 
 @Serializable
 data class InsertableFlightDate(
-    val id: String?,
+    val id: String? = null,
     val mission: String,
     val start_date: Instant,
     val end_date: Instant,

@@ -26,6 +26,6 @@ class FlightDateRepo : KoinComponent {
 
 
     suspend fun upsertFlightDate(date: InsertableFlightDate): FlightDate =
-        supabase.from(Tables.FLIGHT_PLAN.path)
-            .upsert(date) { select() }.decodeSingle() // error handling
+        println(date).run { supabase.from(Tables.FLIGHT_DATE.path)
+            .upsert(date) { select() }.decodeSingle()} // error handling
 }
