@@ -4,22 +4,20 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Aircraft(
-    val id: String,
+    val token: String,
     val owner: String,
     val name: String,
-    val created_at: String,
     val description: String?,
-    val key: String,
-    val token: String
+    val created_at: String,
+    val deleted: Boolean
 )
 
 @Serializable
 data class InsertableAircraft(
-    val id: String? = null,
+    val token: String,
     val owner: String? = null,
     val name: String,
-    val created_at: String? = null,
     val description: String? = null,
-    val key: String,
-    val token: String
+    val created_at: String? = null,
+    val deleted: Boolean? = null
 )

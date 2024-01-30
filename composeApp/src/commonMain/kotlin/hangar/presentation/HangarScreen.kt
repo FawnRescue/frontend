@@ -137,6 +137,9 @@ fun HangarScreen(onEvent: (HangarEvent) -> Unit, state: HangarState) {
                         } else {
                             Text("No Data available")
                         }
+                        Button(onClick = {onEvent(HangarEvent.OnDeleteAircraft)}){
+                            Text("Delete aircraft")
+                        }
 
                     }
                 }

@@ -1,8 +1,11 @@
 package hangar.presentation.discover
 
+import core.utils.randomAESKey
+import core.utils.randomUUID
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import hangar.domain.Aircraft
 import hangar.domain.InsertableAircraft
+import hangar.domain.InsertableAircraftSecret
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.from
@@ -42,14 +45,30 @@ class DiscoverViewModel : ViewModel(), KoinComponent {
 
             is DiscoverEvent.OnAddDrone -> {
                 viewModelScope.launch {
-                    //TODO generate token and key
-                    val key = "47832498798743"
-                    val token = "2338495893475"
+                    // Generate a random UUID for the token
+                    val token = randomUUID()
+
+                    val key = randomAESKey()
+
                     val connected = bluetoothClient.connectDrone(event.address, key, token)
                     if (connected) {
                         supabase.from("aircraft")
-                            .insert(InsertableAircraft(name = "${supabase.auth.currentUserOrNull()?.id}-Aircraft", key = key, token = token))
+                            .insert(
+                                InsertableAircraft(
+                                    name = "${supabase.auth.currentUserOrNull()?.id}-Aircraft",
+                                    token = token
+                                )
+                            )
+                        supabase.from("aircraft_secret")
+                            .insert(
+                                InsertableAircraftSecret(
+                                    key = key,
+                                    token = token
+                                )
+                            )
                     }
+                    bluetoothClient.stopScan()
+                    navigator.goBack()
                     println("Drone connected: $connected")
                 }
             }
