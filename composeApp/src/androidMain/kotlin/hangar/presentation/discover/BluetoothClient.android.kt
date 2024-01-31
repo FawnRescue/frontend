@@ -3,7 +3,6 @@ package hangar.presentation.discover
 import AdvertisementDataRetrievalKeys
 import android.Manifest
 import android.app.Activity
-import android.bluetooth.*
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -21,6 +20,7 @@ import kotlinx.coroutines.flow.flow
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.UUID
+import kotlin.math.min
 
 actual class BluetoothClient : KoinComponent, BlueFalconDelegate {
     private val context: Context by inject()
@@ -41,6 +41,32 @@ actual class BluetoothClient : KoinComponent, BlueFalconDelegate {
     private var dataSend = false
     private var token: String? = null
     private var key: String? = null
+
+    private var dataToSend: ByteArray? = null
+    private var currentChunkIndex = 0
+    private val chunkSize = 100 // Adjust as needed
+    private val scanningFlow = flow<Boolean> {
+        while (true) {
+            emit(blueFalcon.isScanning)
+            delay(100)
+        }
+    }
+    private val transmittingFlow = flow<Boolean> {
+        while (true) {
+            emit(currentChunkIndex == 0)
+            delay(100)
+        }
+    }
+    private val percentTransmitted = flow<Float> {
+        while (true) {
+            if (dataToSend == null) {
+                emit(-1f)
+            } else {
+                emit(currentChunkIndex.toFloat() / dataToSend!!.size.toFloat())
+            }
+            delay(100)
+        }
+    }
 
     @RequiresApi(Build.VERSION_CODES.S)
     actual fun startScan() {
@@ -92,6 +118,7 @@ actual class BluetoothClient : KoinComponent, BlueFalconDelegate {
 
     override fun didDisconnect(bluetoothPeripheral: BluetoothPeripheral) {
         println("Disconnected!")
+        devices.remove(bluetoothPeripheral.uuid)
         dataSend = false
         key = null
         token = null
@@ -120,15 +147,14 @@ actual class BluetoothClient : KoinComponent, BlueFalconDelegate {
 
                 )
                 if (it.characteristic.uuid == UUID.fromString("502e4974-fc68-42b1-8402-33daf244e47c")) {
-                    println("Write Data")
-                    connectedDevice?.let { it1 ->
+                    connectedDevice?.let { device ->
+                        val connectMessage = "FawnRescue-Key,"
                         blueFalcon.writeCharacteristic(
-                            it1,
+                            device,
                             it,
-                            "${token},${key}", null
+                            connectMessage.toByteArray(),
+                            null
                         )
-                        println("Send Data")
-                        dataSend = true
                     }
                 }
             }
@@ -155,7 +181,41 @@ actual class BluetoothClient : KoinComponent, BlueFalconDelegate {
         bluetoothCharacteristic: BluetoothCharacteristic,
         success: Boolean
     ) {
-        println("Write Characteristic")
+        if (!success) {
+            println("All chunks sent")
+            devices.remove(bluetoothPeripheral.uuid)
+            dataToSend = null
+            currentChunkIndex = 0
+            connectedDevice = null
+            blueFalcon.disconnect(bluetoothPeripheral)
+            dataSend = true
+            return
+        }
+
+        // Send the next chunk of data if there's more data to send
+        dataToSend?.let { byteArray ->
+            if (currentChunkIndex < byteArray.size) {
+                val end = min(currentChunkIndex + chunkSize, byteArray.size)
+                val chunk = byteArray.copyOfRange(currentChunkIndex, end)
+                currentChunkIndex = end
+
+                blueFalcon.writeCharacteristic(
+                    bluetoothPeripheral,
+                    bluetoothCharacteristic,
+                    chunk,
+                    null
+                )
+            } else {
+                println("All chunks sent")
+                devices.remove(bluetoothPeripheral.uuid)
+                dataToSend = null
+                currentChunkIndex = 0
+                connectedDevice = null
+                blueFalcon.disconnect(bluetoothPeripheral)
+                dataSend = true
+                return
+            }
+        }
     }
 
     override fun didWriteDescriptor(
@@ -173,16 +233,25 @@ actual class BluetoothClient : KoinComponent, BlueFalconDelegate {
         this.key = key
         this.token = token
         connectedDevice = devices[address]
+
         connectedDevice?.let { blueFalcon.connect(it, false) }
+
+        // Prepare the data to be sent in chunks
+        val message = "${token},${key}\n"
+        dataToSend = message.toByteArray()
+        currentChunkIndex = 0
+
         while (!dataSend) {
             delay(100)
         }
-        //TODO add timeout
+
+        //TODO: Add timeout
         return true
     }
 
-    actual fun isScanning(): Boolean {
-        return blueFalcon.isScanning
-    }
+    actual fun scanningFlow(): Flow<Boolean> = scanningFlow
 
+    actual fun transmittingFlow(): Flow<Boolean> = transmittingFlow
+
+    actual fun percentTransmitted(): Flow<Float> = percentTransmitted
 }
