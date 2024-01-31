@@ -38,9 +38,7 @@ actual class BluetoothClient : KoinComponent, BlueFalconDelegate {
             delay(100)
         }
     }
-    private var dataSend = false
-    private var token: String? = null
-    private var key: String? = null
+    private var dataSend: Boolean? = null
 
     private var dataToSend: ByteArray? = null
     private var currentChunkIndex = 0
@@ -119,9 +117,9 @@ actual class BluetoothClient : KoinComponent, BlueFalconDelegate {
     override fun didDisconnect(bluetoothPeripheral: BluetoothPeripheral) {
         println("Disconnected!")
         devices.remove(bluetoothPeripheral.uuid)
-        dataSend = false
-        key = null
-        token = null
+        if (dataSend == null) {
+            dataSend = false
+        }
     }
 
     override fun didDiscoverCharacteristics(bluetoothPeripheral: BluetoothPeripheral) {
@@ -229,24 +227,27 @@ actual class BluetoothClient : KoinComponent, BlueFalconDelegate {
         return devicesFlow
     }
 
-    actual suspend fun connectDrone(address: String, key: String, token: String): Boolean {
-        this.key = key
-        this.token = token
+    actual suspend fun connectDrone(
+        address: String,
+        refreshToken: String,
+        accessToken: String,
+        droneID: String
+    ): Boolean {
         connectedDevice = devices[address]
 
         connectedDevice?.let { blueFalcon.connect(it, false) }
 
         // Prepare the data to be sent in chunks
-        val message = "${token},${key}\n"
+        val message = "${accessToken},${refreshToken},${droneID}\n"
+        dataSend = null
         dataToSend = message.toByteArray()
         currentChunkIndex = 0
 
-        while (!dataSend) {
+        while (dataSend == null) {
             delay(100)
         }
 
-        //TODO: Add timeout
-        return true
+        return dataSend ?: false
     }
 
     actual fun scanningFlow(): Flow<Boolean> = scanningFlow
