@@ -8,9 +8,13 @@ expect class BluetoothClient : KoinComponent {
     fun startScan()
     fun stopScan()
     fun getDrones(): Flow<List<BluetoothDevice>>
-
-    suspend fun connectDrone(address: String, key: String, token: String): Boolean
     fun scanningFlow(): Flow<Boolean>
     fun transmittingFlow(): Flow<Boolean>
     fun percentTransmitted(): Flow<Float>
+    suspend fun connectDrone(
+        address: String,
+        refreshToken: String,
+        accessToken: String,
+        droneID: String
+    ): Boolean
 }
