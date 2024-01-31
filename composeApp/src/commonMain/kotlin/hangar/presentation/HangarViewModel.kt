@@ -4,8 +4,8 @@ import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import hangar.domain.Aircraft
 import hangar.domain.DroneStatus
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.exceptions.HttpRequestException
 import io.github.jan.supabase.postgrest.from
-import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.realtime.RealtimeChannel
 import io.github.jan.supabase.realtime.broadcastFlow
 import io.github.jan.supabase.realtime.channel
@@ -30,11 +30,17 @@ class HangarViewModel : ViewModel(), KoinComponent {
 
     init {
         viewModelScope.launch {
-            _state.update {
-                it.copy(
-                    aircrafts = supabase.from("aircraft").select { filter { eq("deleted", false) } }
-                        .decodeList<Aircraft>()
-                )
+            try {
+
+                _state.update {
+                    it.copy(
+                        aircrafts = supabase.from("aircraft")
+                            .select { filter { eq("deleted", false) } }
+                            .decodeList<Aircraft>()
+                    )
+                }
+            } catch (_: HttpRequestException) {
+                // This needs to be caught. Else the app crashes when leaving this screen before the result is there
             }
         }
     }
