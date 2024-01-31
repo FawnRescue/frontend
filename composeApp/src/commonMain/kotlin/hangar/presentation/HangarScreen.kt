@@ -18,12 +18,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Flight
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Flight
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.PersonAdd
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -128,22 +131,54 @@ fun HangarScreen(onEvent: (HangarEvent) -> Unit, state: HangarState) {
                             .padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(state.selectedAircraft.name)
+                        Text(
+                            text = state.selectedAircraft.name,
+                            style = MaterialTheme.typography.headlineSmall
+                        )
                         Spacer(modifier = Modifier.height(16.dp))
+
                         if (state.droneStatus != null) {
-                            BatteryIndicator(state.droneStatus.battery)
-                            Text("State: ${state.droneStatus.state}")
-                            Text("Location: ${state.droneStatus.location}")
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp)
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(16.dp),
+                                    horizontalAlignment = Alignment.Start
+                                ) {
+                                    BatteryIndicator(
+                                        batteryPercentage = state.droneStatus.battery,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Row {
+                                        Icon(Icons.Default.Flight, contentDescription = "State")
+                                        Text(" State: ${state.droneStatus.state}")
+                                    }
+                                    Row {
+                                        Icon(
+                                            Icons.Default.LocationOn,
+                                            contentDescription = "Location"
+                                        )
+                                        Text(" Location: ${state.droneStatus.location}")
+                                    }
+                                }
+                            }
                         } else {
                             Text("No Data available")
                         }
-                        Button(onClick = {onEvent(HangarEvent.OnDeleteAircraft)}){
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(
+                            onClick = { onEvent(HangarEvent.OnDeleteAircraft) },
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        ) {
                             Text("Delete aircraft")
                         }
-
                     }
                 }
             }
+
         }
 
     }
