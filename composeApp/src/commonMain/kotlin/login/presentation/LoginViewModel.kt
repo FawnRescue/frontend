@@ -36,7 +36,6 @@ class LoginViewModel : ViewModel(), KoinComponent {
                             it.copy(
                                 sessionChecked = false,
                                 errorLogin = null,
-                                startNativeLogin = false
                             )
                         }
                         navigator.navigate(
@@ -86,10 +85,6 @@ class LoginViewModel : ViewModel(), KoinComponent {
 
             LoginEvent.OnSignInGoogle -> viewModelScope.launch {
                 supabase.auth.signInWith(Google)
-            }
-
-            LoginEvent.OnNativeSignIn -> viewModelScope.launch {
-                _state.update { it.copy(startNativeLogin = true) }
             }
 
             is LoginEvent.OnSignInEmail -> viewModelScope.launch {

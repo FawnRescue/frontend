@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import moe.tlaster.precompose.navigation.Navigator
-import navigation.presentation.NavigationEnum
+import navigation.presentation.NAV
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -48,7 +48,7 @@ class HangarViewModel : ViewModel(), KoinComponent {
 
     fun onEvent(event: HangarEvent) {
         when (event) {
-            HangarEvent.AddAircraft -> navigator.navigate(NavigationEnum.HANGAR_DISCOVER.path)
+            HangarEvent.AddAircraft -> navigator.navigate(NAV.HANGAR_DISCOVER.path)
             HangarEvent.OnDismissDialog -> {
                 viewModelScope.launch {
                     supabase.realtime.removeChannel(channel!!)

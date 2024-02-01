@@ -21,6 +21,5 @@ val sharedModule = module {
     singleOf(::getMissionChannel)
     // Throws an error but is correct. Probably because expect classes are in beta
     singleOf(::BluetoothClient)
-    singleOf(::BluetoothServer)
     singleOf(::UserRepo)
 }
