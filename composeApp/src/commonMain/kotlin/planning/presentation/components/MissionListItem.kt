@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import repository.domain.Mission
 
 @Composable
-fun MissionListItem(mission: Mission, modifier: Modifier) {
+fun MissionListItem(mission: Mission, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically

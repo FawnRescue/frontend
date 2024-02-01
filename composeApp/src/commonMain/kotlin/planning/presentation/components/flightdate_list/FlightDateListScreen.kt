@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import repository.domain.FlightDate
 
 @Composable
-fun FlightDateListScreen(dates: List<FlightDate>, onSelectDate: (date: FlightDate) -> Unit) {
+fun FlightDateList(dates: List<FlightDate>, onSelectDate: (date: FlightDate) -> Unit) {
     LazyColumn {
         items(dates) {
             FlightDateListItem(it, onClick = { onSelectDate(it) })

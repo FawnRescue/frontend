@@ -16,7 +16,8 @@ import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
 import friends.presentation.FriendListScreen
 import friends.presentation.FriendListViewModel
-import home.presentation.HomeScreen
+import home.presentation.home.HomeScreen
+import home.presentation.home.HomeViewModel
 import login.presentation.LoginScreen
 import login.presentation.LoginViewModel
 import moe.tlaster.precompose.navigation.NavHost
@@ -81,7 +82,15 @@ fun NavigationScreen(
                         HOME -> scene(
                             route = it.path, navTransition = NavTransition()
                         ) {
-                            HomeScreen()
+                            val viewModel = getViewModel(key = "home-screen",
+                                factory = viewModelFactory {
+                                    HomeViewModel()
+                                })
+                            val stateHome by viewModel.state.collectAsState()
+                            HomeScreen(
+                                state = stateHome,
+                                onEvent = viewModel::onEvent
+                            )
                         }
 
                         FRIENDS -> scene(
