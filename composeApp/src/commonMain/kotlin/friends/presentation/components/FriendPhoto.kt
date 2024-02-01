@@ -1,6 +1,5 @@
 package friends.presentation.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -13,38 +12,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import core.presentation.rememberBitmapFromBytes
-import friends.domain.Friend
+import repository.domain.User
 
 @Composable
 fun FriendPhoto(
-    friend: Friend?,
+    friend: User?,
     modifier: Modifier = Modifier,
-    iconSize: Dp = 25.dp
+    iconSize: Dp = 25.dp,
 ) {
-    val bitmap = rememberBitmapFromBytes(friend?.photoBytes)
+    val bitmap = null // TODO add user photos
     val photoModifier = modifier.clip(RoundedCornerShape(35))
-    if (bitmap != null) {
-        Image(
-            bitmap = bitmap,
-            contentDescription = friend?.firstName,
-            modifier = photoModifier,
-            contentScale = ContentScale.Crop
+    Box(
+        modifier = photoModifier.background(MaterialTheme.colorScheme.secondaryContainer),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.Person,
+            contentDescription = friend?.name,
+            modifier = Modifier.size(iconSize),
+            tint = MaterialTheme.colorScheme.onSecondaryContainer
         )
-    } else {
-        Box(
-            modifier = photoModifier.background(MaterialTheme.colorScheme.secondaryContainer),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.Person,
-                contentDescription = friend?.firstName,
-                modifier = Modifier.size(iconSize),
-                tint = MaterialTheme.colorScheme.onSecondaryContainer
-            )
-        }
     }
 }
