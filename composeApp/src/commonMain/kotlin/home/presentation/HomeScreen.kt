@@ -26,12 +26,18 @@ import org.koin.compose.koinInject
 
 @Composable
 fun HomeScreen() {
+    val supabase = koinInject<SupabaseClient>()
+    val navigator = koinInject<Navigator>()
+    val scope = rememberCoroutineScope()
+
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
         Row(
             modifier = Modifier.fillMaxWidth().padding(20.dp),
             horizontalArrangement = Arrangement.End
         ) {
-            IconButton(onClick = {}) {
+            IconButton(onClick = {
+                navigator.navigate(NAV.PROFILE.path)
+            }) {
                 Icon(
                     imageVector = Icons.Rounded.Person,
                     contentDescription = "Profile"
@@ -40,9 +46,7 @@ fun HomeScreen() {
         }
     }) {
         Box(modifier = Modifier.padding(it)) {
-            val supabase = koinInject<SupabaseClient>()
-            val navigator = koinInject<Navigator>()
-            val scope = rememberCoroutineScope()
+
             Button(onClick = {
                 scope.launch {
                     supabase.auth.signOut()

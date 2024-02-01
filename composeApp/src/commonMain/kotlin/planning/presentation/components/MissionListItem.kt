@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import planning.domain.Mission
+import repository.domain.Mission
 
 @Composable
 fun MissionListItem(mission: Mission, modifier: Modifier) {

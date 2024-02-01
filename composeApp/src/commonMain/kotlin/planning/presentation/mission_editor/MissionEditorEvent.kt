@@ -1,7 +1,7 @@
 package planning.presentation.mission_editor
 
-import planning.domain.FlightDate
-import planning.domain.InsertableMission
+import repository.domain.FlightDate
+import repository.domain.InsertableMission
 import planning.presentation.mission_list.MissionListEvent
 
 

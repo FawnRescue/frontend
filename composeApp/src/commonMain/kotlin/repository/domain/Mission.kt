@@ -1,4 +1,4 @@
-package planning.domain
+package repository.domain
 
 import kotlinx.serialization.Serializable
 

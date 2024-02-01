@@ -1,4 +1,4 @@
-package planning.domain
+package repository.domain
 
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime

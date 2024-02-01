@@ -1,4 +1,4 @@
-package planning.repository
+package repository
 
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
@@ -7,9 +7,9 @@ import io.github.jan.supabase.postgrest.query.Columns
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import planning.domain.InsertableMission
-import planning.domain.Mission
-import planning.domain.Tables
+import repository.domain.InsertableMission
+import repository.domain.Mission
+import repository.domain.Tables
 
 class MissionRepo : KoinComponent {
     val supabase: SupabaseClient by inject<SupabaseClient>()
