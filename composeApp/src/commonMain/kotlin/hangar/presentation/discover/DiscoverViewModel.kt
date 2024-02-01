@@ -4,7 +4,10 @@ import core.utils.randomUUID
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import hangar.domain.InsertableAircraft
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.exceptions.UnknownRestException
+import io.github.jan.supabase.gotrue.OtpType
 import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.gotrue.providers.builtin.OTP
 import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +22,7 @@ class DiscoverViewModel : ViewModel(), KoinComponent {
     val supabase: SupabaseClient by inject<SupabaseClient>()
     private val bluetoothClient: BluetoothClient by inject<BluetoothClient>()
 
-    private val _state = MutableStateFlow(DiscoverState(emptyList()))
+    private val _state = MutableStateFlow(DiscoverState())
     val state = _state.asStateFlow()
 
 
@@ -53,32 +56,52 @@ class DiscoverViewModel : ViewModel(), KoinComponent {
                 navigator.goBack()
             }
 
-            is DiscoverEvent.OnAddDrone -> {
+            DiscoverEvent.OnAddDrone -> {
                 viewModelScope.launch {
                     // Generate a random UUID for the token
-                    val currentSession = supabase.auth.currentSessionOrNull() ?: return@launch
 
-                    val accessToken = currentSession.accessToken
-
-                    val refreshToken = currentSession.refreshToken
-
-                    val droneID = randomUUID()
+                    if (_state.value.otp.length != 6) {
+                        return@launch
+                    }
+                    val email = supabase.auth.currentUserOrNull()?.email ?: return@launch
 
                     val connected =
-                        bluetoothClient.connectDrone(event.address, refreshToken, accessToken, droneID)
+                        bluetoothClient.connectDrone(
+                            _state.value.selectedDrone!!,
+                            email,
+                            _state.value.otp,
+                            randomUUID()
+                        )
                     if (connected) {
-                        supabase.from("aircraft")
-                            .insert(
-                                InsertableAircraft(
-                                    name = "${supabase.auth.currentUserOrNull()?.id}-Aircraft",
-                                    token = droneID
-                                )
-                            )
+                        bluetoothClient.stopScan()
+                        navigator.goBack()
+                        _state.update { it.copy(otp = "", selectedDrone = null) }
                     }
-                    bluetoothClient.stopScan()
-                    navigator.goBack()
-                    println("Drone connected: $connected")
                 }
+            }
+
+            is DiscoverEvent.OnSelectDrone -> {
+                _state.update { it.copy(selectedDrone = event.address) }
+                viewModelScope.launch {
+                    try {
+                        supabase.auth.signInWith(OTP) {
+                            createUser = false
+                            email = supabase.auth.currentUserOrNull()?.email
+                        }
+                    } catch (e: UnknownRestException) {
+                        e.printStackTrace()
+                        // TODO: add retry after 60 sec toast
+                        _state.update { it.copy(selectedDrone = null) }
+                    }
+                }
+            }
+
+            is DiscoverEvent.OnChangeOTP -> {
+                _state.update { it.copy(otp = event.otp) }
+            }
+
+            DiscoverEvent.OnCancelAddDrone -> {
+                _state.update { it.copy(otp = "", selectedDrone = null) }
             }
         }
     }

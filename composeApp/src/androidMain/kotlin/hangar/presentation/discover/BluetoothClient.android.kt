@@ -180,6 +180,7 @@ actual class BluetoothClient : KoinComponent, BlueFalconDelegate {
         success: Boolean
     ) {
         if (!success) {
+            // Last result is false. Not entirely sure why but if there is time we should investigate that. Normally this should only be handled in the else clause
             println("All chunks sent")
             devices.remove(bluetoothPeripheral.uuid)
             dataToSend = null
@@ -229,16 +230,16 @@ actual class BluetoothClient : KoinComponent, BlueFalconDelegate {
 
     actual suspend fun connectDrone(
         address: String,
-        refreshToken: String,
-        accessToken: String,
-        droneID: String
+        email: String,
+        otp: String,
+        token: String
     ): Boolean {
         connectedDevice = devices[address]
 
         connectedDevice?.let { blueFalcon.connect(it, false) }
 
         // Prepare the data to be sent in chunks
-        val message = "${accessToken},${refreshToken},${droneID}\n"
+        val message = "${otp},${email},${token}\n"
         dataSend = null
         dataToSend = message.toByteArray()
         currentChunkIndex = 0

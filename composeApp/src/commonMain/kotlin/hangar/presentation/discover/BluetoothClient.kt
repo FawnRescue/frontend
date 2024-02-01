@@ -13,8 +13,8 @@ expect class BluetoothClient : KoinComponent {
     fun percentTransmitted(): Flow<Float>
     suspend fun connectDrone(
         address: String,
-        refreshToken: String,
-        accessToken: String,
-        droneID: String
+        email: String,
+        otp: String,
+        token: String
     ): Boolean
 }
