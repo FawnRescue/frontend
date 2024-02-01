@@ -2,7 +2,7 @@ package planning.presentation.flightdate_editor
 
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalTime
-import planning.domain.InsertableFlightDate
+import repository.domain.InsertableFlightDate
 
 sealed interface FlightDateEditorEvent {
     data object Cancel : FlightDateEditorEvent

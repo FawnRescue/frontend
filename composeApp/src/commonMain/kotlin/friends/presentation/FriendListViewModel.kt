@@ -1,33 +1,39 @@
 package friends.presentation
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
-import friends.domain.Friend
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.gotrue.auth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import repository.UserRepo
 
-class FriendListViewModel : ViewModel() {
+class FriendListViewModel : ViewModel(), KoinComponent {
+    val userRepo: UserRepo by inject<UserRepo>()
+    val supabase: SupabaseClient by inject<SupabaseClient>()
 
-    private val _state = MutableStateFlow(FriendListState(friends = friends))
+
+    private val _state = MutableStateFlow(FriendListState(friends = emptyList()))
     val state = _state.asStateFlow()
 
-    var newFriend: Friend? by mutableStateOf(null)
-        private set
+    init {
+        loadUsers()
+    }
+
+    private fun loadUsers() {
+        viewModelScope.launch {
+            _state.update { state ->
+                state.copy(
+                    friends = userRepo.getAllUsers().filter { it.id != supabase.auth.currentUserOrNull()?.id }
+                )
+            }
+        }
+    }
 
     fun onEvent(event: FriendListEvent) {
 
     }
-}
-
-private val friends = (1..50).map {
-    Friend(
-        id = it.toLong(),
-        firstName = "First${it}",
-        lastName = "Last${it}",
-        email = "test${it}@test.com",
-        phoneNumber = "1231244${it}",
-        photoBytes = null
-    )
 }

@@ -1,4 +1,4 @@
-package planning.repository
+package repository
 
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
@@ -7,11 +7,11 @@ import io.github.jan.supabase.postgrest.query.Columns
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import planning.domain.FlightDate
-import planning.domain.InsertableFlightDate
-import planning.domain.InsertableMission
-import planning.domain.Mission
-import planning.domain.Tables
+import repository.domain.FlightDate
+import repository.domain.InsertableFlightDate
+import repository.domain.InsertableMission
+import repository.domain.Mission
+import repository.domain.Tables
 
 class FlightDateRepo : KoinComponent {
     val supabase: SupabaseClient by inject<SupabaseClient>()
@@ -26,6 +26,6 @@ class FlightDateRepo : KoinComponent {
 
 
     suspend fun upsertFlightDate(date: InsertableFlightDate): FlightDate =
-        println(date).run { supabase.from(Tables.FLIGHT_DATE.path)
-            .upsert(date) { select() }.decodeSingle()} // error handling
+        supabase.from(Tables.FLIGHT_DATE.path)
+            .upsert(date) { select() }.decodeSingle() // error handling
 }

@@ -1,7 +1,8 @@
-package planning.domain
+package repository.domain
 
 enum class Tables(val path: String) {
     MISSION("mission"),
     FLIGHT_PLAN("flightplan"),
     FLIGHT_DATE("flightdate"),
+    USER("user"),
 }

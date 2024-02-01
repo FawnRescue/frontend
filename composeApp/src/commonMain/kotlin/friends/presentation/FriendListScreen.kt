@@ -19,49 +19,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import friends.domain.Friend
 import friends.presentation.components.FriendListItem
 
 @Composable
 fun FriendListScreen(
     state: FriendListState,
-    newFriend: Friend?,
-    onEvent: (FriendListEvent) -> Unit
+    onEvent: (FriendListEvent) -> Unit,
 ) {
-    Scaffold(floatingActionButton = {
-        FloatingActionButton(
-            onClick = {
-                onEvent(FriendListEvent.OnAddNewFriendClick)
-            },
-            shape = RoundedCornerShape(20.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.PersonAdd,
-                contentDescription = "Add friend"
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp)
+    ) {
+        item {
+            Text(
+                text = "My contacts (${state.friends.size})",
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                fontWeight = FontWeight.Bold
             )
         }
-    }) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp)
-        ) {
-            item {
-                Text(
-                    text = "My contacts (${state.friends.size})",
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                    fontWeight = FontWeight.Bold
-                )
-            }
-            items(state.friends) { friend ->
-                FriendListItem(
-                    friend = friend,
-                    modifier = Modifier.fillMaxWidth().clickable {
-                        onEvent(FriendListEvent.SelectFriend(friend))
-                    }.padding(horizontal = 16.dp)
-                )
+        items(state.friends) { friend ->
+            FriendListItem(
+                friend = friend,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+            )
 
-            }
         }
     }
 }

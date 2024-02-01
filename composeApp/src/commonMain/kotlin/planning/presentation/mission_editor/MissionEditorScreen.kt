@@ -2,14 +2,11 @@ package planning.presentation.mission_editor
 
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import planning.presentation.components.flightdate_list.FlightDateListScreen
-import planning.presentation.mission_editor.MissionEditorEvent
-import planning.presentation.mission_editor.MissionEditorState
+import planning.presentation.components.flightdate_list.FlightDateList
 
 @Composable
 fun MissionEditorScreen(onEvent: (MissionEditorEvent) -> Unit, state: MissionEditorState) {
@@ -35,7 +32,7 @@ fun MissionEditorScreen(onEvent: (MissionEditorEvent) -> Unit, state: MissionEdi
             Text("Cancel")
         }
 
-        FlightDateListScreen(state.dates, onSelectDate = { onEvent(MissionEditorEvent.DateSelected(it)) })
+        FlightDateList(state.dates, onSelectDate = { onEvent(MissionEditorEvent.DateSelected(it)) })
     }
 
 }
