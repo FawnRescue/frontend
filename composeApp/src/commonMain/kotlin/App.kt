@@ -1,19 +1,15 @@
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
-import io.github.jan.supabase.annotations.SupabaseExperimental
-import io.github.jan.supabase.compose.auth.ui.ProviderButtonContent
-import io.github.jan.supabase.gotrue.providers.Github
 import kotlinx.coroutines.DelicateCoroutinesApi
 import moe.tlaster.precompose.PreComposeApp
 import moe.tlaster.precompose.navigation.Navigator
-import navigation.presentation.NavigationEnum
+import navigation.presentation.NAV
 import navigation.presentation.NavigationEvent
 import navigation.presentation.NavigationScreen
 import navigation.presentation.NavigationViewModel
@@ -39,7 +35,7 @@ fun App() {
                 LaunchedEffect(Unit) {
                     navigator.currentEntry.collect { currentRoute ->
                         val correspondingItem =
-                            NavigationEnum.entries.find {
+                            NAV.entries.find {
                                 it.path == (currentRoute?.path)
                             }
                         if (correspondingItem != null && correspondingItem != viewModel.selectedItem) {

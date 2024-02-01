@@ -1,5 +1,6 @@
 package planning.presentation.mission_list
 
+import planning.domain.FlightDate
 import planning.domain.Mission
 
 sealed interface MissionListEvent {

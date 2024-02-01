@@ -21,7 +21,7 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.gotrue.auth
 import kotlinx.coroutines.launch
 import moe.tlaster.precompose.navigation.Navigator
-import navigation.presentation.NavigationEnum
+import navigation.presentation.NAV
 import org.koin.compose.koinInject
 
 @Composable
@@ -46,7 +46,7 @@ fun HomeScreen() {
             Button(onClick = {
                 scope.launch {
                     supabase.auth.signOut()
-                    navigator.navigate(NavigationEnum.LOGIN.path)
+                    navigator.navigate(NAV.LOGIN.path)
                 }
 
             }) {

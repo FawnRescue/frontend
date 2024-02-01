@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import moe.tlaster.precompose.navigation.Navigator
-import navigation.presentation.NavigationEnum
+import navigation.presentation.NAV
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import planning.domain.InsertableFlightPlan
@@ -74,7 +74,7 @@ class FlightPlanEditorViewModel : ViewModel(), KoinComponent {
             FlightPlanEditorEvent.SaveBoundary -> {
                 val selectedMission = missionRepo.selectedMission.value
                 if (selectedMission == null) {
-                    navigator.navigate(NavigationEnum.HOME.path)
+                    navigator.navigate(NAV.HOME.path)
                     return
                 }
                 viewModelScope.launch {
@@ -86,7 +86,7 @@ class FlightPlanEditorViewModel : ViewModel(), KoinComponent {
                             checkpoints = flightPlanRepo.calculateCheckpoints(_state.value.editedBoundary)
                         )
                     ).also {
-                        navigator.navigate(NavigationEnum.PLANNING.path)
+                        navigator.navigate(NAV.PLANNING.path)
                     }
                 }
             }

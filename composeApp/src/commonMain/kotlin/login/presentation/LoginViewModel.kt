@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import moe.tlaster.precompose.navigation.NavOptions
 import moe.tlaster.precompose.navigation.Navigator
 import moe.tlaster.precompose.navigation.PopUpTo
-import navigation.presentation.NavigationEnum
+import navigation.presentation.NAV
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -40,7 +40,7 @@ class LoginViewModel : ViewModel(), KoinComponent {
                             )
                         }
                         navigator.navigate(
-                            NavigationEnum.HOME.path,
+                            NAV.HOME.path,
                             NavOptions(popUpTo = PopUpTo.First(true))
                         )
                     }

@@ -12,7 +12,7 @@ import org.koin.core.component.inject
 
 class NavigationViewModel : ViewModel(), KoinComponent {
     private val navigator by inject<Navigator>()
-    var selectedItem by mutableStateOf(NavigationEnum.entries.first())
+    var selectedItem by mutableStateOf(NAV.entries.first())
         private set
 
     fun onEvent(event: NavigationEvent) {
@@ -23,9 +23,9 @@ class NavigationViewModel : ViewModel(), KoinComponent {
             }
 
             NavigationEvent.OnSuccessfulLogin -> {
-                selectedItem = NavigationEnum.HOME
+                selectedItem = NAV.HOME
                 navigator.navigate(
-                    NavigationEnum.HOME.path,
+                    NAV.HOME.path,
                     NavOptions(popUpTo = PopUpTo.First(true))
                 )
             }

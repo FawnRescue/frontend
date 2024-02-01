@@ -63,7 +63,7 @@ actual fun GoogleMaps(
     }
     var showBoundaryMarkers by remember { mutableStateOf(true) }
     var showBoundary by remember { mutableStateOf(true) }
-    var showCheckpointMarkers by remember { mutableStateOf(true) }
+    var showCheckpointMarkers by remember { mutableStateOf(false) }
     var showPath by remember { mutableStateOf(true) }
 
 
