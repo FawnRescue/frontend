@@ -9,21 +9,43 @@ import moe.tlaster.precompose.navigation.Navigator
 import navigation.presentation.NAV
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import planning.domain.FlightDate
 import planning.domain.InsertableMission
+import planning.presentation.mission_editor.MissionEditorEvent.*
+import planning.repository.FlightDateRepo
 import planning.repository.MissionRepo
 
 class MissionEditorViewModel : ViewModel(), KoinComponent {
     private val navigator: Navigator by inject<Navigator>()
     val missionRepo: MissionRepo by inject<MissionRepo>()
+    private val flightDateRepo: FlightDateRepo by inject<FlightDateRepo>()
+
+    init {
+        loadDates()
+    }
+
+    private fun loadDates() {
+        viewModelScope.launch {
+            _state.update {
+                val dates =
+                    missionRepo.selectedMission.value?.id?.let { it1 -> flightDateRepo.getDates(it1) }
+                        ?: listOf<FlightDate>().also {
+                            navigator.navigate(
+                                NAV.PLANNING.path
+                            )
+                        }
+                it.copy(dates = dates)
+            }
+        }
+    }
 
     private val _state = run {
         val selectedMission = missionRepo.selectedMission.value
-        val editedMission =
-            selectedMission?.let { InsertableMission(it.description, it.id) }
-                ?: InsertableMission("")
+        val editedMission = selectedMission?.let { InsertableMission(it.description, it.id) }
+            ?: InsertableMission("")
         MutableStateFlow(
             MissionEditorState(
-                selectedMission, editedMission
+                selectedMission, editedMission, emptyList()
             )
         )
     }
@@ -31,11 +53,11 @@ class MissionEditorViewModel : ViewModel(), KoinComponent {
 
     fun onEvent(event: MissionEditorEvent) {
         when (event) {
-            is MissionEditorEvent.UpdateMission -> {
+            is UpdateMission -> {
                 _state.value = _state.value.copy(editedMission = event.mission)
             }
 
-            MissionEditorEvent.SaveMission -> viewModelScope.launch {
+            SaveMission -> viewModelScope.launch {
                 val selectedMission = missionRepo.selectedMission.value
                 if (selectedMission == null || selectedMission.description != _state.value.editedMission.description) {
                     missionRepo.selectedMission.value =
@@ -43,12 +65,12 @@ class MissionEditorViewModel : ViewModel(), KoinComponent {
                 }
             }
 
-            MissionEditorEvent.Cancel -> {
+            Cancel -> {
                 missionRepo.selectedMission.value = null
                 navigator.navigate(NAV.PLANNING.path)
             }
 
-            MissionEditorEvent.ResetMission -> _state.update {
+            ResetMission -> _state.update {
                 it.copy(editedMission = _state.value.selectedMission?.let { mission ->
                     InsertableMission(
                         mission.description
@@ -56,8 +78,14 @@ class MissionEditorViewModel : ViewModel(), KoinComponent {
                 } ?: InsertableMission(""))
             }
 
-            MissionEditorEvent.EditFlightPlan -> navigator.navigate(NAV.FLIGHT_PLAN_EDITOR.path)
-            MissionEditorEvent.AddFlightDate -> navigator.navigate(NAV.FLIGHT_DATE_EDITOR.path)
+            EditFlightPlan -> navigator.navigate(NAV.FLIGHT_PLAN_EDITOR.path)
+            AddFlightDate -> navigator.navigate(NAV.FLIGHT_DATE_EDITOR.path)
+            is DateSelected -> {
+                flightDateRepo.selectedFlightDate.update {
+                    event.date
+                }
+                navigator.navigate(NAV.FLIGHT_DATE_EDITOR.path)
+            }
         }
     }
 }

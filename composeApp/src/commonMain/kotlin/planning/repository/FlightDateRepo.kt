@@ -18,7 +18,7 @@ class FlightDateRepo : KoinComponent {
 
     val selectedFlightDate: MutableStateFlow<FlightDate?> = MutableStateFlow(null)
     suspend fun getDates(mission: String): List<FlightDate> =
-        supabase.from(Tables.FLIGHT_PLAN.path).select{
+        supabase.from(Tables.FLIGHT_DATE.path).select{
             filter {
                 eq("mission", mission)
             }

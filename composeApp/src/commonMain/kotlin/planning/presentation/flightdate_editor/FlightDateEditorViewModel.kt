@@ -73,7 +73,7 @@ class FlightDateEditorViewModel : ViewModel(), KoinComponent {
                     if (date == null || startTime == null || endTime == null) return
 
                     val selectedMission = missionRepo.selectedMission.value
-                    if(selectedMission == null){
+                    if (selectedMission == null) {
                         navigator.navigate(NAV.PLANNING.path)
                         return
                     }
@@ -89,9 +89,10 @@ class FlightDateEditorViewModel : ViewModel(), KoinComponent {
                         mission = selectedMission.id,
                         aircraft = "d20fa9dd-3c8c-41bc-a04a-2cec92c0e965" // TODO after Hangar PR
                     )
-                    viewModelScope.launch { flightDateRepo.upsertFlightDate(insertableFlightDate)}.invokeOnCompletion {
-                        navigator.navigate(NAV.MISSION_EDITOR.path)
-                    }
+                    viewModelScope.launch { flightDateRepo.upsertFlightDate(insertableFlightDate) }
+                        .invokeOnCompletion {
+                            navigator.navigate(NAV.MISSION_EDITOR.path)
+                        }
                 }
             }
 

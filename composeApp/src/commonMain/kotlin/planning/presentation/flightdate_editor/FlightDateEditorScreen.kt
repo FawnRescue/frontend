@@ -129,6 +129,11 @@ fun FlightDateEditorScreen(onEvent: (FlightDateEditorEvent) -> Unit, state: Flig
         }, enabled = state.isSaveEnabled) {
             Text("Save")
         }
+        Button(onClick = {
+            onEvent(FlightDateEditorEvent.Cancel)
+        }) {
+            Text("Cancel")
+        }
     }
 
 }
