@@ -2,6 +2,7 @@ package planning.repository
 
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import planning.domain.InsertableFlightPlan
@@ -21,7 +22,10 @@ import kotlin.math.sqrt
 class FlightPlanRepo : KoinComponent {
     val supabase: SupabaseClient by inject<SupabaseClient>()
 
-    suspend fun getPath(id: String): FlightPlan = supabase.from(Tables.FLIGHT_PLAN.path).select {
+
+    val selectedFlightPlan: MutableStateFlow<FlightPlan?> = MutableStateFlow(null)
+
+    suspend fun getPlan(id: String): FlightPlan = supabase.from(Tables.FLIGHT_PLAN.path).select {
         filter {
             eq("id", id)
         }
