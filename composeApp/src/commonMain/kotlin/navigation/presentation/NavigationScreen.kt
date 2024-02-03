@@ -16,6 +16,10 @@ import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
 import friends.presentation.FriendListScreen
 import friends.presentation.FriendListViewModel
+import hangar.presentation.HangarScreen
+import hangar.presentation.HangarViewModel
+import hangar.presentation.discover.DiscoverScreen
+import hangar.presentation.discover.DiscoverViewModel
 import home.presentation.home.HomeScreen
 import home.presentation.home.HomeViewModel
 import login.presentation.LoginScreen
@@ -28,6 +32,7 @@ import navigation.presentation.NAV.FLIGHT_PLAN_EDITOR
 import navigation.presentation.NAV.FRIENDS
 import navigation.presentation.NAV.GROUP
 import navigation.presentation.NAV.HANGAR
+import navigation.presentation.NAV.HANGAR_DISCOVER
 import navigation.presentation.NAV.HOME
 import navigation.presentation.NAV.LOGIN
 import navigation.presentation.NAV.MISSION_EDITOR
@@ -82,28 +87,27 @@ fun NavigationScreen(
                         HOME -> scene(
                             route = it.path, navTransition = NavTransition()
                         ) {
-                            val viewModel = getViewModel(key = "home-screen",
-                                factory = viewModelFactory {
+                            val viewModel =
+                                getViewModel(key = "home-screen", factory = viewModelFactory {
                                     HomeViewModel()
                                 })
                             val stateHome by viewModel.state.collectAsState()
                             HomeScreen(
-                                state = stateHome,
-                                onEvent = viewModel::onEvent
+                                state = stateHome, onEvent = viewModel::onEvent
                             )
                         }
 
                         FRIENDS -> scene(
                             route = it.path, navTransition = NavTransition()
                         ) {
-                            val viewModel = getViewModel(key = "friend-list-screen",
+                            val viewModel = getViewModel(
+                                key = "friend-list-screen",
                                 factory = viewModelFactory {
                                     FriendListViewModel()
                                 })
                             val stateFriend by viewModel.state.collectAsState()
                             FriendListScreen(
-                                state = stateFriend,
-                                onEvent = viewModel::onEvent
+                                state = stateFriend, onEvent = viewModel::onEvent
                             )
                         }
 
@@ -123,7 +127,8 @@ fun NavigationScreen(
                         PLANNING -> scene(
                             route = it.path, navTransition = NavTransition()
                         ) {
-                            val viewModel = getViewModel(key = "mission-list-screen",
+                            val viewModel = getViewModel(
+                                key = "mission-list-screen",
                                 factory = viewModelFactory {
                                     MissionListViewModel()
                                 })
@@ -136,7 +141,8 @@ fun NavigationScreen(
                         MISSION_EDITOR -> scene(
                             route = it.path, navTransition = NavTransition()
                         ) {
-                            val viewModel = getViewModel(key = "mission-editor-screen",
+                            val viewModel = getViewModel(
+                                key = "mission-editor-screen",
                                 factory = viewModelFactory {
                                     MissionEditorViewModel()
                                 })
@@ -149,7 +155,8 @@ fun NavigationScreen(
                         FLIGHT_PLAN_EDITOR -> scene(
                             route = it.path, navTransition = NavTransition()
                         ) {
-                            val viewModel = getViewModel(key = "flight-plan-editor-screen",
+                            val viewModel = getViewModel(
+                                key = "flight-plan-editor-screen",
                                 factory = viewModelFactory {
                                     FlightPlanEditorViewModel()
                                 })
@@ -168,13 +175,21 @@ fun NavigationScreen(
                         HANGAR -> scene(
                             route = it.path, navTransition = NavTransition()
                         ) {
-
+                            val viewModel =
+                                getViewModel(key = "hangar-screen", factory = viewModelFactory {
+                                    HangarViewModel()
+                                })
+                            val stateHangar by viewModel.state.collectAsState()
+                            HangarScreen(
+                                state = stateHangar, onEvent = viewModel::onEvent
+                            )
                         }
 
                         FLIGHT_DATE_EDITOR -> scene(
                             route = it.path, navTransition = NavTransition()
                         ) {
-                            val viewModel = getViewModel(key = "flight-date-editor-screen",
+                            val viewModel = getViewModel(
+                                key = "flight-date-editor-screen",
                                 factory = viewModelFactory {
                                     FlightDateEditorViewModel()
                                 })
@@ -194,6 +209,19 @@ fun NavigationScreen(
                             val stateProfile by viewModel.state.collectAsState()
                             ProfileEditorScreen(
                                 state = stateProfile, onEvent = viewModel::onEvent
+                            )
+                        }
+
+                        HANGAR_DISCOVER -> scene(
+                            route = it.path, navTransition = NavTransition()
+                        ) {
+                            val viewModel = getViewModel(key = "hangar-discover-screen",
+                                factory = viewModelFactory {
+                                    DiscoverViewModel()
+                                })
+                            val stateHangarDiscover by viewModel.state.collectAsState()
+                            DiscoverScreen(
+                                state = stateHangarDiscover, onEvent = viewModel::onEvent
                             )
                         }
                     }

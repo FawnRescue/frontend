@@ -1,5 +1,6 @@
 package di
 
+import hangar.presentation.discover.BluetoothClient
 import moe.tlaster.precompose.navigation.Navigator
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -18,5 +19,7 @@ val sharedModule = module {
     singleOf(::FlightPlanRepo)
     singleOf(::FlightDateRepo)
     singleOf(::getMissionChannel)
+    // Throws an error but is correct. Probably because expect classes are in beta
+    singleOf(::BluetoothClient)
     singleOf(::UserRepo)
 }

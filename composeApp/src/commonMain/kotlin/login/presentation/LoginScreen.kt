@@ -42,7 +42,7 @@ fun LoginScreen(
     onEvent: (LoginEvent) -> Unit
 ) {
     val supabase = koinInject<SupabaseClient>()
-    if (state.startNativeLogin) {
+    val nativeLogin =
         supabase.composeAuth.rememberSignInWithGoogle(fallback = { onEvent(LoginEvent.OnSignInGoogle) },
             onResult = { result ->
                 println(result)
@@ -54,8 +54,7 @@ fun LoginScreen(
                     else -> {}
                 }
             }
-        ).startFlow()
-    }
+        )
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -83,16 +82,18 @@ fun LoginScreen(
                 Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
                 Spacer(Modifier.height(16.dp))
             }
-            Button(onClick = { onEvent(LoginEvent.OnNativeSignIn) }) {
+            Button(onClick = { nativeLogin.startFlow() }) {
                 ProviderButtonContent(Google, "SignIn with Google")
             }
             Button(onClick = { onEvent(LoginEvent.OnSignInGithub) }) {
                 ProviderButtonContent(Github, "SignIn with Github")
             }
             Button(onClick = { onEvent(LoginEvent.OnShowEmailDialog(true)) }) {
-                Icon(Icons.Rounded.Email, "SignIn with Email", Modifier.size(
-                    24.dp
-                ))
+                Icon(
+                    Icons.Rounded.Email, "SignIn with Email", Modifier.size(
+                        24.dp
+                    )
+                )
                 Spacer(Modifier.width(8.dp))
                 Text(text = "SignIn with Email")
             }
@@ -118,9 +119,11 @@ fun LoginScreen(
                     )
                 )
             }) {
-                Icon(Icons.Rounded.Email, "SignUp with Email", Modifier.size(
-                    24.dp
-                ))
+                Icon(
+                    Icons.Rounded.Email, "SignUp with Email", Modifier.size(
+                        24.dp
+                    )
+                )
                 Spacer(Modifier.width(8.dp))
                 Text(text = "SignUp with Email")
             }
