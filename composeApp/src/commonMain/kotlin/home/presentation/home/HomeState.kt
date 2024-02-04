@@ -4,5 +4,7 @@ import repository.domain.FlightDate
 import repository.domain.Mission
 
 data class HomeState(
-    val dates: List<Pair<Mission, List<FlightDate>>>
+    val dates: Map<Mission, List<FlightDate>>,
+    val datesLoading: Map<Mission, Boolean>,
+    val loading: Boolean = true
 )

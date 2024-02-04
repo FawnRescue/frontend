@@ -11,6 +11,8 @@ import di.AndroidApplication
 import di.AndroidContext
 import di.AndroidPrinter
 import di.sharedModule
+import io.github.aakira.napier.DebugAntilog
+import io.github.aakira.napier.Napier
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.handleDeeplinks
@@ -30,6 +32,7 @@ import org.koin.java.KoinJavaComponent
 class MainActivity : ComponentActivity() {
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
+        Napier.base(DebugAntilog())
         //TODO only start when not running
         stopKoin()
         val androidModule = module {

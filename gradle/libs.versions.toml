@@ -22,7 +22,9 @@ kotlinxDatetime = "0.5.0"
 ktorClientCore = "2.3.7"
 mapsCompose = "4.3.0"
 mvvm = "0.16.1"
+napier = "1.4.1"
 secretsGradlePlugin = "2.0.1"
+store5 = "5.1.0-alpha02"
 supabase = "2.1.1"
 koin-core = "3.5.0"
 material3 = "1.2.0-rc01"
@@ -58,6 +60,7 @@ mvvm-flow = { module = "dev.icerock.moko:mvvm-flow", version.ref = "mvvm" }
 mvvm-compose = { module = "dev.icerock.moko:mvvm-compose", version.ref = "mvvm" }
 mvvm-core = { module = "dev.icerock.moko:mvvm-core", version.ref = "mvvm" }
 mvvm-flow-compose = { module = "dev.icerock.moko:mvvm-flow-compose", version.ref = "mvvm" }
+napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 postgrest-kt = { module = "io.github.jan-tennert.supabase:postgrest-kt", version.ref = "supabase" }
 precompose = { module = "moe.tlaster:precompose", version.ref = "precompose" }
 realtime-kt = { module = "io.github.jan-tennert.supabase:realtime-kt", version.ref = "supabase" }
@@ -66,6 +69,7 @@ storage-kt = { module = "io.github.jan-tennert.supabase:storage-kt", version.ref
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin-core" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin-core" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+store5 = { module = "org.mobilenativefoundation.store:store5", version.ref = "store5" }
 [plugins]
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 androidApplication = { id = "com.android.application", version.ref = "agp" }

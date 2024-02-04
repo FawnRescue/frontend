@@ -21,7 +21,7 @@ import kotlin.math.sqrt
 class FlightPlanRepo : KoinComponent {
     val supabase: SupabaseClient by inject<SupabaseClient>()
 
-    suspend fun getPath(id: String): FlightPlan = supabase.from(Tables.FLIGHT_PLAN.path).select {
+    suspend fun getPlan(id: FlightPlanId): FlightPlan = supabase.from(Tables.FLIGHT_PLAN.path).select {
         filter {
             eq("id", id)
         }
@@ -39,7 +39,7 @@ class FlightPlanRepo : KoinComponent {
         }
         return supabase.from(Tables.FLIGHT_PLAN.path).upsert(plan) { select() }
             .decodeSingle<FlightPlan>().also {
-                supabase.from(Tables.MISSION.path).update(selectedMission.copy(plan = it.id)) {
+                supabase.from(Tables.MISSION.path).update(selectedMission.copy(plan = FlightPlanId(it.id))) {
                     filter {
                         eq("id", selectedMission.id)
                     }

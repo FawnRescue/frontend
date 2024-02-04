@@ -3,6 +3,7 @@ package repository.domain
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
+import repository.MissionId
 
 @Serializable
 data class FlightDate(
@@ -17,7 +18,7 @@ data class FlightDate(
 fun FlightDate.insertable(): InsertableFlightDate {
     return InsertableFlightDate(
         this.id,
-        this.mission,
+        MissionId(this.mission),
         this.start_date,
         this.end_date,
         this.aircraft
@@ -46,7 +47,7 @@ data class EditableFlightDate(
 @Serializable
 data class InsertableFlightDate(
     val id: String? = null,
-    val mission: String,
+    val mission: MissionId,
     val start_date: Instant,
     val end_date: Instant,
     val aircraft: String,

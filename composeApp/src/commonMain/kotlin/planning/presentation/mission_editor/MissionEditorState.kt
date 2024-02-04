@@ -8,4 +8,5 @@ data class MissionEditorState(
     val selectedMission: Mission?,
     val editedMission: InsertableMission,
     val dates: List<FlightDate>,
-    )
+    val datesLoading: Boolean = true
+)

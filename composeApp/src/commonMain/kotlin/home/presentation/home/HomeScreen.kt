@@ -59,17 +59,17 @@ fun HomeScreen(onEvent: (HomeEvent) -> Unit, state: HomeState) {
             Text("Available Flight Dates:", fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(4.dp))
             LazyColumn {
-                state.dates.forEach { pair ->
-                    if (pair.second.isEmpty()) {
+                state.dates.forEach { entry ->
+                    if (entry.value.isEmpty()) {
                         return@forEach
                     }
                     item {
                         MissionListItem(
-                            pair.first,
+                            entry.key,
                             Modifier.background(MaterialTheme.colorScheme.background)
                         )
                     }
-                    items(pair.second) { date ->
+                    items(entry.value) { date ->
                         FlightDateListItem(date, {}, modifier = Modifier.offset(10.dp))
                         Spacer(Modifier.height(2.dp))
                     }

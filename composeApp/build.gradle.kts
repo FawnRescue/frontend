@@ -80,6 +80,8 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.maps.compose)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.napier)
+            implementation(libs.store5)
             api(libs.precompose)
         }
     }
