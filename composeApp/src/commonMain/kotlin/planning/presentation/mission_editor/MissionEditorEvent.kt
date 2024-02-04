@@ -13,5 +13,4 @@ sealed interface MissionEditorEvent {
     data object EditFlightPlan : MissionEditorEvent
     data object AddFlightDate : MissionEditorEvent
     data class DateSelected(val date: FlightDate) : MissionEditorEvent
-
 }

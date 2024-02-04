@@ -21,11 +21,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import planning.presentation.components.MissionListItem
+import planning.presentation.mission_list.MissionListEvent.*
 
 @Composable
 fun MissionListScreen(onEvent: (MissionListEvent) -> Unit, state: MissionListState) {
     Scaffold(modifier = Modifier.fillMaxSize(), floatingActionButton = {
-        FloatingActionButton(onClick = { onEvent(MissionListEvent.CreateNewMission) }) {
+        FloatingActionButton(onClick = { onEvent(CreateNewMission) }) {
             Icon(Icons.Rounded.Add, contentDescription = "Add Mission")
         }
     }) {
@@ -46,7 +47,7 @@ fun MissionListScreen(onEvent: (MissionListEvent) -> Unit, state: MissionListSta
                     MissionListItem(
                         mission = mission,
                         modifier = Modifier.fillMaxWidth().clickable {
-                            onEvent(MissionListEvent.ExistingMissionSelected(mission))
+                            onEvent(ExistingMissionSelected(mission))
                         }.padding(horizontal = 16.dp),
                     )
                 }

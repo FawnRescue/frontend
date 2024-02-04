@@ -32,7 +32,7 @@ class FlightPlanEditorViewModel : ViewModel(), KoinComponent {
         val selectedMission = missionRepo.selectedMission.value
         if (selectedMission?.plan != null) {
             viewModelScope.launch {
-                val plan = flightPlanRepo.getPath(selectedMission.plan)
+                val plan = flightPlanRepo.getPlan(selectedMission.plan)
                 _state.update {
                     it.copy(
                         selectedFlightPlan = plan,
