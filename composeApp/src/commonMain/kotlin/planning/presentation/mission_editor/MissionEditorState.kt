@@ -1,8 +1,8 @@
 package planning.presentation.mission_editor
 
-import planning.domain.FlightDate
-import planning.domain.InsertableMission
-import planning.domain.Mission
+import repository.domain.FlightDate
+import repository.domain.InsertableMission
+import repository.domain.Mission
 
 data class MissionEditorState(
     val selectedMission: Mission?,

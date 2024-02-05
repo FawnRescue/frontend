@@ -10,11 +10,11 @@ import moe.tlaster.precompose.navigation.Navigator
 import navigation.presentation.NAV
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import planning.domain.InsertableFlightPlan
-import planning.domain.insertable
-import planning.repository.FlightPlanRepo
-import planning.repository.MissionRepo
-import planning.repository.sortPolarCoordinates
+import repository.domain.InsertableFlightPlan
+import repository.domain.insertable
+import repository.FlightPlanRepo
+import repository.MissionRepo
+import repository.sortPolarCoordinates
 import presentation.maps.getCenter
 
 class FlightPlanEditorViewModel : ViewModel(), KoinComponent {
@@ -32,7 +32,7 @@ class FlightPlanEditorViewModel : ViewModel(), KoinComponent {
         val selectedMission = missionRepo.selectedMission.value
         if (selectedMission?.plan != null) {
             viewModelScope.launch {
-                val plan = flightPlanRepo.getPath(selectedMission.plan)
+                val plan = flightPlanRepo.getPlan(selectedMission.plan)
                 _state.update {
                     it.copy(
                         selectedFlightPlan = plan,

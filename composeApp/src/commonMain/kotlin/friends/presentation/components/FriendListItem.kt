@@ -9,10 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import friends.domain.Friend
+import repository.domain.User
 
 @Composable
-fun FriendListItem(friend: Friend, modifier: Modifier = Modifier) {
+fun FriendListItem(friend: User, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -22,6 +22,6 @@ fun FriendListItem(friend: Friend, modifier: Modifier = Modifier) {
             modifier = Modifier.size(50.dp)
         )
         Spacer(Modifier.width(16.dp))
-        Text(text = "${friend.firstName} ${friend.lastName}", modifier = Modifier.weight(1f))
+        Text(text = friend.name, modifier = Modifier.weight(1f))
     }
 }

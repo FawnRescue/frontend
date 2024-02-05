@@ -9,10 +9,10 @@ import moe.tlaster.precompose.navigation.Navigator
 import navigation.presentation.NAV
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import planning.domain.Mission
+import repository.domain.Mission
 import planning.presentation.mission_list.MissionListEvent.CreateNewMission
 import planning.presentation.mission_list.MissionListEvent.ExistingMissionSelected
-import planning.repository.MissionRepo
+import repository.MissionRepo
 
 class MissionListViewModel : ViewModel(), KoinComponent {
     private val navigator: Navigator by inject<Navigator>()

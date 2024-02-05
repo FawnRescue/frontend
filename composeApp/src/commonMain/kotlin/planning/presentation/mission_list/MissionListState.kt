@@ -1,7 +1,7 @@
 package planning.presentation.mission_list
 
-import planning.domain.FlightDate
-import planning.domain.Mission
+import repository.domain.FlightDate
+import repository.domain.Mission
 
 data class MissionListState(
     val missions: List<Mission>,

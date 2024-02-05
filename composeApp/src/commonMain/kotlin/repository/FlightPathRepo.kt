@@ -1,14 +1,14 @@
-package planning.repository
+package repository
 
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import planning.domain.InsertableFlightPlan
-import planning.domain.FlightPlan
-import planning.domain.InsertableMission
-import planning.domain.Tables
+import repository.domain.InsertableFlightPlan
+import repository.domain.FlightPlan
+import repository.domain.InsertableMission
+import repository.domain.Tables
 import presentation.maps.LatLong
 import presentation.maps.getCenter
 import kotlin.math.tan

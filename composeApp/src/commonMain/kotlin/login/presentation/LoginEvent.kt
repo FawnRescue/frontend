@@ -8,7 +8,6 @@ sealed interface LoginEvent {
 
     object OnSignInGoogle : LoginEvent
     object OnSignInGithub : LoginEvent
-    object OnNativeSignIn : LoginEvent
     data class OnSignInEmail(val email: String, val password: String) : LoginEvent
     data class OnSignUpEmail(val email: String, val password: String) : LoginEvent
 

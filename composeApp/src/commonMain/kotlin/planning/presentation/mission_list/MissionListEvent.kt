@@ -1,9 +1,9 @@
 package planning.presentation.mission_list
 
-import planning.domain.FlightDate
-import planning.domain.Mission
+import repository.domain.FlightDate
+import repository.domain.Mission
 
 sealed interface MissionListEvent {
-    object CreateNewMission : MissionListEvent
+    data object CreateNewMission : MissionListEvent
     data class ExistingMissionSelected(val mission: Mission) : MissionListEvent
 }

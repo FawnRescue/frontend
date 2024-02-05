@@ -5,7 +5,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.toInstant
-import planning.domain.FlightDate
+import repository.domain.FlightDate
 
 data class FlightDateEditorState (
     val selectedFlightDate: FlightDate?,

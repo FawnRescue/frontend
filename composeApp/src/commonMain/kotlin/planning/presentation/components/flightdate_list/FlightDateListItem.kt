@@ -6,7 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import planning.domain.FlightDate
+import repository.domain.FlightDate
 @Composable
 fun FlightDateListItem(
     flightDate: FlightDate,
