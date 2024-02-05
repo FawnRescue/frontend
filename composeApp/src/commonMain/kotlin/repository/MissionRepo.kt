@@ -19,6 +19,10 @@ class MissionRepo : KoinComponent {
     suspend fun getMissions(): List<Mission> =
         supabase.from(Tables.MISSION.path).select().decodeList<Mission>()
 
+    suspend fun getMission(id: String): Mission =
+        supabase.from(Tables.MISSION.path).select {
+            filter { eq("id", id) }
+        }.decodeSingle<Mission>()
 
     suspend fun upsertMission(mission: InsertableMission): Mission =
         supabase.from(Tables.MISSION.path)

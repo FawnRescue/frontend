@@ -25,5 +25,6 @@ enum class NAV(
     FRIENDS("Friends", "/friends", Icons.Rounded.Group),
     HANGAR("Hangar", "/hangar", Icons.Rounded.Flight),
     HANGAR_DISCOVER("Discover Aircraft", "/hangar/discover", null, true, false),
-    PROFILE("Profile", "/profile", null, false, false);
+    PROFILE("Profile", "/profile", null, false, false),
+    PILOT("Pilot", "/pilot", null, false, false);
 }

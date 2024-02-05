@@ -74,7 +74,7 @@ class FlightPlanEditorViewModel : ViewModel(), KoinComponent {
             FlightPlanEditorEvent.SaveBoundary -> {
                 val selectedMission = missionRepo.selectedMission.value
                 if (selectedMission == null) {
-                    navigator.navigate(NAV.HOME.path)
+                    navigator.goBack()
                     return
                 }
                 viewModelScope.launch {
@@ -90,6 +90,11 @@ class FlightPlanEditorViewModel : ViewModel(), KoinComponent {
                     }
                 }
             }
+
+            FlightPlanEditorEvent.ToggleBoundary -> _state.update { it.copy(showBoundary = !it.showBoundary) }
+            FlightPlanEditorEvent.ToggleBoundaryMarkers -> _state.update { it.copy(showBoundaryMarkers = !it.showBoundaryMarkers) }
+            FlightPlanEditorEvent.ToggleCheckpointMarkers ->_state.update { it.copy(showCheckpointMarkers = !it.showCheckpointMarkers) }
+            FlightPlanEditorEvent.TogglePath -> _state.update { it.copy(showPath = !it.showPath) }
         }
     }
 }

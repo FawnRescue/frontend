@@ -70,7 +70,7 @@ fun HomeScreen(onEvent: (HomeEvent) -> Unit, state: HomeState) {
                         )
                     }
                     items(pair.second) { date ->
-                        FlightDateListItem(date, {}, modifier = Modifier.offset(10.dp))
+                        FlightDateListItem(date, {onEvent(DateSelected(date))}, modifier = Modifier.offset(10.dp))
                         Spacer(Modifier.height(2.dp))
                     }
                     item{

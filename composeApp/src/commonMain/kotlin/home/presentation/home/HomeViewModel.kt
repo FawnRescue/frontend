@@ -52,6 +52,10 @@ class HomeViewModel : ViewModel(), KoinComponent {
                 navigator.navigate(NAV.PROFILE.path)
 
             }
+
+            is DateSelected -> flightDateRepo.selectedFlightDate.update { event.date }.also {
+                navigator.navigate(NAV.PILOT.path)
+            }
         }
     }
 }

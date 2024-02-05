@@ -1,14 +1,19 @@
 package pilot
 
-import pilot.PilotEvent.*
+import androidx.compose.foundation.layout.offset
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import planning.presentation.flightplan_editor.GoogleMaps
 import presentation.maps.getCenter
 
 @Composable
 fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
-    if(state.plan == null){
-        onEvent(NoPlan)
+    if(state.plan == null || state.date == null || state.mission == null){
         return
     }
     GoogleMaps(
@@ -18,7 +23,11 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
         onMarkerClick = {
         },
         listOf(),
-        state.plan.checkpoints ?: listOf()
+        state.plan.checkpoints ?: listOf(),
+        showBoundaryMarkers = false,
+        showBoundary = false,
+        showCheckpointMarkers = false,
+        showPath = true,
     )
 }
 

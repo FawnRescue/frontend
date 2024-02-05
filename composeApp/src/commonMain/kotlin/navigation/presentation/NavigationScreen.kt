@@ -27,18 +27,10 @@ import login.presentation.LoginViewModel
 import moe.tlaster.precompose.navigation.NavHost
 import moe.tlaster.precompose.navigation.Navigator
 import moe.tlaster.precompose.navigation.transition.NavTransition
-import navigation.presentation.NAV.FLIGHT_DATE_EDITOR
-import navigation.presentation.NAV.FLIGHT_PLAN_EDITOR
-import navigation.presentation.NAV.FRIENDS
-import navigation.presentation.NAV.GROUP
-import navigation.presentation.NAV.HANGAR
-import navigation.presentation.NAV.HANGAR_DISCOVER
-import navigation.presentation.NAV.HOME
-import navigation.presentation.NAV.LOGIN
-import navigation.presentation.NAV.MISSION_EDITOR
-import navigation.presentation.NAV.PLANNING
-import navigation.presentation.NAV.PROFILE
+import navigation.presentation.NAV.*
 import org.koin.compose.koinInject
+import pilot.PilotScreen
+import pilot.PilotViewModel
 import planning.presentation.flightdate_editor.FlightDateEditorScreen
 import planning.presentation.flightdate_editor.FlightDateEditorViewModel
 import planning.presentation.flightplan_editor.FlightPlanEditorScreen
@@ -222,6 +214,19 @@ fun NavigationScreen(
                             val stateHangarDiscover by viewModel.state.collectAsState()
                             DiscoverScreen(
                                 state = stateHangarDiscover, onEvent = viewModel::onEvent
+                            )
+                        }
+
+                        PILOT -> scene(
+                            route = it.path, navTransition = NavTransition()
+                        ) {
+                            val viewModel = getViewModel(key = "pilot-screen",
+                                factory = viewModelFactory {
+                                    PilotViewModel()
+                                })
+                            val statePilot by viewModel.state.collectAsState()
+                            PilotScreen(
+                                state = statePilot, onEvent = viewModel::onEvent
                             )
                         }
                     }

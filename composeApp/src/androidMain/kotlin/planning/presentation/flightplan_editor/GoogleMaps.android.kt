@@ -56,55 +56,14 @@ actual fun GoogleMaps(
     onMarkerClick: (LatLong) -> Unit,
     markers: List<LatLong>,
     checkpoints: List<LatLong>,
+    showBoundaryMarkers: Boolean,
+    showBoundary: Boolean,
+    showCheckpointMarkers: Boolean,
+    showPath: Boolean,
 ) {
     println(checkpoints)
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(currentPosition.toLatLng(), 16f)
-    }
-    var showBoundaryMarkers by remember { mutableStateOf(true) }
-    var showBoundary by remember { mutableStateOf(true) }
-    var showCheckpointMarkers by remember { mutableStateOf(false) }
-    var showPath by remember { mutableStateOf(true) }
-
-
-    var selectedMarkerIndex by remember {
-        mutableIntStateOf(0)
-    }
-    FloatingActionButton(
-        onClick = { showBoundaryMarkers = !showBoundaryMarkers },
-        modifier = Modifier
-            .offset(100.dp)
-            .zIndex(1f)
-            .alpha(if (showBoundaryMarkers) 1.0f else 0.5f)
-    ) {
-        Text("BMarkers")
-    }
-    FloatingActionButton(
-        onClick = { showCheckpointMarkers = !showCheckpointMarkers },
-        modifier = Modifier
-            .offset(160.dp)
-            .zIndex(1f)
-            .alpha(if (showCheckpointMarkers) 1.0f else 0.5f)
-    ) {
-        Text("CMarkers")
-    }
-    FloatingActionButton(
-        onClick = { showBoundary = !showBoundary },
-        modifier = Modifier
-            .offset(220.dp)
-            .zIndex(1f)
-            .alpha(if (showBoundary) 1.0f else 0.5f)
-    ) {
-        Text("Boundary")
-    }
-    FloatingActionButton(
-        onClick = { showPath = !showPath },
-        modifier = Modifier
-            .offset(280.dp)
-            .zIndex(1f)
-            .alpha(if (showPath) 1.0f else 0.5f)
-    ) {
-        Text("Path")
     }
     GoogleMap(modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
