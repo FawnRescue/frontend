@@ -1,15 +1,11 @@
 package planning.presentation.flightplan_editor
 
 
-import androidx.compose.foundation.layout.offset
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import presentation.maps.LatLong
 import presentation.maps.getCenter
 

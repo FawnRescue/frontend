@@ -2,7 +2,6 @@ package home.presentation.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,13 +22,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import home.presentation.home.HomeEvent.*
+import home.presentation.home.HomeEvent.Logout
+import home.presentation.home.HomeEvent.ProfileButton
 import planning.presentation.components.MissionListItem
-import planning.presentation.components.flightdate_list.FlightDateList
 import planning.presentation.components.flightdate_list.FlightDateListItem
 
 @Composable

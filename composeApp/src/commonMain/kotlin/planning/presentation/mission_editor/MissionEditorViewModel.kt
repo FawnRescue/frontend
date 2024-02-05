@@ -3,13 +3,13 @@ package planning.presentation.mission_editor
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import moe.tlaster.precompose.navigation.Navigator
 import navigation.presentation.NAV
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.mobilenativefoundation.store.store5.StoreReadResponse
 import planning.presentation.mission_editor.MissionEditorEvent.AddFlightDate
 import planning.presentation.mission_editor.MissionEditorEvent.Cancel
 import planning.presentation.mission_editor.MissionEditorEvent.DateSelected
@@ -17,13 +17,8 @@ import planning.presentation.mission_editor.MissionEditorEvent.EditFlightPlan
 import planning.presentation.mission_editor.MissionEditorEvent.ResetMission
 import planning.presentation.mission_editor.MissionEditorEvent.SaveMission
 import planning.presentation.mission_editor.MissionEditorEvent.UpdateMission
-import org.mobilenativefoundation.store.store5.StoreReadResponse
-import org.mobilenativefoundation.store.store5.UpdaterResult
-import repository.domain.FlightDate
-import planning.presentation.mission_editor.MissionEditorEvent.*
 import repository.FlightDateRepo
 import repository.MissionRepo
-import repository.domain.Mission
 import repository.domain.InsertableMission
 import repository.domain.insertable
 

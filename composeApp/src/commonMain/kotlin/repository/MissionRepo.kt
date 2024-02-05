@@ -6,7 +6,6 @@ import io.github.jan.supabase.exceptions.HttpRequestException
 import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.mobilenativefoundation.store.store5.Converter.Builder
@@ -15,38 +14,13 @@ import org.mobilenativefoundation.store.store5.Store
 import org.mobilenativefoundation.store.store5.StoreBuilder
 import org.mobilenativefoundation.store.store5.StoreReadRequest
 import org.mobilenativefoundation.store.store5.StoreReadResponse
-import org.mobilenativefoundation.store.store5.UpdaterResult
 import repository.domain.InsertableMission
 import repository.domain.Mission
 import repository.domain.NetworkMission
 import repository.domain.Tables
+import repository.domain.UserId
 import repository.domain.toLocal
-import kotlin.jvm.JvmInline
 
-
-@Serializable
-@JvmInline
-value class UserId(val id: String) {
-    override fun toString(): String {
-        return this.id
-    }
-}
-
-@Serializable
-@JvmInline
-value class MissionId(val id: String) {
-    override fun toString(): String {
-        return this.id
-    }
-}
-
-@Serializable
-@JvmInline
-value class FlightPlanId(val id: String) {
-    override fun toString(): String {
-        return this.id
-    }
-}
 
 sealed class MissionKey {
     sealed class Read : MissionKey() {

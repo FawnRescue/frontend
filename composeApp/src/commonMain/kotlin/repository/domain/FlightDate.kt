@@ -1,9 +1,7 @@
 package repository.domain
 
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
-import repository.MissionId
 
 @Serializable
 data class FlightDate(

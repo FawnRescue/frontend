@@ -2,13 +2,10 @@ package hangar.presentation.discover
 
 import core.utils.randomUUID
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
-import hangar.domain.InsertableAircraft
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.exceptions.UnknownRestException
-import io.github.jan.supabase.gotrue.OtpType
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.builtin.OTP
-import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

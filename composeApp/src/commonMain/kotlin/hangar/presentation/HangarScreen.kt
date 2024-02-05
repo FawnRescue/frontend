@@ -22,11 +22,8 @@ import androidx.compose.material.icons.filled.Flight
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Flight
-import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.PersonAdd
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -41,13 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import friends.presentation.FriendListEvent
 import hangar.presentation.components.BatteryIndicator
-import io.github.jan.supabase.compose.auth.ui.email.OutlinedEmailField
-import io.github.jan.supabase.compose.auth.ui.password.OutlinedPasswordField
-import io.github.jan.supabase.compose.auth.ui.password.PasswordRule
-import io.github.jan.supabase.compose.auth.ui.password.rememberPasswordRuleList
-import login.presentation.LoginEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -1,13 +1,13 @@
 package home.presentation.home
 
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
-import home.presentation.home.HomeEvent.*
+import home.presentation.home.HomeEvent.Logout
+import home.presentation.home.HomeEvent.ProfileButton
 import io.github.aakira.napier.Napier
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.gotrue.auth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import moe.tlaster.precompose.navigation.Navigator
@@ -17,7 +17,7 @@ import org.koin.core.component.inject
 import org.mobilenativefoundation.store.store5.StoreReadResponse
 import repository.FlightDateRepo
 import repository.MissionRepo
-import repository.UserId
+import repository.domain.UserId
 
 class HomeViewModel : ViewModel(), KoinComponent {
     private val navigator: Navigator by inject<Navigator>()
