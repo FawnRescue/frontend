@@ -17,6 +17,7 @@ import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -55,22 +56,26 @@ fun HomeScreen(onEvent: (HomeEvent) -> Unit, state: HomeState) {
         Column(modifier = Modifier.padding(it)) {
             Text("Available Flight Dates:", fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(4.dp))
+            if (state.loading) {
+                LinearProgressIndicator(Modifier.fillMaxWidth())
+            }
             LazyColumn {
-                state.dates.forEach { entry ->
-                    if (entry.value.isEmpty()) {
-                        return@forEach
-                    }
+                state.datesLoading.forEach { entry ->
                     item {
                         MissionListItem(
                             entry.key,
-                            Modifier.background(MaterialTheme.colorScheme.background)
+                            Modifier.background(MaterialTheme.colorScheme.background),
                         )
                     }
-                    items(entry.value) { date ->
-                        FlightDateListItem(date, {}, modifier = Modifier.offset(10.dp))
-                        Spacer(Modifier.height(2.dp))
+                    if (entry.value || !state.dates.containsKey(entry.key)) {
+                        item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
+                    } else {
+                        items(state.dates[entry.key]!!) { date ->
+                            FlightDateListItem(date, {}, modifier = Modifier.offset(10.dp))
+                            Spacer(Modifier.height(2.dp))
+                        }
                     }
-                    item{
+                    item {
                         Spacer(Modifier.height(4.dp))
                     }
                 }

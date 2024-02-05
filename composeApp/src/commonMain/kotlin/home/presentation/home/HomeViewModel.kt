@@ -43,7 +43,8 @@ class HomeViewModel : ViewModel(), KoinComponent {
                             it.copy(
                                 datesLoading = it.datesLoading.plus(
                                     Pair(mission, true)
-                                )
+                                ),
+                                loading = false
                             )
                         }
                         flightDateRepo.getDates(mission.id).collect { dateResponse ->

@@ -16,7 +16,7 @@ import org.mobilenativefoundation.store.store5.StoreReadResponse
 import planning.presentation.mission_list.MissionListEvent.CreateNewMission
 import planning.presentation.mission_list.MissionListEvent.ExistingMissionSelected
 import repository.MissionRepo
-import repository.UserId
+import repository.domain.UserId
 import repository.domain.Mission
 
 class MissionListViewModel : ViewModel(), KoinComponent {
