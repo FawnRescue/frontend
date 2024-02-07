@@ -40,7 +40,7 @@ class MissionListViewModel : ViewModel(), KoinComponent {
             missionRepo.getMissions(userId).collect { response ->
                 when (response) {
                     is StoreReadResponse.Data -> _state.update {
-                        it.copy(missions = response.value)
+                        it.copy(missions = response.value, loading = false)
                     }
 
                     is StoreReadResponse.Error.Exception -> Napier.e(

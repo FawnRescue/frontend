@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,12 +45,17 @@ fun MissionListScreen(onEvent: (MissionListEvent) -> Unit, state: MissionListSta
                         fontWeight = FontWeight.Bold
                     )
                 }
+                if (state.loading) {
+                    item {
+                        LinearProgressIndicator(Modifier.fillMaxWidth())
+                    }
+                }
                 items(state.missions) { mission ->
                     MissionListItem(
                         mission = mission,
                         modifier = Modifier.fillMaxWidth().clickable {
                             onEvent(ExistingMissionSelected(mission))
-                        }.padding(horizontal = 16.dp),
+                        },
                     )
                 }
             }
