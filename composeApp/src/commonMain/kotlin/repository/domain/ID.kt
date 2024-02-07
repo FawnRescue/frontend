@@ -26,3 +26,10 @@ value class FlightPlanId(val id: String) {
         return this.id
     }
 }
+
+@JvmInline
+value class AircraftId(val id: String) {
+    override fun toString(): String {
+        return this.id
+    }
+}
