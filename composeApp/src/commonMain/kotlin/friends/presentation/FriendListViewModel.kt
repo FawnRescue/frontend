@@ -27,7 +27,9 @@ class FriendListViewModel : ViewModel(), KoinComponent {
         viewModelScope.launch {
             _state.update { state ->
                 state.copy(
-                    friends = userRepo.getAllUsers().filter { it.id != supabase.auth.currentUserOrNull()?.id }
+                    friends = userRepo.getAllUsers()
+                        .filter { it.id != supabase.auth.currentUserOrNull()?.id },
+                    loading = false
                 )
             }
         }

@@ -47,38 +47,42 @@ class HomeViewModel : ViewModel(), KoinComponent {
                                 loading = false
                             )
                         }
-                        flightDateRepo.getDates(mission.id).collect { dateResponse ->
-                            when (dateResponse) {
-                                is StoreReadResponse.Data -> _state.update {
-                                    it.copy(
-                                        dates = it.dates.plus(
-                                            Pair(mission, dateResponse.value)
-                                        ),
-                                        datesLoading = it.datesLoading.plus(
-                                            Pair(mission, false)
+                        viewModelScope.launch {
+                            flightDateRepo.getDates(mission.id).collect { dateResponse ->
+                                when (dateResponse) {
+                                    is StoreReadResponse.Data -> _state.update {
+                                        it.copy(
+                                            dates = it.dates.plus(
+                                                Pair(mission, dateResponse.value)
+                                            ),
+                                            datesLoading = it.datesLoading.plus(
+                                                Pair(mission, false)
+                                            )
                                         )
-                                    )
-                                }
-                                is StoreReadResponse.Error.Custom<*> -> TODO()
-                                is StoreReadResponse.Error.Exception -> TODO()
-                                is StoreReadResponse.Error.Message -> TODO()
-                                StoreReadResponse.Initial -> TODO()
-                                is StoreReadResponse.Loading -> _state.update {
-                                    it.copy(
-                                        datesLoading = it.datesLoading.plus(
-                                            Pair(mission, true)
-                                        )
-                                    )
-                                }
-                                is StoreReadResponse.NoNewData -> _state.update {
-                                    it.copy(
-                                        datesLoading = it.datesLoading.plus(
-                                            Pair(mission, false)
-                                        )
-                                    )
-                                }
-                            }
+                                    }
 
+                                    is StoreReadResponse.Error.Custom<*> -> TODO()
+                                    is StoreReadResponse.Error.Exception -> TODO()
+                                    is StoreReadResponse.Error.Message -> TODO()
+                                    StoreReadResponse.Initial -> TODO()
+                                    is StoreReadResponse.Loading -> _state.update {
+                                        it.copy(
+                                            datesLoading = it.datesLoading.plus(
+                                                Pair(mission, true)
+                                            )
+                                        )
+                                    }
+
+                                    is StoreReadResponse.NoNewData -> _state.update {
+                                        it.copy(
+                                            datesLoading = it.datesLoading.plus(
+                                                Pair(mission, false)
+                                            )
+                                        )
+                                    }
+                                }
+
+                            }
                         }
                     }
 
