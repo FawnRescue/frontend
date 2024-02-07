@@ -59,14 +59,14 @@ fun HangarScreen(onEvent: (HangarEvent) -> Unit, state: HangarState) {
         }
     }) {
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().padding(top = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
             item {
                 Text(
                     text = "My aircrafts (${state.aircrafts?.size ?: 0})",
-                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     fontWeight = FontWeight.Bold
                 )
             }

@@ -33,7 +33,7 @@ fun MissionListScreen(onEvent: (MissionListEvent) -> Unit, state: MissionListSta
     }) {
         Box(modifier = Modifier.padding(it)) {
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().padding(top = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp)
             ) {
