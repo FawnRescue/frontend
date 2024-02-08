@@ -2,6 +2,7 @@ package hangar.presentation
 
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -78,6 +79,13 @@ fun HangarScreen(onEvent: (HangarEvent) -> Unit, state: HangarState) {
             state.aircrafts?.let {
                 items(it) { aircraft ->
                     ListItem(
+                        modifier = Modifier.clickable {
+                            onEvent(
+                                HangarEvent.OnSelectAircraft(
+                                    aircraft
+                                )
+                            )
+                        },
                         headlineContent = { Text(text = aircraft.name) },
                         leadingContent = {
                             Icon(
