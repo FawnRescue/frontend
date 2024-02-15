@@ -6,7 +6,7 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import repository.FlightDateRepo
 import repository.FlightPlanRepo
-import repository.HangarRepo
+import repository.AircraftRepo
 import repository.MissionRepo
 import repository.UserRepo
 
@@ -23,5 +23,5 @@ val sharedModule = module {
     // Throws an error but is correct. Probably because expect classes are in beta
     singleOf(::BluetoothClient)
     singleOf(::UserRepo)
-    singleOf(::HangarRepo)
+    singleOf(::AircraftRepo)
 }

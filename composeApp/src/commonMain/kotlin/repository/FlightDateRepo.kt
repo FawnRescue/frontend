@@ -1,5 +1,6 @@
 package repository
 
+import io.github.aakira.napier.Napier
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.exceptions.HttpRequestException
 import io.github.jan.supabase.postgrest.from
@@ -33,6 +34,7 @@ class FlightDateRepo : KoinComponent {
                 }
             }.decodeList<FlightDate>()
         } catch (e: HttpRequestException) {
+            e.message?.let { Napier.e(it) }
             listOf()
         }
 

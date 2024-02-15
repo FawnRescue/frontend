@@ -15,12 +15,20 @@ import org.mobilenativefoundation.store.store5.StoreReadRequest
 import org.mobilenativefoundation.store.store5.StoreReadResponse
 import repository.domain.Aircraft
 import repository.domain.AircraftId
+import repository.domain.MissionId
 import repository.domain.NetworkAircraft
 import repository.domain.Tables
 import repository.domain.UserId
 import repository.domain.toLocal
 
-class HangarRepo : KoinComponent {
+sealed class AircraftKey {
+    sealed class Read : AircraftKey() {
+        data class ByOwner(val owner: UserId) : Read()
+        data class ByID(val id: AircraftId) : Read()
+    }
+}
+
+class AircraftRepo : KoinComponent {
     val supabase: SupabaseClient by inject<SupabaseClient>()
 
     private val converter =
@@ -29,9 +37,22 @@ class HangarRepo : KoinComponent {
         }.fromOutputToLocal { it }
             .build()
 
-    private val store: Store<UserId, List<Aircraft>> = StoreBuilder.from(
-        fetcher = Fetcher.of { key: UserId ->
-            loadAircrafts(key).map { converter.fromNetworkToLocal(it) }
+    private val store: Store<AircraftKey, List<Aircraft>> = StoreBuilder.from(
+        fetcher = Fetcher.of { key: AircraftKey ->
+            when (key) {
+                is AircraftKey.Read.ByID -> loadAircraft(key.id).map {
+                    converter.fromNetworkToLocal(
+                        it
+                    )
+                }
+
+                is AircraftKey.Read.ByOwner -> loadAircrafts(key.owner).map {
+                    converter.fromNetworkToLocal(
+                        it
+                    )
+                }
+
+            }
         }
     ).build()
 
@@ -46,13 +67,33 @@ class HangarRepo : KoinComponent {
                 }
                 .decodeList<NetworkAircraft>()
         } catch (e: HttpRequestException) {
-            Napier.e("Loading missions for userid failed", e)
+            Napier.e("Loading aircrafts for userid failed", e)
+            emptyList()
+        }
+    }
+
+    private suspend fun loadAircraft(id: AircraftId): List<NetworkAircraft> {
+        return try {
+            supabase.from(Tables.AIRCRAFT.path)
+                .select {
+                    filter {
+                        eq("deleted", false)
+                        eq("token", id)
+                    }
+                }
+                .decodeList<NetworkAircraft>()
+        } catch (e: HttpRequestException) {
+            Napier.e("Loading aircraft by id failed", e)
             emptyList()
         }
     }
 
     fun getAircrafts(userId: UserId): Flow<StoreReadResponse<List<Aircraft>>> {
-        return store.stream(StoreReadRequest.cached(userId, true))
+        return store.stream(StoreReadRequest.cached(AircraftKey.Read.ByOwner(userId), true))
+    }
+
+    fun getAircraft(id: AircraftId): Flow<StoreReadResponse<List<Aircraft>>> {
+        return store.stream(StoreReadRequest.cached(AircraftKey.Read.ByID(id), true))
     }
 
 

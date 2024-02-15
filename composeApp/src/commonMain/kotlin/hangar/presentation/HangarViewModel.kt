@@ -18,7 +18,7 @@ import navigation.presentation.NAV
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.mobilenativefoundation.store.store5.StoreReadResponse
-import repository.HangarRepo
+import repository.AircraftRepo
 import repository.domain.Aircraft
 import repository.domain.UserId
 
@@ -26,7 +26,7 @@ class HangarViewModel : ViewModel(), KoinComponent {
     private val navigator: Navigator by inject<Navigator>()
     val supabase: SupabaseClient by inject<SupabaseClient>()
     private var channel: RealtimeChannel? = null
-    private val hangarRepo by inject<HangarRepo>()
+    private val aircraftRepo by inject<AircraftRepo>()
 
 
     private val _state = MutableStateFlow(HangarState(null, null, null))
@@ -40,7 +40,7 @@ class HangarViewModel : ViewModel(), KoinComponent {
         val authId = supabase.auth.currentUserOrNull()?.id ?: return
         val userId = UserId(authId)
         viewModelScope.launch {
-            hangarRepo.getAircrafts(userId).collect { response ->
+            aircraftRepo.getAircrafts(userId).collect { response ->
                 when (response) {
                     is StoreReadResponse.Data -> _state.update { it.copy(aircrafts = response.value, loading = false) }
                     is StoreReadResponse.Error.Exception -> Napier.e(
@@ -73,7 +73,7 @@ class HangarViewModel : ViewModel(), KoinComponent {
             is HangarEvent.OnSelectAircraft -> viewModelScope.launch { selectAircraft(event.aircraft) }
             HangarEvent.OnDeleteAircraft -> {
                 viewModelScope.launch {
-                    state.value.selectedAircraft?.let { hangarRepo.deleteAircraft(it.token) }
+                    state.value.selectedAircraft?.let { aircraftRepo.deleteAircraft(it.token) }
                     _state.update {
                         it.copy(
                             selectedAircraft = null
