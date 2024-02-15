@@ -2,7 +2,6 @@ package home.presentation.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,18 +17,18 @@ import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import home.presentation.home.HomeEvent.*
+import home.presentation.home.HomeEvent.DateSelected
+import home.presentation.home.HomeEvent.Logout
+import home.presentation.home.HomeEvent.ProfileButton
 import planning.presentation.components.MissionListItem
-import planning.presentation.components.flightdate_list.FlightDateList
 import planning.presentation.components.flightdate_list.FlightDateListItem
 
 @Composable
@@ -58,22 +57,29 @@ fun HomeScreen(onEvent: (HomeEvent) -> Unit, state: HomeState) {
         Column(modifier = Modifier.padding(it)) {
             Text("Available Flight Dates:", fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(4.dp))
+            if (state.loading) {
+                LinearProgressIndicator(Modifier.fillMaxWidth())
+            }
             LazyColumn {
-                state.dates.forEach { pair ->
-                    if (pair.second.isEmpty()) {
+                state.datesLoading.forEach { entry ->
+                    if(!entry.value && state.dates.containsKey(entry.key) && state.dates[entry.key]!!.isEmpty()){
                         return@forEach
                     }
                     item {
                         MissionListItem(
-                            pair.first,
-                            Modifier.background(MaterialTheme.colorScheme.background)
+                            entry.key,
+                            Modifier.background(MaterialTheme.colorScheme.background),
                         )
                     }
-                    items(pair.second) { date ->
-                        FlightDateListItem(date, {onEvent(DateSelected(date))}, modifier = Modifier.offset(10.dp))
-                        Spacer(Modifier.height(2.dp))
+                    if (entry.value || !state.dates.containsKey(entry.key)) {
+                        item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
+                    } else {
+                        items(state.dates[entry.key]!!) { date ->
+                            FlightDateListItem(date, {onEvent(DateSelected(date))}, modifier = Modifier.offset(10.dp))
+                            Spacer(Modifier.height(2.dp))
+                        }
                     }
-                    item{
+                    item {
                         Spacer(Modifier.height(4.dp))
                     }
                 }

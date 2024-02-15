@@ -12,7 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import planning.presentation.flightplan_editor.FlightPlanEditorEvent.*
+import planning.presentation.flightplan_editor.FlightPlanEditorEvent.MarkerAdded
+import planning.presentation.flightplan_editor.FlightPlanEditorEvent.MarkerRemoved
+import planning.presentation.flightplan_editor.FlightPlanEditorEvent.SaveBoundary
+import planning.presentation.flightplan_editor.FlightPlanEditorEvent.ToggleBoundary
+import planning.presentation.flightplan_editor.FlightPlanEditorEvent.ToggleBoundaryMarkers
+import planning.presentation.flightplan_editor.FlightPlanEditorEvent.ToggleCheckpointMarkers
+import planning.presentation.flightplan_editor.FlightPlanEditorEvent.TogglePath
 import presentation.maps.LatLong
 import presentation.maps.getCenter
 

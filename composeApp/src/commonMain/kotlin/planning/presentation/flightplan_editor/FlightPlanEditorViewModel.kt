@@ -10,12 +10,12 @@ import moe.tlaster.precompose.navigation.Navigator
 import navigation.presentation.NAV
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import repository.domain.InsertableFlightPlan
-import repository.domain.insertable
+import presentation.maps.getCenter
 import repository.FlightPlanRepo
 import repository.MissionRepo
+import repository.domain.InsertableFlightPlan
+import repository.domain.insertable
 import repository.sortPolarCoordinates
-import presentation.maps.getCenter
 
 class FlightPlanEditorViewModel : ViewModel(), KoinComponent {
     private val navigator: Navigator by inject<Navigator>()

@@ -8,5 +8,6 @@ import repository.domain.Mission
 data class PilotState(
     val date: FlightDate?,
     val plan: FlightPlan?,
-    val mission: Mission?
+    val mission: Mission?,
+    val loading: Boolean = true,
 )

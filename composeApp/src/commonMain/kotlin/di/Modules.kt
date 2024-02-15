@@ -4,9 +4,10 @@ import hangar.presentation.discover.BluetoothClient
 import moe.tlaster.precompose.navigation.Navigator
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
-import repository.MissionRepo
-import repository.FlightPlanRepo
 import repository.FlightDateRepo
+import repository.FlightPlanRepo
+import repository.HangarRepo
+import repository.MissionRepo
 import repository.UserRepo
 
 // Provide the dependencies through a Koin module
@@ -22,4 +23,5 @@ val sharedModule = module {
     // Throws an error but is correct. Probably because expect classes are in beta
     singleOf(::BluetoothClient)
     singleOf(::UserRepo)
+    singleOf(::HangarRepo)
 }

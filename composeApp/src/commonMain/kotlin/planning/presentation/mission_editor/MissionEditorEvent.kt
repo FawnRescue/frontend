@@ -2,7 +2,6 @@ package planning.presentation.mission_editor
 
 import repository.domain.FlightDate
 import repository.domain.InsertableMission
-import planning.presentation.mission_list.MissionListEvent
 
 
 sealed interface MissionEditorEvent {
