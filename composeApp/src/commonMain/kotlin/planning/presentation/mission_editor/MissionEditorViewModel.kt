@@ -9,6 +9,7 @@ import moe.tlaster.precompose.navigation.Navigator
 import navigation.presentation.NAV
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.mobilenativefoundation.store.store5.StoreReadResponse
 import planning.presentation.mission_editor.MissionEditorEvent.AddFlightDate
 import planning.presentation.mission_editor.MissionEditorEvent.Cancel
 import planning.presentation.mission_editor.MissionEditorEvent.DateSelected
@@ -32,11 +33,25 @@ class MissionEditorViewModel : ViewModel(), KoinComponent {
 
     private fun loadDates() {
         viewModelScope.launch {
-            _state.update {
-                val dates =
-                    missionRepo.selectedMission.value?.id?.let { it1 -> flightDateRepo.getDates(it1) }
-                        ?: listOf()
-                it.copy(dates = dates)
+            val selectedMissionId = missionRepo.selectedMission.value?.id
+            selectedMissionId?.let { missionId ->
+                flightDateRepo.getDates(missionId).collect { response ->
+                    when (response) {
+                        is StoreReadResponse.Data -> _state.update {
+                            it.copy(
+                                dates = response.value,
+                                datesLoading = false
+                            )
+                        }
+
+                        is StoreReadResponse.Error.Custom<*> -> TODO()
+                        is StoreReadResponse.Error.Exception -> TODO()
+                        is StoreReadResponse.Error.Message -> TODO()
+                        StoreReadResponse.Initial -> TODO()
+                        is StoreReadResponse.Loading -> _state.update { it.copy(datesLoading = true) }
+                        is StoreReadResponse.NoNewData -> TODO()
+                    }
+                }
             }
         }
     }

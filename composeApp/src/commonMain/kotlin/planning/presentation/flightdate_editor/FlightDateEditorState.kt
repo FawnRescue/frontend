@@ -1,10 +1,7 @@
 package planning.presentation.flightdate_editor
 
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
-import kotlinx.datetime.toInstant
 import repository.domain.FlightDate
 
 data class FlightDateEditorState (

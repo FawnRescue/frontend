@@ -21,7 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import planning.presentation.components.MissionListItem
-import planning.presentation.mission_list.MissionListEvent.*
+import planning.presentation.mission_list.MissionListEvent.CreateNewMission
+import planning.presentation.mission_list.MissionListEvent.ExistingMissionSelected
 
 @Composable
 fun MissionListScreen(onEvent: (MissionListEvent) -> Unit, state: MissionListState) {
@@ -32,7 +33,7 @@ fun MissionListScreen(onEvent: (MissionListEvent) -> Unit, state: MissionListSta
     }) {
         Box(modifier = Modifier.padding(it)) {
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().padding(top = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp)
             ) {

@@ -6,7 +6,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import profile.ProfileEditorEvent.*
+import profile.ProfileEditorEvent.Cancel
+import profile.ProfileEditorEvent.NameChanged
+import profile.ProfileEditorEvent.Save
 
 @Composable
 fun ProfileEditorScreen(onEvent: (ProfileEditorEvent) -> Unit, state: ProfileEditorState) {

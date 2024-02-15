@@ -1,7 +1,5 @@
 package hangar.presentation.discover
 
-import hangar.domain.Aircraft
-
 sealed interface DiscoverEvent {
     object OnScanDevices : DiscoverEvent
     object OnCancelDiscovery : DiscoverEvent
