@@ -21,7 +21,7 @@ class FlightDateRepo : KoinComponent {
 
     val selectedFlightDate: MutableStateFlow<FlightDate?> = MutableStateFlow(null)
 
-    val store = StoreBuilder.from(fetcher = Fetcher.of { key: MissionId ->
+    private val store = StoreBuilder.from(fetcher = Fetcher.of { key: MissionId ->
         loadDates(key)
     }).build()
 

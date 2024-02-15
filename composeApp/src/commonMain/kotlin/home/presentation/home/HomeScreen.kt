@@ -61,6 +61,9 @@ fun HomeScreen(onEvent: (HomeEvent) -> Unit, state: HomeState) {
             }
             LazyColumn {
                 state.datesLoading.forEach { entry ->
+                    if(!entry.value && state.dates.containsKey(entry.key) && state.dates[entry.key]!!.isEmpty()){
+                        return@forEach
+                    }
                     item {
                         MissionListItem(
                             entry.key,
