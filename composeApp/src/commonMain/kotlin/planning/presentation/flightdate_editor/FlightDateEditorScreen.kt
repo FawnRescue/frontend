@@ -1,15 +1,25 @@
 package planning.presentation.flightdate_editor
 
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -20,27 +30,34 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalTime
+import planning.presentation.flightdate_editor.FlightDateEditorEvent.*
+import repository.domain.AircraftId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FlightDateEditorScreen(onEvent: (FlightDateEditorEvent) -> Unit, state: FlightDateEditorState) {
     val datePickerState = rememberDatePickerState()
     val timePickerState = rememberTimePickerState(is24Hour = true)
+    if (state.loading) {
+        LinearProgressIndicator(Modifier.fillMaxWidth())
+        return
+    }
     if (state.isDatePickerOpen) {
         val confirmEnabled = remember {
             derivedStateOf { datePickerState.selectedDateMillis != null }
         }
         DatePickerDialog(onDismissRequest = {
-            onEvent(FlightDateEditorEvent.CloseDatePicker(null))
+            onEvent(CloseDatePicker(null))
         }, confirmButton = {
             TextButton(
                 onClick = {
                     onEvent(
-                        FlightDateEditorEvent.CloseDatePicker(
+                        CloseDatePicker(
                             datePickerState.selectedDateMillis?.let {
                                 Instant.fromEpochMilliseconds(
                                     it
@@ -55,7 +72,7 @@ fun FlightDateEditorScreen(onEvent: (FlightDateEditorEvent) -> Unit, state: Flig
             }
         }, dismissButton = {
             TextButton(onClick = {
-                onEvent(FlightDateEditorEvent.CloseDatePicker(null))
+                onEvent(CloseDatePicker(null))
             }) {
                 Text("Cancel")
             }
@@ -65,7 +82,7 @@ fun FlightDateEditorScreen(onEvent: (FlightDateEditorEvent) -> Unit, state: Flig
     } else if (state.isStartTimePickerOpen || state.isEndTimePickerOpen) {
         Dialog(
             onDismissRequest = {
-                onEvent(FlightDateEditorEvent.CloseTimePicker(null))
+                onEvent(CloseTimePicker(null))
             },
         ) {
             Column {
@@ -74,7 +91,7 @@ fun FlightDateEditorScreen(onEvent: (FlightDateEditorEvent) -> Unit, state: Flig
                     Button(
                         onClick = {
                             onEvent(
-                                FlightDateEditorEvent.CloseTimePicker(
+                                CloseTimePicker(
                                     LocalTime(
                                         timePickerState.hour,
                                         timePickerState.minute
@@ -86,7 +103,7 @@ fun FlightDateEditorScreen(onEvent: (FlightDateEditorEvent) -> Unit, state: Flig
                         Text("Save Time")
                     }
                     Button(
-                        onClick = { onEvent(FlightDateEditorEvent.CloseTimePicker(null)) }
+                        onClick = { onEvent(CloseTimePicker(null)) }
                     ) {
                         Text("Cancel")
                     }
@@ -96,7 +113,7 @@ fun FlightDateEditorScreen(onEvent: (FlightDateEditorEvent) -> Unit, state: Flig
     }
     Column(Modifier.offset(10.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Button({ onEvent(FlightDateEditorEvent.OpenDatePicker) }) {
+            Button({ onEvent(OpenDatePicker) }) {
                 Text("Select Date")
             }
             Spacer(Modifier.width(10.dp))
@@ -105,34 +122,88 @@ fun FlightDateEditorScreen(onEvent: (FlightDateEditorEvent) -> Unit, state: Flig
             }
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Button({ onEvent(FlightDateEditorEvent.OpenStartTimePicker) }) {
+            Button({ onEvent(OpenStartTimePicker) }) {
                 Text("Select Start Time")
             }
             Spacer(Modifier.width(10.dp))
             state.startTime?.let {
-                Text("${state.startTime.hour.toString().padStart(2, '0')}:${state.startTime.minute.toString().padStart(2, '0')}")
+                Text(
+                    "${
+                        state.startTime.hour.toString().padStart(2, '0')
+                    }:${state.startTime.minute.toString().padStart(2, '0')}"
+                )
             }
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Button({ onEvent(FlightDateEditorEvent.OpenEndTimePicker) }) {
+            Button({ onEvent(OpenEndTimePicker) }) {
                 Text("Select End Time")
             }
             Spacer(Modifier.width(10.dp))
             state.endTime?.let {
-                Text("${state.endTime.hour.toString().padStart(2, '0')}:${state.endTime.minute.toString().padStart(2, '0')}")
+                Text(
+                    "${
+                        state.endTime.hour.toString().padStart(2, '0')
+                    }:${state.endTime.minute.toString().padStart(2, '0')}"
+                )
+            }
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column {
+                Text("Selected Aircraft: ${state.aircraftId ?: "None"}")
+                LazyColumn {
+                    if (state.aircrafts.isEmpty()) {
+                        item { Text("No Aircraft in Hangar") }
+                    }
+                    items(state.aircrafts) {
+                        SelectableItem(it.token == state.aircraftId, onItemSelected = {
+                            onEvent(
+                                SelectAircraft(it.token)
+                            )
+                        }) {
+                            Text(it.name)
+                        }
+                    }
+                }
             }
         }
         Button(onClick = {
-            onEvent(FlightDateEditorEvent.Save)
+            onEvent(Save)
         }, enabled = state.isSaveEnabled) {
             Text("Save")
         }
         Button(onClick = {
-            onEvent(FlightDateEditorEvent.Cancel)
+            onEvent(Cancel)
         }) {
             Text("Cancel")
         }
     }
 
+
+}
+
+@Composable
+fun SelectableItem(
+    selected: Boolean,
+    onItemSelected: () -> Unit,
+    content: @Composable RowScope.() -> Unit,
+) {
+    Row(
+        modifier = Modifier.height(IntrinsicSize.Min)
+            .background(rowColor(selected))
+            .clickable {
+                onItemSelected()
+            }
+    ) {
+        content()
+    }
+}
+
+@Composable
+fun rowColor(selected: Boolean): Color {
+    return if (selected) {
+        MaterialTheme.colorScheme.secondary
+    } else {
+        Color.Transparent
+    }
 }
 

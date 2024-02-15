@@ -23,7 +23,7 @@ import repository.domain.toLocal
 
 sealed class AircraftKey {
     sealed class Read : AircraftKey() {
-        data class ByOwner(val owner: UserId) : Read()
+        data class ByOwner(val owner: UserId) : Read() //TODO use implicit UserID when selecting
         data class ByID(val id: AircraftId) : Read()
     }
 }
