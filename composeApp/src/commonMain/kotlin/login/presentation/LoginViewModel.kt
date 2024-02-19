@@ -74,6 +74,7 @@ class LoginViewModel : ViewModel(), KoinComponent {
             is LoginEvent.OnShowEmailDialog -> _state.update {
                 _state.value.copy(
                     showEmailDialog = event.show,
+                    emailFromSignup = event.fromSignUp
                 )
             }
 
