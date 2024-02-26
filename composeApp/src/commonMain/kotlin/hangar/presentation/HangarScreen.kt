@@ -21,6 +21,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Flight
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Satellite
+import androidx.compose.material.icons.filled.Terrain
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Flight
 import androidx.compose.material3.Button
@@ -133,7 +135,8 @@ fun HangarScreen(onEvent: (HangarEvent) -> Unit, state: HangarState) {
                                     horizontalAlignment = Alignment.Start
                                 ) {
                                     BatteryIndicator(
-                                        batteryPercentage = state.droneStatus.battery,
+                                        batteryPercentage = state.droneStatus.battery?.remainingPercent
+                                            ?: 0f,
                                         modifier = Modifier.fillMaxWidth()
                                     )
                                     Spacer(modifier = Modifier.height(8.dp))
@@ -146,7 +149,27 @@ fun HangarScreen(onEvent: (HangarEvent) -> Unit, state: HangarState) {
                                             Icons.Default.LocationOn,
                                             contentDescription = "Location"
                                         )
-                                        Text(" Location: ${state.droneStatus.location}")
+                                        Text(" Location: ${state.droneStatus.location?.latitude}, ${state.droneStatus.location?.longitude}")
+                                    }
+                                    // Displaying the altitude if available
+                                    state.droneStatus.altitude?.let {
+                                        Row {
+                                            Icon(
+                                                Icons.Default.Terrain,
+                                                contentDescription = "Altitude"
+                                            )
+                                            Text(" Altitude: ${it}m")
+                                        }
+                                    }
+                                    // Displaying the number of satellites if available
+                                    state.droneStatus.numSatellites?.let {
+                                        Row {
+                                            Icon(
+                                                Icons.Default.Satellite,
+                                                contentDescription = "Number of Satellites"
+                                            )
+                                            Text(" Satellites: $it")
+                                        }
                                     }
                                 }
                             }
