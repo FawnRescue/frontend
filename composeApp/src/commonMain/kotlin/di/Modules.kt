@@ -4,9 +4,9 @@ import hangar.presentation.discover.BluetoothClient
 import moe.tlaster.precompose.navigation.Navigator
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
+import repository.AircraftRepo
 import repository.FlightDateRepo
 import repository.FlightPlanRepo
-import repository.AircraftRepo
 import repository.MissionRepo
 import repository.UserRepo
 

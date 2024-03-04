@@ -14,6 +14,7 @@ import org.koin.core.component.inject
 import org.mobilenativefoundation.store.store5.StoreReadResponse
 import pilot.PilotEvent.NoPlan
 import repository.AircraftRepo
+import repository.CommandRepo
 import repository.FlightDateRepo
 import repository.FlightPlanRepo
 import repository.MissionRepo
@@ -28,6 +29,7 @@ class PilotViewModel : ViewModel(), KoinComponent {
     private val flightPlanRepo by inject<FlightPlanRepo>()
     private val missionRepo by inject<MissionRepo>()
     private val aircraftRepo by inject<AircraftRepo>()
+    private val commandRepo by inject<CommandRepo>()
     private val _state = MutableStateFlow(PilotState(null, null, null, null))
     val state = _state.asStateFlow()
 
@@ -111,6 +113,11 @@ class PilotViewModel : ViewModel(), KoinComponent {
                 navigator.navigate(NAV.HOME.path)
             }
 
+            is PilotEvent.SendCommand -> {
+                viewModelScope.launch {
+                    commandRepo.sendCommand(event.command)
+                }
+            }
         }
     }
 }

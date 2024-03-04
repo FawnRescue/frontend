@@ -35,8 +35,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalTime
-import planning.presentation.flightdate_editor.FlightDateEditorEvent.*
-import repository.domain.AircraftId
+import planning.presentation.flightdate_editor.FlightDateEditorEvent.Cancel
+import planning.presentation.flightdate_editor.FlightDateEditorEvent.CloseDatePicker
+import planning.presentation.flightdate_editor.FlightDateEditorEvent.CloseTimePicker
+import planning.presentation.flightdate_editor.FlightDateEditorEvent.OpenDatePicker
+import planning.presentation.flightdate_editor.FlightDateEditorEvent.OpenEndTimePicker
+import planning.presentation.flightdate_editor.FlightDateEditorEvent.OpenStartTimePicker
+import planning.presentation.flightdate_editor.FlightDateEditorEvent.Save
+import planning.presentation.flightdate_editor.FlightDateEditorEvent.SelectAircraft
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

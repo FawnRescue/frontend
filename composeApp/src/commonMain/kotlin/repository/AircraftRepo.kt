@@ -15,7 +15,6 @@ import org.mobilenativefoundation.store.store5.StoreReadRequest
 import org.mobilenativefoundation.store.store5.StoreReadResponse
 import repository.domain.Aircraft
 import repository.domain.AircraftId
-import repository.domain.MissionId
 import repository.domain.NetworkAircraft
 import repository.domain.Tables
 import repository.domain.UserId
