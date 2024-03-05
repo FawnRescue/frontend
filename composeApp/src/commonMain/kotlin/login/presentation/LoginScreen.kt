@@ -1,5 +1,6 @@
 package login.presentation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.annotations.SupabaseExperimental
@@ -32,6 +34,7 @@ import io.github.jan.supabase.compose.auth.ui.ProviderButtonContent
 import io.github.jan.supabase.gotrue.providers.Github
 import io.github.jan.supabase.gotrue.providers.Google
 import login.presentation.components.EmailEntryDialog
+import login.presentation.components.FawnRescueLogo
 import org.koin.compose.koinInject
 
 @OptIn(SupabaseExperimental::class)
@@ -54,7 +57,11 @@ fun LoginScreen(
                 }
             }
         )
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier.fillMaxSize().background(
+            Color(0xFF1B252B)
+        )
+    ) {
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
@@ -69,12 +76,8 @@ fun LoginScreen(
                 )
                 return
             }
-            Icon(
-                modifier = Modifier.size(100.dp),
-                imageVector = Icons.Rounded.Android,
-                contentDescription = "Logo"
-            )
-            Spacer(Modifier.height(20.dp))
+
+            FawnRescueLogo(Modifier.size(250.dp))
 
             // Error message display
             state.errorLogin?.let { errorMessage ->
@@ -95,17 +98,6 @@ fun LoginScreen(
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(text = "SignIn with Email")
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(
-                    enabled = false,
-                    checked = state.rememberLogin,
-                    onCheckedChange = { onEvent(LoginEvent.OnRememberLoginClicked(it)) }
-                )
-                Text(
-                    //modifier = Modifier.clickable { onEvent(LoginEvent.OnRememberLoginClicked(!state.rememberLogin)) },
-                    text = "Remember Login"
-                )
             }
             Spacer(modifier = Modifier.height(16.dp))
             Divider()

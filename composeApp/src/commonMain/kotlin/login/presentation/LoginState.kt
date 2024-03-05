@@ -7,6 +7,5 @@ data class LoginState(
     val password: String = "",
     val showSignUpDialog: Boolean = false,
     val showEmailDialog: Boolean = false,
-    val rememberLogin: Boolean = false,
     val emailFromSignup: Boolean = false,
 )

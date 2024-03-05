@@ -70,7 +70,6 @@ class LoginViewModel : ViewModel(), KoinComponent {
     fun onEvent(event: LoginEvent) {
         when (event) {
             //TODO add storage for credentials to make remember useful
-            is LoginEvent.OnRememberLoginClicked -> _state.update { it.copy(rememberLogin = event.remember) }
             is LoginEvent.OnShowEmailDialog -> _state.update {
                 _state.value.copy(
                     showEmailDialog = event.show,
