@@ -19,6 +19,6 @@ fun FlightDateListItem(
         supportingContent = {
             Text(text = "${flightDate.start_date} - ${flightDate.end_date}")
         },
-        shadowElevation = 5.dp
+        shadowElevation = 10.dp
     )
 }

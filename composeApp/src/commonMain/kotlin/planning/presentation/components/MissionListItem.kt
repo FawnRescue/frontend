@@ -1,26 +1,42 @@
 package planning.presentation.components
 
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Divider
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Flight
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import repository.domain.Mission
 
+
 @Composable
 fun MissionListItem(mission: Mission, modifier: Modifier = Modifier) {
-    Row(
+    ListItem(
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Spacer(Modifier.width(16.dp))
-        Text(text = mission.description, modifier = Modifier.weight(1f))
-        Spacer(Modifier)
-    }
-    Divider(modifier.fillMaxWidth())
+        leadingContent = {
+            // Optional: Icon based on mission's status or other criteria
+            Icon(
+                imageVector = Icons.Default.Flight, // Choose an icon relevant to your application
+                contentDescription = "Mission",
+                modifier = Modifier.size(24.dp)
+            )
+        },
+        overlineContent = {
+            // Displaying the creation date of the mission
+            Text(
+                text = "Created: ${mission.created_at}",
+                style = MaterialTheme.typography.labelSmall
+            )
+        },
+        headlineContent = {
+            // Main content: mission description
+            Text(mission.description, style = MaterialTheme.typography.bodyMedium)
+        }
+    )
 }
