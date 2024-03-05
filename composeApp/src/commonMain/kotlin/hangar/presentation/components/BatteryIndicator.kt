@@ -20,17 +20,17 @@ import androidx.compose.ui.Modifier
 @Composable
 fun BatteryIndicator(batteryPercentage: Float?, modifier: Modifier = Modifier) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
-        if (batteryPercentage != null) {
-            Text("${(batteryPercentage * 100).toInt()}%")
+        if (batteryPercentage != null && batteryPercentage >= 0) {
+            Text("${(batteryPercentage).toInt()}%")
             Icon(
                 imageVector = when {
-                    batteryPercentage < 0.125 -> Icons.Rounded.Battery0Bar
-                    batteryPercentage < 0.25 -> Icons.Rounded.Battery1Bar
-                    batteryPercentage < 0.375 -> Icons.Rounded.Battery2Bar
-                    batteryPercentage < 0.5 -> Icons.Rounded.Battery3Bar
-                    batteryPercentage < 0.625 -> Icons.Rounded.Battery4Bar
-                    batteryPercentage < 0.75 -> Icons.Rounded.Battery5Bar
-                    batteryPercentage < 0.875 -> Icons.Rounded.Battery6Bar
+                    batteryPercentage < 12.5 -> Icons.Rounded.Battery0Bar
+                    batteryPercentage < 25 -> Icons.Rounded.Battery1Bar
+                    batteryPercentage < 37.5 -> Icons.Rounded.Battery2Bar
+                    batteryPercentage < 50 -> Icons.Rounded.Battery3Bar
+                    batteryPercentage < 62.5 -> Icons.Rounded.Battery4Bar
+                    batteryPercentage < 75 -> Icons.Rounded.Battery5Bar
+                    batteryPercentage < 87.5 -> Icons.Rounded.Battery6Bar
                     else -> Icons.Rounded.BatteryFull
                 },
                 contentDescription = "Battery"
