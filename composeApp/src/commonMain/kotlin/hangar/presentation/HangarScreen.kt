@@ -122,7 +122,7 @@ fun HangarScreen(onEvent: (HangarEvent) -> Unit, state: HangarState) {
                         )
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        if (state.droneStatus != null) {
+                        if (state.aircraftStatus != null) {
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -133,24 +133,24 @@ fun HangarScreen(onEvent: (HangarEvent) -> Unit, state: HangarState) {
                                     horizontalAlignment = Alignment.Start
                                 ) {
                                     BatteryIndicator(
-                                        batteryPercentage = state.droneStatus.battery?.remainingPercent
+                                        batteryPercentage = state.aircraftStatus.battery?.remainingPercent
                                             ?: 0f,
                                         modifier = Modifier.fillMaxWidth()
                                     )
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Row {
                                         Icon(Icons.Default.Flight, contentDescription = "State")
-                                        Text(" State: ${state.droneStatus.state}")
+                                        Text(" State: ${state.aircraftStatus.state}")
                                     }
                                     Row {
                                         Icon(
                                             Icons.Default.LocationOn,
                                             contentDescription = "Location"
                                         )
-                                        Text(" Location: ${state.droneStatus.location?.latitude}, ${state.droneStatus.location?.longitude}")
+                                        Text(" Location: ${state.aircraftStatus.location?.latitude}, ${state.aircraftStatus.location?.longitude}")
                                     }
                                     // Displaying the altitude if available
-                                    state.droneStatus.altitude?.let {
+                                    state.aircraftStatus.altitude?.let {
                                         Row {
                                             Icon(
                                                 Icons.Default.Terrain,
@@ -160,7 +160,7 @@ fun HangarScreen(onEvent: (HangarEvent) -> Unit, state: HangarState) {
                                         }
                                     }
                                     // Displaying the number of satellites if available
-                                    state.droneStatus.numSatellites?.let {
+                                    state.aircraftStatus.numSatellites?.let {
                                         Row {
                                             Icon(
                                                 Icons.Default.Satellite,

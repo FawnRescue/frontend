@@ -3,6 +3,7 @@ package repository.domain
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 
+@Serializable
 data class NetworkCommand(
     val id: String,
     val created_at: String,
@@ -10,14 +11,14 @@ data class NetworkCommand(
     val command: Commands,
     val status: CommandStatus,
     val aircraft: String,
-    val flightDateId: String,
-    val context: Serializable,
+   // val flightDateId: String,
+    val context: String,
 )
 
 data class Command(
     val command: Commands,
-    val flightDateId: FlightDateId,
-    val context: Serializable,
+    //val flightDateId: FlightDateId,
+    val context: String,
     val status: CommandStatus,
     val id: CommandId,
     val created_at: LocalDateTime,
@@ -25,10 +26,11 @@ data class Command(
     val aircraft: AircraftId,
 )
 
+@Serializable
 data class InsertableCommand(
     val command: Commands,
-    val flightDateId: FlightDateId,
-    val context: Serializable,
+    //val flightDateId: FlightDateId,
+    val context: String,
     val aircraft: AircraftId,
 )
 
@@ -40,7 +42,7 @@ fun NetworkCommand.toLocal(): Command {
         command = command,
         aircraft = AircraftId(aircraft),
         context = context,
-        flightDateId = FlightDateId(flightDateId),
+        //flightDateId = FlightDateId(flightDateId),
         status = status
     )
 }
@@ -54,10 +56,16 @@ enum class CommandStatus {
 
 enum class Commands {
     ARM,
+    DISARM,
+    TAKEOFF,
+    LAND,
+    RETURN,
+    //Unimplemented:
     FLY2CHECKPOINT,
     CAPTURE_IMAGE,
     LOITER,
     RTH,
     KILL,
-    ELAND
+    ELAND,
+    CONTINUE
 }

@@ -1,8 +1,12 @@
 package pilot
 
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
+import hangar.domain.AircraftStatus
 import io.github.aakira.napier.Napier
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.realtime.RealtimeChannel
+import io.github.jan.supabase.realtime.broadcastFlow
+import io.github.jan.supabase.realtime.channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -30,8 +34,9 @@ class PilotViewModel : ViewModel(), KoinComponent {
     private val missionRepo by inject<MissionRepo>()
     private val aircraftRepo by inject<AircraftRepo>()
     private val commandRepo by inject<CommandRepo>()
-    private val _state = MutableStateFlow(PilotState(null, null, null, null))
+    private val _state = MutableStateFlow(PilotState(null, null, null, null, null))
     val state = _state.asStateFlow()
+    private var channel: RealtimeChannel? = null
 
     init {
         val date = flightDateRepo.selectedFlightDate.value
@@ -45,7 +50,7 @@ class PilotViewModel : ViewModel(), KoinComponent {
         }
     }
 
-    private fun loadAircraft(aircraftId: AircraftId){
+    private fun loadAircraft(aircraftId: AircraftId) {
         viewModelScope.launch {
             aircraftRepo.getAircraft(aircraftId)
                 .collect { response ->
@@ -58,11 +63,24 @@ class PilotViewModel : ViewModel(), KoinComponent {
                             }
                             val aircraft = response.value[0]
                             _state.update { it.copy(aircraft = aircraft, loading = false) }
+                            channel = supabase.channel(aircraft.token.toString())
+                            val broadcastFlow =
+                                channel!!.broadcastFlow<AircraftStatus>(event = "event")
+                            viewModelScope.launch {
+                                broadcastFlow.collect { status ->
+                                    _state.update { it.copy(aircraftStatus = status) }
+                                }
+                            }
+                            println("Subscribing")
+                            channel!!.subscribe(blockUntilSubscribed = true)
+                            println("Subscribed")
                         }
+
                         is StoreReadResponse.Error.Custom<*> -> TODO()
                         is StoreReadResponse.Error.Exception -> {
                             response.error.message?.let { Napier.e(it) }
                         }
+
                         is StoreReadResponse.Error.Message -> TODO()
                         StoreReadResponse.Initial -> TODO()
                         is StoreReadResponse.Loading -> _state.update { it.copy(loading = true) }
@@ -90,6 +108,7 @@ class PilotViewModel : ViewModel(), KoinComponent {
                             loadPlan(mission.plan)
                         }
                     }
+
                     is StoreReadResponse.Error.Custom<*> -> TODO()
                     is StoreReadResponse.Error.Exception -> TODO()
                     is StoreReadResponse.Error.Message -> TODO()

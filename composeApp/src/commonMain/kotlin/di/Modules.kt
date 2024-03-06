@@ -9,6 +9,7 @@ import repository.FlightDateRepo
 import repository.FlightPlanRepo
 import repository.MissionRepo
 import repository.UserRepo
+import repository.CommandRepo
 
 // Provide the dependencies through a Koin module
 val sharedModule = module {
@@ -24,4 +25,5 @@ val sharedModule = module {
     singleOf(::BluetoothClient)
     singleOf(::UserRepo)
     singleOf(::AircraftRepo)
+    singleOf(::CommandRepo)
 }

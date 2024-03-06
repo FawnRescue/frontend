@@ -13,4 +13,7 @@ This is a Kotlin Multiplatform project targeting Android, iOS, Desktop.
 
 Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
 
-        repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+# Setup
+if there are problems with the iosX64() library import set `repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)`
+- Set secrets.properties
+- Set debug.keystore in ~/.android/

@@ -9,10 +9,10 @@ data class Battery(val remainingPercent: Float?, val voltage: Float)
 data class Location(val longitude: Double, val latitude: Double)
 
 @Serializable
-data class DroneStatus(
-    val state: DroneState,
+data class AircraftStatus(
+    val state: AircraftState,
     val battery: Battery?,
     val location: Location?,
     val altitude: Float?,
-    val numSatellites: Int?
+    val numSatellites: Int?,
 )

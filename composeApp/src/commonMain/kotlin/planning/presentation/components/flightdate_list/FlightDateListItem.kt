@@ -6,10 +6,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import repository.domain.FlightDate
+import repository.domain.NetworkFlightDate
 @Composable
 fun FlightDateListItem(
-    flightDate: FlightDate,
+    flightDate: NetworkFlightDate,
     onClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {

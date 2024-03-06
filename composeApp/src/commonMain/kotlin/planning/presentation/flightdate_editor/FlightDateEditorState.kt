@@ -4,10 +4,10 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import repository.domain.Aircraft
 import repository.domain.AircraftId
-import repository.domain.FlightDate
+import repository.domain.NetworkFlightDate
 
 data class FlightDateEditorState(
-    val selectedFlightDate: FlightDate?,
+    val selectedFlightDate: NetworkFlightDate?,
     val date: LocalDate?,
     val isDatePickerOpen: Boolean,
     val isStartTimePickerOpen: Boolean,

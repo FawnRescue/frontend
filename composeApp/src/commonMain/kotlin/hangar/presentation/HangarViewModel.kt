@@ -1,7 +1,7 @@
 package hangar.presentation
 
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
-import hangar.domain.DroneStatus
+import hangar.domain.AircraftStatus
 import io.github.aakira.napier.Napier
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.gotrue.auth
@@ -67,7 +67,7 @@ class HangarViewModel : ViewModel(), KoinComponent {
                 viewModelScope.launch {
                     supabase.realtime.removeChannel(channel!!)
                 }
-                _state.update { it.copy(selectedAircraft = null, droneStatus = null) }
+                _state.update { it.copy(selectedAircraft = null, aircraftStatus = null) }
             }
 
             is HangarEvent.OnSelectAircraft -> viewModelScope.launch { selectAircraft(event.aircraft) }
@@ -90,10 +90,10 @@ class HangarViewModel : ViewModel(), KoinComponent {
         _state.update { it.copy(selectedAircraft = aircraft) }
         println(aircraft.token)
         channel = supabase.channel(aircraft.token.toString())
-        val broadcastFlow = channel!!.broadcastFlow<DroneStatus>(event = "event")
+        val broadcastFlow = channel!!.broadcastFlow<AircraftStatus>(event = "event")
         viewModelScope.launch {
             broadcastFlow.collect { status ->
-                _state.update { it.copy(droneStatus = status) }
+                _state.update { it.copy(aircraftStatus = status) }
             }
         }
         println("Subscribing")

@@ -12,7 +12,7 @@ import org.mobilenativefoundation.store.store5.Fetcher
 import org.mobilenativefoundation.store.store5.StoreBuilder
 import org.mobilenativefoundation.store.store5.StoreReadRequest
 import org.mobilenativefoundation.store.store5.StoreReadResponse
-import repository.domain.FlightDate
+import repository.domain.NetworkFlightDate
 import repository.domain.InsertableFlightDate
 import repository.domain.MissionId
 import repository.domain.Tables
@@ -20,29 +20,29 @@ import repository.domain.Tables
 class FlightDateRepo : KoinComponent {
     val supabase: SupabaseClient by inject<SupabaseClient>()
 
-    val selectedFlightDate: MutableStateFlow<FlightDate?> = MutableStateFlow(null)
+    val selectedFlightDate: MutableStateFlow<NetworkFlightDate?> = MutableStateFlow(null)
 
     private val store = StoreBuilder.from(fetcher = Fetcher.of { key: MissionId ->
         loadDates(key)
     }).build()
 
-    private suspend fun loadDates(missionId: MissionId): List<FlightDate> =
+    private suspend fun loadDates(missionId: MissionId): List<NetworkFlightDate> =
         try {
             supabase.from(Tables.FLIGHT_DATE.path).select {
                 filter {
                     eq("mission", missionId)
                 }
-            }.decodeList<FlightDate>()
+            }.decodeList<NetworkFlightDate>()
         } catch (e: HttpRequestException) {
             e.message?.let { Napier.e(it) }
             listOf()
         }
 
-    fun getDates(missionId: MissionId): Flow<StoreReadResponse<List<FlightDate>>> {
+    fun getDates(missionId: MissionId): Flow<StoreReadResponse<List<NetworkFlightDate>>> {
         return store.stream(StoreReadRequest.cached(missionId, true))
     }
 
-    suspend fun upsertFlightDate(date: InsertableFlightDate): FlightDate =
+    suspend fun upsertFlightDate(date: InsertableFlightDate): NetworkFlightDate =
         supabase.from(Tables.FLIGHT_DATE.path)
             .upsert(date) { select() }.decodeSingle() // error handling
 }

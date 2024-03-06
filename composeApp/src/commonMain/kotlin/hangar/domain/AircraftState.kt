@@ -1,6 +1,6 @@
 package hangar.domain
 
-enum class DroneState {
+enum class AircraftState {
     NOT_CONNECTED,
     IDLE,
     ARMED,
