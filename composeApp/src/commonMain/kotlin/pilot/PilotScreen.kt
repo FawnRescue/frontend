@@ -1,6 +1,5 @@
 package pilot
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,7 +40,6 @@ import hangar.presentation.components.BatteryIndicator
 import planning.presentation.flightplan_editor.GoogleMaps
 import presentation.maps.getCenter
 import repository.domain.Commands
-import repository.domain.FlightDateId
 import repository.domain.InsertableCommand
 
 @Composable
