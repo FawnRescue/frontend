@@ -10,11 +10,11 @@ import repository.domain.NetworkFlightDate
 @Composable
 fun FlightDateListItem(
     flightDate: NetworkFlightDate,
-    onClick: () -> Unit = {},
+    onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     ListItem(
-        modifier = modifier.clickable { onClick() },
+        modifier = if(onClick != null) modifier.clickable { onClick() } else modifier,
         headlineContent = { Text("Flight Date") },
         supportingContent = {
             Text(text = "${flightDate.start_date} - ${flightDate.end_date}")

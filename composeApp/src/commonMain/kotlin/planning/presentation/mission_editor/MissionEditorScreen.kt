@@ -37,6 +37,7 @@ fun MissionEditorScreen(onEvent: (MissionEditorEvent) -> Unit, state: MissionEdi
         )
         Text("Description:", style = MaterialTheme.typography.bodyLarge)
         OutlinedTextField(
+            enabled = state.editable,
             value = state.editedMission.description,
             onValueChange = { onEvent(UpdateMission(state.editedMission.copy(description = it))) },
             label = { Text("Enter mission description") },
@@ -46,36 +47,37 @@ fun MissionEditorScreen(onEvent: (MissionEditorEvent) -> Unit, state: MissionEdi
             )
         )
         Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = { onEvent(SaveMission) },
-            enabled = state.selectedMission == null || state.selectedMission.description != state.editedMission.description,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            if (state.selectedMission == null) Text("Save Description") else Text("Save New Description")
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-
-        state.selectedMission?.let {
-            Text(
-                "Flight Plan Options:",
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-            Button(onClick = { onEvent(ResetMission) }, modifier = Modifier.fillMaxWidth()) {
-                Text("Reset Description")
+        if (state.editable) {
+            Button(
+                onClick = { onEvent(SaveMission) },
+                enabled = state.selectedMission == null || state.selectedMission.description != state.editedMission.description,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                if (state.selectedMission == null) Text("Save Description") else Text("Save New Description")
             }
             Spacer(modifier = Modifier.height(8.dp))
-            Button(onClick = { onEvent(EditFlightPlan) }, modifier = Modifier.fillMaxWidth()) {
-                Text("Edit Flight Plan")
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(onClick = { onEvent(AddFlightDate) }, modifier = Modifier.fillMaxWidth()) {
-                Text("Add Flight Date")
-            }
+
+            state.selectedMission?.let {
+                Text(
+                    "Flight Plan Options:",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+                Button(onClick = { onEvent(ResetMission) }, modifier = Modifier.fillMaxWidth()) {
+                    Text("Reset Description")
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(onClick = { onEvent(EditFlightPlan) }, modifier = Modifier.fillMaxWidth()) {
+                    Text("Edit Flight Plan")
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(onClick = { onEvent(AddFlightDate) }, modifier = Modifier.fillMaxWidth()) {
+                    Text("Add Flight Date")
+                }
 
 
-            Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+            }
         }
 
         Button(onClick = { onEvent(Cancel) }, modifier = Modifier.fillMaxWidth()) {
@@ -88,6 +90,9 @@ fun MissionEditorScreen(onEvent: (MissionEditorEvent) -> Unit, state: MissionEdi
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(vertical = 8.dp)
         )
-        FlightDateList(state.dates, onSelectDate = { onEvent(DateSelected(it)) })
+        FlightDateList(
+            state.dates,
+            onSelectDate = if (state.editable) ({ onEvent(DateSelected(it)) }) else null
+        )
     }
 }
