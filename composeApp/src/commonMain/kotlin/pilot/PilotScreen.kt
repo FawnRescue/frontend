@@ -36,11 +36,17 @@ import hangar.domain.AircraftState.IDLE
 import hangar.domain.AircraftState.IN_FLIGHT
 import hangar.domain.AircraftState.NOT_CONNECTED
 import hangar.domain.AircraftStatus
+import hangar.domain.Location
 import hangar.presentation.components.BatteryIndicator
 import planning.presentation.flightplan_editor.GoogleMaps
+import presentation.maps.LatLong
 import presentation.maps.getCenter
 import repository.domain.Commands
 import repository.domain.InsertableCommand
+
+fun Location.toLatLong(): LatLong {
+    return LatLong(this.latitude, this.longitude)
+}
 
 @Composable
 fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
@@ -89,7 +95,9 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
                 showBoundary = false,
                 showCheckpointMarkers = false,
                 showPath = true,
+                dronePosition = state.aircraftStatus.location?.toLatLong()
             )
+            LatLong
         }
     }
 }

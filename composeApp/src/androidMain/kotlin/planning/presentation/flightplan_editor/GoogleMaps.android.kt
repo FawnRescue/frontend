@@ -1,28 +1,14 @@
 package planning.presentation.flightplan_editor
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.PinDrop
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material.icons.filled.Flight
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -30,15 +16,14 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerInfoWindow
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polygon
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
+import hangar.domain.Location
+import org.fawnrescue.project.R
 import presentation.maps.LatLong
 import presentation.maps.getCenter
-import kotlin.math.atan2
 
 
 fun LatLong.toLatLng(): LatLng {
@@ -60,6 +45,10 @@ actual fun GoogleMaps(
     showBoundary: Boolean,
     showCheckpointMarkers: Boolean,
     showPath: Boolean,
+    dronePosition: LatLong?,
+    pilotPosition: LatLong?,
+    helperPositions: List<LatLong>?,
+    detections: List<LatLong>?
 ) {
     println(checkpoints)
     val cameraPositionState = rememberCameraPositionState {
@@ -93,11 +82,25 @@ actual fun GoogleMaps(
             }
         }
         if (markers.isNotEmpty() && showBoundary) {
-            Polygon(points = markers.map(LatLong::toLatLng), fillColor =MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+            Polygon(
+                points = markers.map(LatLong::toLatLng),
+                fillColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+            )
         }
         if (checkpoints.isNotEmpty() && showPath) {
-            Polyline(points = checkpoints.map(LatLong::toLatLng), color= Color.White, zIndex = 3f)
+            Polyline(points = checkpoints.map(LatLong::toLatLng), color = Color.White, zIndex = 3f)
         }
         Marker(state = MarkerState(position = checkpoints.getCenter().toLatLng()), rotation = 180f)
+
+        if (dronePosition != null) {
+            Marker(
+                state = MarkerState(position = dronePosition.toLatLng()),
+                title = "Drone",
+                icon = BitmapDescriptorFactory.fromResource(
+                    R.drawable.drone
+                ),
+                anchor = Offset(0.5f, 0.5f)
+            )
+        }
     }
 }

@@ -14,4 +14,8 @@ expect fun GoogleMaps(
     showBoundary: Boolean,
     showCheckpointMarkers: Boolean,
     showPath: Boolean,
+    dronePosition: LatLong? = null,
+    pilotPosition: LatLong? = null,
+    helperPositions: List<LatLong>? = null,
+    detections: List<LatLong>? = null
 )
