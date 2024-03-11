@@ -85,8 +85,7 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
     }
     val command = InsertableCommand(
         Commands.ARM,
-        // FlightDateId(state.date.id),
-        context = "",
+        context = state.date.id,
         aircraft = state.aircraft.token
     )
 
