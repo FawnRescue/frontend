@@ -83,6 +83,7 @@ kotlin {
             implementation(libs.napier)
             implementation(libs.store5)
             api(libs.precompose)
+
         }
     }
 
@@ -129,6 +130,9 @@ android {
     dependencies {
         debugImplementation(libs.compose.ui.tooling)
         implementation(libs.koin.android)
+        implementation(libs.play.services.location)
+        implementation(libs.androidx.core)
+        implementation(libs.androidx.material3)
     }
 }
 
@@ -145,10 +149,11 @@ compose.desktop {
 }
 
 dependencies {
-    implementation(libs.androidx.core)
-    implementation(libs.androidx.material3)
     commonMainApi(libs.mvvm.core)
     commonMainApi(libs.mvvm.compose)
     commonMainApi(libs.mvvm.flow)
     commonMainApi(libs.mvvm.flow.compose)
+    commonMainApi(libs.permissions)
+    commonMainApi(libs.permissions.compose)
+    commonTestImplementation(libs.permissions.test)
 }
