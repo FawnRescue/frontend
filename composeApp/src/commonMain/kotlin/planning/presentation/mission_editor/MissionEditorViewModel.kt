@@ -31,6 +31,17 @@ class MissionEditorViewModel : ViewModel(), KoinComponent {
     private val flightDateRepo by inject<FlightDateRepo>()
     private val supabase by inject<SupabaseClient>()
 
+    private val _state = run {
+        val selectedMission = missionRepo.selectedMission.value
+        val editedMission = selectedMission?.let { InsertableMission(it.description, it.id) }
+            ?: InsertableMission("")
+        MutableStateFlow(
+            MissionEditorState(
+                selectedMission, editedMission, emptyList()
+            )
+        )
+    }
+
     init {
         supabase.auth.currentUserOrNull()?.id?.let { authId ->
             _state.update {
@@ -63,17 +74,6 @@ class MissionEditorViewModel : ViewModel(), KoinComponent {
                 }
             }
         }
-    }
-
-    private val _state = run {
-        val selectedMission = missionRepo.selectedMission.value
-        val editedMission = selectedMission?.let { InsertableMission(it.description, it.id) }
-            ?: InsertableMission("")
-        MutableStateFlow(
-            MissionEditorState(
-                selectedMission, editedMission, emptyList()
-            )
-        )
     }
     val state = _state.asStateFlow()
 
