@@ -34,10 +34,8 @@ class HomeViewModel : ViewModel(), KoinComponent {
     }
 
     private fun loadMissions() {
-        val authId = supabase.auth.currentUserOrNull()?.id ?: return
-        val userId = UserId(authId)
         viewModelScope.launch {
-            missionRepo.getMissions(userId).collect { response ->
+            missionRepo.getMissions().collect { response ->
                 when (response) {
                     is StoreReadResponse.Data -> response.value.map { mission ->
                         _state.update {

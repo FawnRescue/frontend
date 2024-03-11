@@ -25,7 +25,7 @@ import repository.domain.toLocal
 
 sealed class MissionKey {
     sealed class Read : MissionKey() {
-        data class ByOwner(val owner: UserId) : Read()
+        data object ByOwner : Read()
         data class ByID(val id: MissionId) : Read()
     }
 }
@@ -44,7 +44,7 @@ class MissionRepo : KoinComponent {
         fetcher = Fetcher.of { key: MissionKey ->
             require(key is MissionKey.Read)
             when (key) {
-                is MissionKey.Read.ByOwner -> loadMissions(key.owner).map {
+                is MissionKey.Read.ByOwner -> loadMissions().map {
                     converter.fromNetworkToLocal(it)
                 }
 
@@ -56,23 +56,19 @@ class MissionRepo : KoinComponent {
     ).build()
 
 
-    private suspend fun loadMissions(userId: UserId): List<NetworkMission> {
+    private suspend fun loadMissions(): List<NetworkMission> {
         return try {
-            supabase.from(Tables.MISSION.path).select {
-                filter { eq("owner", userId) }
-            }.decodeList<NetworkMission>()
+            supabase.from(Tables.MISSION.path).select().decodeList<NetworkMission>()
         } catch (e: HttpRequestException) {
             Napier.e("Loading missions for userid failed", e)
             emptyList()
         }
     }
 
-    fun getMissions(userId: UserId): Flow<StoreReadResponse<List<Mission>>> =
+    fun getMissions(): Flow<StoreReadResponse<List<Mission>>> =
         userMissionStore.stream(
             StoreReadRequest.cached(
-                MissionKey.Read.ByOwner(
-                    userId
-                ), true
+                MissionKey.Read.ByOwner, true
             )
         )
 
