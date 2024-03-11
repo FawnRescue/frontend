@@ -23,12 +23,14 @@ ktorClientCore = "2.3.7"
 mapsCompose = "4.3.0"
 mvvm = "0.16.1"
 napier = "2.7.1"
+permissions = "0.17.0"
 secretsGradlePlugin = "2.0.1"
 store5 = "5.1.0-alpha02"
 supabase = "2.1.1"
 koin-core = "3.5.0"
 material3 = "1.2.0-rc01"
 precompose = "1.5.9"
+playServicesLocation = "21.2.0"
 
 [libraries]
 androidx-core = { module = "androidx.core:core", version.ref = "androidx-core-ktx" }
@@ -61,6 +63,9 @@ mvvm-compose = { module = "dev.icerock.moko:mvvm-compose", version.ref = "mvvm" 
 mvvm-core = { module = "dev.icerock.moko:mvvm-core", version.ref = "mvvm" }
 mvvm-flow-compose = { module = "dev.icerock.moko:mvvm-flow-compose", version.ref = "mvvm" }
 napier = { module = "io.github.aakira:napier", version.ref = "napier" }
+permissions = { module = "dev.icerock.moko:permissions", version.ref = "permissions" }
+permissions-compose = { module = "dev.icerock.moko:permissions-compose", version.ref = "permissions" }
+permissions-test = { module = "dev.icerock.moko:permissions-test", version.ref = "permissions" }
 postgrest-kt = { module = "io.github.jan-tennert.supabase:postgrest-kt", version.ref = "supabase" }
 precompose = { module = "moe.tlaster:precompose", version.ref = "precompose" }
 realtime-kt = { module = "io.github.jan-tennert.supabase:realtime-kt", version.ref = "supabase" }
@@ -70,6 +75,7 @@ koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin-core" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin-core" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 store5 = { module = "org.mobilenativefoundation.store:store5", version.ref = "store5" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 [plugins]
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 androidApplication = { id = "com.android.application", version.ref = "agp" }
