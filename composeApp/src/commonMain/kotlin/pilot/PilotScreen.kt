@@ -15,6 +15,8 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Flight
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Satellite
+import androidx.compose.material.icons.filled.Terrain
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Button
@@ -79,7 +81,7 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
             onDisarm = { onEvent(PilotEvent.SendCommand(command.copy(command = Commands.DISARM))) },
             onELAND = { onEvent(PilotEvent.SendCommand(command.copy(command = Commands.ELAND))) },
             onKill = { onEvent(PilotEvent.SendCommand(command.copy(command = Commands.KILL))) },
-            onLoiter = { onEvent(PilotEvent.SendCommand(command.copy(command = Commands.LOITER))) },
+            onTakeoff = { onEvent(PilotEvent.SendCommand(command.copy(command = Commands.TAKEOFF))) },
             onRTH = { onEvent(PilotEvent.SendCommand(command.copy(command = Commands.RTH))) },
         )
         Card{
@@ -170,10 +172,12 @@ fun OSD(status: AircraftStatus?) {
         modifier = Modifier.fillMaxWidth().padding(8.dp).zIndex(2f)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.Start
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.Start
         ) {
             BatteryIndicator(
-                batteryPercentage = status.battery?.remainingPercent,
+                batteryPercentage = status.battery?.remainingPercent
+                    ?: 0f,
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -183,9 +187,30 @@ fun OSD(status: AircraftStatus?) {
             }
             Row {
                 Icon(
-                    Icons.Default.LocationOn, contentDescription = "Location"
+                    Icons.Default.LocationOn,
+                    contentDescription = "Location"
                 )
-                Text(" Location: ${status.location}")
+                Text(" Location: ${status.location?.latitude}, ${status.location?.longitude}")
+            }
+            // Displaying the altitude if available
+            status.altitude?.let {
+                Row {
+                    Icon(
+                        Icons.Default.Terrain,
+                        contentDescription = "Altitude"
+                    )
+                    Text(" Altitude: ${it}m")
+                }
+            }
+            // Displaying the number of satellites if available
+            status.numSatellites?.let {
+                Row {
+                    Icon(
+                        Icons.Default.Satellite,
+                        contentDescription = "Number of Satellites"
+                    )
+                    Text(" Satellites: $it")
+                }
             }
         }
     }
@@ -195,7 +220,7 @@ fun OSD(status: AircraftStatus?) {
 fun Controls(
     status: AircraftStatus?,
     onArm: () -> Unit,
-    onLoiter: () -> Unit,
+    onTakeoff: () -> Unit,
     onRTH: () -> Unit,
     onKill: () -> Unit,
     onELAND: () -> Unit,
@@ -218,7 +243,7 @@ fun Controls(
                 items(listOf(
                     "Arm" to onArm,
                     "Disarm" to onDisarm,
-                    "Loiter" to onLoiter,
+                    "Takeoff" to onTakeoff,
                     "Return to Home" to onRTH,
                     "Emergency Land" to onELAND,
                     "Kill" to onKill,
@@ -228,9 +253,10 @@ fun Controls(
                         onClick = { onClick() },
                         enabled = when (text) {
                             "Arm" -> status.state == IDLE
-                            "Disarm" -> status.state == ARMED || status.state == IN_FLIGHT
-                            "Loiter", "Return to Home", "Emergency Land", "Kill" -> status.state == IN_FLIGHT
-                            "Continue Mission" -> status.state == ARMED
+                            "Disarm" -> status.state == ARMED
+                            "Takeoff" -> status.state == ARMED
+                            "Return to Home", "Emergency Land", "Kill" -> status.state == IN_FLIGHT
+                            "Continue Mission" -> status.state == ARMED|| status.state == IN_FLIGHT
                             else -> true
                         }
                     ) {

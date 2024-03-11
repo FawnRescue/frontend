@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import hangar.presentation.components.BatteryIndicator
+import pilot.OSD
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -128,48 +129,7 @@ fun HangarScreen(onEvent: (HangarEvent) -> Unit, state: HangarState) {
                                     .fillMaxWidth()
                                     .padding(8.dp)
                             ) {
-                                Column(
-                                    modifier = Modifier.padding(16.dp),
-                                    horizontalAlignment = Alignment.Start
-                                ) {
-                                    BatteryIndicator(
-                                        batteryPercentage = state.aircraftStatus.battery?.remainingPercent
-                                            ?: 0f,
-                                        modifier = Modifier.fillMaxWidth()
-                                    )
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    Row {
-                                        Icon(Icons.Default.Flight, contentDescription = "State")
-                                        Text(" State: ${state.aircraftStatus.state}")
-                                    }
-                                    Row {
-                                        Icon(
-                                            Icons.Default.LocationOn,
-                                            contentDescription = "Location"
-                                        )
-                                        Text(" Location: ${state.aircraftStatus.location?.latitude}, ${state.aircraftStatus.location?.longitude}")
-                                    }
-                                    // Displaying the altitude if available
-                                    state.aircraftStatus.altitude?.let {
-                                        Row {
-                                            Icon(
-                                                Icons.Default.Terrain,
-                                                contentDescription = "Altitude"
-                                            )
-                                            Text(" Altitude: ${it}m")
-                                        }
-                                    }
-                                    // Displaying the number of satellites if available
-                                    state.aircraftStatus.numSatellites?.let {
-                                        Row {
-                                            Icon(
-                                                Icons.Default.Satellite,
-                                                contentDescription = "Number of Satellites"
-                                            )
-                                            Text(" Satellites: $it")
-                                        }
-                                    }
-                                }
+                                OSD(state.aircraftStatus)
                             }
                         } else {
                             Text("No Data available")
