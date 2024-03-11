@@ -154,7 +154,23 @@ class PilotViewModel : ViewModel(), KoinComponent {
 
     private fun loadPlan(planId: FlightPlanId) {
         viewModelScope.launch {
-            _state.update { it.copy(plan = flightPlanRepo.getPlan(planId)) }
+            flightPlanRepo.getPlan(planId).collect { response ->
+                when (response) {
+                    is StoreReadResponse.Data -> _state.update {
+                        it.copy(
+                            plan = response.value.firstOrNull(),
+                            planLoading = false
+                        )
+                    }
+
+                    is StoreReadResponse.Error.Custom<*> -> TODO()
+                    is StoreReadResponse.Error.Exception -> TODO()
+                    is StoreReadResponse.Error.Message -> TODO()
+                    StoreReadResponse.Initial -> TODO()
+                    is StoreReadResponse.Loading -> _state.update { it.copy(planLoading = true) }
+                    is StoreReadResponse.NoNewData -> TODO()
+                }
+            }
         }
     }
 

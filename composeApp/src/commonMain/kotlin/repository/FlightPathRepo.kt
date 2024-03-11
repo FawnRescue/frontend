@@ -1,16 +1,26 @@
 package repository
 
+import io.github.aakira.napier.Napier
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.exceptions.HttpRequestException
 import io.github.jan.supabase.postgrest.from
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.mobilenativefoundation.store.store5.Fetcher
+import org.mobilenativefoundation.store.store5.StoreBuilder
+import org.mobilenativefoundation.store.store5.StoreReadRequest
+import org.mobilenativefoundation.store.store5.StoreReadResponse
 import presentation.maps.LatLong
 import presentation.maps.getCenter
 import repository.domain.FlightPlan
 import repository.domain.FlightPlanId
 import repository.domain.InsertableFlightPlan
 import repository.domain.InsertableMission
+import repository.domain.Mission
+import repository.domain.MissionId
+import repository.domain.NetworkFlightDate
 import repository.domain.Tables
 import kotlin.math.PI
 import kotlin.math.atan2
@@ -23,14 +33,28 @@ import kotlin.math.tan
 class FlightPlanRepo : KoinComponent {
     val supabase: SupabaseClient by inject<SupabaseClient>()
 
+    private val store = StoreBuilder.from(fetcher = Fetcher.of { key: FlightPlanId ->
+        loadFlightPlan(key)
+    }).build()
+
+    private suspend fun loadFlightPlan(flightPlanId: FlightPlanId): List<FlightPlan> =
+        try {
+            listOf(supabase.from(Tables.FLIGHT_PLAN.path).select {
+                filter {
+                    eq("id", flightPlanId)
+                }
+            }.decodeSingle<FlightPlan>())
+        } catch (e: HttpRequestException) {
+            e.message?.let { Napier.e(it) }
+            emptyList()
+        }
+
+    fun getPlan(flightPlanId: FlightPlanId): Flow<StoreReadResponse<List<FlightPlan>>> {
+        return store.stream(StoreReadRequest.cached(flightPlanId, true))
+    }
+
 
     val selectedFlightPlan: MutableStateFlow<FlightPlan?> = MutableStateFlow(null)
-
-    suspend fun getPlan(id: FlightPlanId): FlightPlan = supabase.from(Tables.FLIGHT_PLAN.path).select {
-        filter {
-            eq("id", id)
-        }
-    }.decodeSingle()
 
     suspend fun upsertFlightPlan(
         selectedMission: InsertableMission,
@@ -44,11 +68,12 @@ class FlightPlanRepo : KoinComponent {
         }
         return supabase.from(Tables.FLIGHT_PLAN.path).upsert(plan) { select() }
             .decodeSingle<FlightPlan>().also {
-                supabase.from(Tables.MISSION.path).update(selectedMission.copy(plan = FlightPlanId(it.id))) {
-                    filter {
-                        eq("id", selectedMission.id)
+                supabase.from(Tables.MISSION.path)
+                    .update(selectedMission.copy(plan = FlightPlanId(it.id))) {
+                        filter {
+                            eq("id", selectedMission.id)
+                        }
                     }
-                }
             } // error handling
     }
 
@@ -240,7 +265,7 @@ class FlightPlanRepo : KoinComponent {
                 index: Int,
                 checkpoints: List<Pair<LatLong, Boolean>>,
             ): Boolean {
-                for (i in (index+1)..<checkpoints.size) {
+                for (i in (index + 1)..<checkpoints.size) {
                     if (checkpoints[i].first.longitude != checkpoints[index].first.longitude) {
                         return false
                     }
@@ -255,13 +280,13 @@ class FlightPlanRepo : KoinComponent {
                 index: Int,
                 checkpoints: List<Pair<LatLong, Boolean>>,
             ): Boolean {
-                if(index == 0) {
+                if (index == 0) {
                     return false
                 }
-                if (checkpoints[index-1].first.longitude != checkpoints[index].first.longitude) {
+                if (checkpoints[index - 1].first.longitude != checkpoints[index].first.longitude) {
                     return false
                 }
-                return checkpoints[index-1].second
+                return checkpoints[index - 1].second
             }
 
             return newCheckpoints.filter {
