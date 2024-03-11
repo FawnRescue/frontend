@@ -4,27 +4,41 @@ import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import hangar.domain.AircraftStatus
 import io.github.aakira.napier.Napier
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.realtime.RealtimeChannel
+import io.github.jan.supabase.realtime.broadcast
 import io.github.jan.supabase.realtime.broadcastFlow
 import io.github.jan.supabase.realtime.channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import moe.tlaster.precompose.navigation.Navigator
 import navigation.presentation.NAV
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.mobilenativefoundation.store.store5.StoreReadResponse
 import pilot.PilotEvent.NoPlan
+import presentation.maps.LatLong
 import repository.AircraftRepo
 import repository.CommandRepo
 import repository.FlightDateRepo
 import repository.FlightPlanRepo
+import repository.LocationRepo
 import repository.MissionRepo
 import repository.domain.AircraftId
+import repository.domain.FlightDateId
 import repository.domain.FlightPlanId
 import repository.domain.MissionId
+import repository.domain.UserId
+
+@Serializable
+data class LocationUpdate(
+    val userId: UserId,
+    val flightDateId: FlightDateId,
+    val location: LatLong,
+)
 
 class PilotViewModel : ViewModel(), KoinComponent {
     private val navigator: Navigator by inject<Navigator>()
@@ -34,6 +48,7 @@ class PilotViewModel : ViewModel(), KoinComponent {
     private val missionRepo by inject<MissionRepo>()
     private val aircraftRepo by inject<AircraftRepo>()
     private val commandRepo by inject<CommandRepo>()
+    private val locationRepo by inject<LocationRepo>()
     private val _state = MutableStateFlow(PilotState(null, null, null, null, null))
     val state = _state.asStateFlow()
     private var channel: RealtimeChannel? = null
@@ -47,6 +62,23 @@ class PilotViewModel : ViewModel(), KoinComponent {
             // TODO Parse date to domain ids instead of casting here
             loadMission(MissionId(date.mission))
             loadAircraft(AircraftId(date.aircraft))
+        }
+    }
+
+    private fun publishOwnLocation(dateId: FlightDateId){
+        viewModelScope.launch {
+            locationRepo.getLocation().collect{ownLocation ->
+                _state.update {
+                    it.copy(ownLocation = ownLocation)
+                }
+                if(channel == null) {
+                    return@collect
+                }
+                val authId = supabase.auth.currentUserOrNull()?.id ?: return@collect
+                val userId = UserId(authId)
+                val update = LocationUpdate(userId, dateId, ownLocation )
+                channel!!.broadcast("location", update)
+            }
         }
     }
 
@@ -65,7 +97,7 @@ class PilotViewModel : ViewModel(), KoinComponent {
                             _state.update { it.copy(aircraft = aircraft, loading = false) }
                             channel = supabase.channel(aircraft.token.toString())
                             val broadcastFlow =
-                                channel!!.broadcastFlow<AircraftStatus>(event = "event")
+                                channel!!.broadcastFlow<AircraftStatus>(event = "aircraft_status")
                             viewModelScope.launch {
                                 broadcastFlow.collect { status ->
                                     _state.update { it.copy(aircraftStatus = status) }

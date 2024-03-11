@@ -10,7 +10,7 @@ import org.koin.core.component.inject
 import presentation.maps.LatLong
 
 class LocationRepo: KoinComponent {
-    val service by inject<LocationService>()
+    private val service by inject<LocationService>()
     private val permissionsController by inject<PermissionsController>()
     suspend fun getLocation(): Flow<LatLong> {
         try {

@@ -16,4 +16,5 @@ data class PilotState(
     val aircraftStatus: AircraftStatus?,
     val loading: Boolean = true, // TODO: granular loading variables for mission, date, path and aircraft
     val positions: List<LatLong> = emptyList(),
+    val ownLocation: LatLong? = null
 )

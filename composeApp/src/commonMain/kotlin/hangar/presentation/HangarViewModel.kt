@@ -90,7 +90,7 @@ class HangarViewModel : ViewModel(), KoinComponent {
         _state.update { it.copy(selectedAircraft = aircraft) }
         println(aircraft.token)
         channel = supabase.channel(aircraft.token.toString())
-        val broadcastFlow = channel!!.broadcastFlow<AircraftStatus>(event = "event")
+        val broadcastFlow = channel!!.broadcastFlow<AircraftStatus>(event = "aircraft_status")
         viewModelScope.launch {
             broadcastFlow.collect { status ->
                 _state.update { it.copy(aircraftStatus = status) }
