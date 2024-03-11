@@ -26,6 +26,7 @@ import repository.CommandRepo
 import repository.FlightDateRepo
 import repository.FlightPlanRepo
 import repository.LocationRepo
+import repository.LocationService
 import repository.MissionRepo
 import repository.domain.AircraftId
 import repository.domain.FlightDateId
@@ -48,7 +49,7 @@ class PilotViewModel : ViewModel(), KoinComponent {
     private val missionRepo by inject<MissionRepo>()
     private val aircraftRepo by inject<AircraftRepo>()
     private val commandRepo by inject<CommandRepo>()
-    private val locationRepo by inject<LocationRepo>()
+    private val locationService by inject<LocationService>()
     private val _state = MutableStateFlow(PilotState(null, null, null, null, null))
     val state = _state.asStateFlow()
     private var channel: RealtimeChannel? = null
@@ -62,21 +63,22 @@ class PilotViewModel : ViewModel(), KoinComponent {
             // TODO Parse date to domain ids instead of casting here
             loadMission(MissionId(date.mission))
             loadAircraft(AircraftId(date.aircraft))
+            publishOwnLocation(FlightDateId(date.id)) // TODO
         }
     }
 
-    private fun publishOwnLocation(dateId: FlightDateId){
+    private fun publishOwnLocation(dateId: FlightDateId) {
         viewModelScope.launch {
-            locationRepo.getLocation().collect{ownLocation ->
+            locationService.location().collect { ownLocation ->
                 _state.update {
                     it.copy(ownLocation = ownLocation)
                 }
-                if(channel == null) {
+                if (channel == null) {
                     return@collect
                 }
                 val authId = supabase.auth.currentUserOrNull()?.id ?: return@collect
                 val userId = UserId(authId)
-                val update = LocationUpdate(userId, dateId, ownLocation )
+                val update = LocationUpdate(userId, dateId, ownLocation)
                 channel!!.broadcast("location", update)
             }
         }

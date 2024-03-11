@@ -97,7 +97,8 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
                 showBoundary = false,
                 showCheckpointMarkers = false,
                 showPath = true,
-                dronePosition = state.aircraftStatus.location?.toLatLong()
+                dronePosition = state.aircraftStatus.location?.toLatLong(),
+                pilotPosition = state.ownLocation
             )
             LatLong
         }

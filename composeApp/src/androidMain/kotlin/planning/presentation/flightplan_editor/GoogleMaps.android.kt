@@ -102,5 +102,12 @@ actual fun GoogleMaps(
                 anchor = Offset(0.5f, 0.5f)
             )
         }
+
+        if (pilotPosition != null) {
+            Marker(
+                state = MarkerState(position = pilotPosition.toLatLng()),
+                title = "Pilot",
+            )
+        }
     }
 }
