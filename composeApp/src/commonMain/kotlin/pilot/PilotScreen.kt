@@ -1,5 +1,9 @@
 package pilot
 
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Flight
 import androidx.compose.material.icons.filled.LocationOn
@@ -20,6 +25,7 @@ import androidx.compose.material.icons.filled.Terrain
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -27,9 +33,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -40,11 +56,19 @@ import hangar.domain.AircraftState.NOT_CONNECTED
 import hangar.domain.AircraftStatus
 import hangar.domain.Location
 import hangar.presentation.components.BatteryIndicator
+import io.ktor.util.date.getTimeMillis
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import planning.presentation.flightplan_editor.GoogleMaps
 import presentation.maps.LatLong
 import presentation.maps.getCenter
 import repository.domain.Commands
 import repository.domain.InsertableCommand
+import kotlin.time.Duration
 
 fun Location.toLatLong(): LatLong {
     return LatLong(this.latitude, this.longitude)
@@ -84,7 +108,7 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
             onTakeoff = { onEvent(PilotEvent.SendCommand(command.copy(command = Commands.TAKEOFF))) },
             onRTH = { onEvent(PilotEvent.SendCommand(command.copy(command = Commands.RTH))) },
         )
-        Card{
+        Card {
             GoogleMaps(
                 state.plan.boundary.getCenter(),
                 onMapClick = {
@@ -228,38 +252,46 @@ fun Controls(
     onContinue: () -> Unit,
     onDisarm: () -> Unit,
 ) {
+    val hapticFeedback = LocalHapticFeedback.current
     Column(modifier = Modifier.padding(8.dp)) {
         if (status == null || status.state == NOT_CONNECTED) {
             Text("Aircraft not connected")
             return
         }
-
         Card(modifier = Modifier.fillMaxWidth().zIndex(2f)) {
+            Text(modifier = Modifier.padding(start = 16.dp, top = 16.dp), text = "Hold to activate")
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(minSize = 128.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 16.dp, end = 16.dp)
             ) {
-                items(listOf(
-                    "Arm" to onArm,
-                    "Disarm" to onDisarm,
-                    "Takeoff" to onTakeoff,
-                    "Return to Home" to onRTH,
-                    "Emergency Land" to onELAND,
-                    "Kill" to onKill,
-                    "Continue Mission" to onContinue,
-                )) { (text, onClick) ->
+                items(
+                    listOf(
+                        "Arm" to onArm,
+                        "Disarm" to onDisarm,
+                        "Takeoff" to onTakeoff,
+                        "Return to Home" to onRTH,
+                        "Emergency Land" to onELAND,
+                        "Kill" to onKill,
+                        "Continue Mission" to onContinue,
+                    )
+                ) { (text, onClick) ->
+                    val enabled = when (text) {
+                        "Arm" -> status.state == IDLE
+                        "Disarm" -> status.state == ARMED
+                        "Takeoff" -> status.state == ARMED
+                        "Return to Home", "Emergency Land", "Kill" -> status.state == IN_FLIGHT
+                        "Continue Mission" -> status.state == ARMED || status.state == IN_FLIGHT
+                        else -> true
+                    }
                     Button(
-                        onClick = { onClick() },
-                        enabled = when (text) {
-                            "Arm" -> status.state == IDLE
-                            "Disarm" -> status.state == ARMED
-                            "Takeoff" -> status.state == ARMED
-                            "Return to Home", "Emergency Land", "Kill" -> status.state == IN_FLIGHT
-                            "Continue Mission" -> status.state == ARMED|| status.state == IN_FLIGHT
-                            else -> true
-                        }
+                        modifier = if (!enabled) Modifier else Modifier.onTouchHeld(onTouchSuccess = {
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                            onClick()
+                        }),
+                        onClick = { },
+                        enabled = enabled
                     ) {
                         Text(text)
                     }
@@ -269,3 +301,34 @@ fun Controls(
     }
 }
 
+fun Modifier.onTouchHeld(
+    pollDelay: Long = 50,
+    successTime: Long = 1000,
+    onTouchHeld: (timeElapsed: Long) -> Unit = {},
+    onTouchSuccess: () -> Unit = {},
+    onTouchStop: (timeElapsed: Long) -> Unit = {}
+) = composed {
+    val scope = rememberCoroutineScope()
+    var success = false
+    pointerInput(onTouchHeld) {
+        awaitEachGesture {
+            val initialDown = awaitFirstDown(requireUnconsumed = false)
+            val initialDownTime = getTimeMillis()
+            val initialTouchHeldJob = scope.launch {
+                while (initialDown.pressed) {
+                    val timeElapsed = getTimeMillis() - initialDownTime
+                    onTouchHeld(timeElapsed)
+                    if (timeElapsed > successTime && !success) {
+                        success = true
+                        onTouchSuccess()
+                    }
+                    delay(pollDelay)
+                }
+            }
+            waitForUpOrCancellation()
+            onTouchStop(getTimeMillis() - initialDownTime)
+            success = false
+            initialTouchHeldJob.cancel()
+        }
+    }
+}
