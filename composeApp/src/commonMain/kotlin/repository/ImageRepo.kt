@@ -57,4 +57,8 @@ class ImageRepo : KoinComponent {
     fun getImage(imageId: ImageId): Flow<StoreReadResponse<List<Image>>> {
         return store.stream(StoreReadRequest.cached(ImageKey.Read.ById(imageId), true))
     }
+
+    fun getImageCached(imageId: ImageId): Flow<StoreReadResponse<List<Image>>> {
+        return store.stream(StoreReadRequest.cached(ImageKey.Read.ById(imageId), false))
+    }
 }

@@ -114,7 +114,8 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
                 showCheckpointMarkers = false,
                 showPath = true,
                 dronePosition = state.aircraftStatus.location?.toLatLong(),
-                personPositions = state.helperLocations.values.toList()
+                personPositions = state.helperLocations.values.toList(),
+                detections = state.detections.map { it.position }
             )
         }
     }

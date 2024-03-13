@@ -77,53 +77,56 @@ class PilotViewModel : ViewModel(), KoinComponent {
         } else {
             _state.update { it.copy(date = flightDateRepo.selectedFlightDate.value) }
             val channel = supabase.channel(date.aircraft)
-
+            viewModelScope.launch {
+                channel.subscribe(blockUntilSubscribed = true)
+            }
             // TODO Parse date to domain ids instead of casting here
             val flightDateId = FlightDateId(date.id)
 
             val authId = supabase.auth.currentUserOrNull()?.id
-            if(authId != null){
+            if (authId != null) {
                 val userId = UserId(authId)
                 loadAircraft(AircraftId(date.aircraft), userId)
-                publishOwnLocation(channel, flightDateId,userId)
+                publishOwnLocation(channel, flightDateId, userId)
             }
 
-            collectDetectionLocations(flightDateId)
             loadMission(MissionId(date.mission))
+            collectDetectionLocations(channel)
             collectAircraftStatus(channel)
             collectHelperLocations(channel)
         }
     }
 
-    private fun collectDetectionLocations(flightDateId: FlightDateId) {
-        val detectionChannel = supabase.channel("public:detection")
+    private fun collectDetectionLocations(channel: RealtimeChannel) {
         val changeFlow =
-            detectionChannel.postgresChangeFlow<Insert>(schema = "public") {
+            channel.postgresChangeFlow<Insert>(schema = "public") {
                 table = "detection"
-                filter("flight_date", FilterOperator.EQ, flightDateId)
+                //filter("flight_date", FilterOperator.EQ, flightDateId.id)
             }
         viewModelScope.launch {
             changeFlow.collect { newRow ->
                 val detection = newRow.decodeRecord<NetworkDetection>().toLocal()
-                imageRepo.getImage(detection.image).collect { response ->
-                    when (response) {
-                        is Data -> _state.update { s ->
-                            s.copy(
-                                detections = _state.value.detections.plus(
-                                    response.value.map { DetectionLocation(it.location) })
+                viewModelScope.launch {
+                    imageRepo.getImageCached(detection.image).collect { response ->
+                        when (response) {
+                            is Data -> _state.update { s ->
+                                s.copy(
+                                    detections = _state.value.detections.plus(
+                                        response.value.map { DetectionLocation(it.location) })
+                                )
+                            }
+
+                            is Error.Exception -> Napier.e(
+                                "Image loading error",
+                                response.error
                             )
+
+                            is Error.Message -> Napier.e(response.message)
+                            is Loading -> {}
+                            is NoNewData -> {}
+                            is Error.Custom<*> -> TODO()
+                            Initial -> TODO()
                         }
-
-                        is Error.Exception -> Napier.e(
-                            "Image loading error",
-                            response.error
-                        )
-
-                        is Error.Message -> Napier.e(response.message)
-                        is Loading -> {}
-                        is NoNewData -> {}
-                        is Error.Custom<*> -> TODO()
-                        Initial -> TODO()
                     }
                 }
             }
@@ -226,9 +229,6 @@ class PilotViewModel : ViewModel(), KoinComponent {
             broadcastFlow.collect { status ->
                 _state.update { it.copy(aircraftStatus = status) }
             }
-        }
-        viewModelScope.launch {
-            channel.subscribe(blockUntilSubscribed = true)
         }
     }
 

@@ -48,7 +48,6 @@ actual fun GoogleMaps(
     personPositions: List<PersonLocation>?,
     detections: List<LatLong>?
 ) {
-    println(checkpoints)
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(currentPosition.toLatLng(), 16f)
     }

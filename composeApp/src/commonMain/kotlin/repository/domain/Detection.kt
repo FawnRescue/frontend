@@ -13,7 +13,7 @@ data class NetworkDetection(
     val y: Int,
     val width: Int,
     val height: Int,
-    val confidence: Float,
+    val confidence: Float?,
     val flight_date: String,
 )
 
@@ -35,6 +35,6 @@ data class Detection(
     val y: Int,
     val width: Int,
     val height: Int,
-    val confidence: Float,
+    val confidence: Float?,
     val flight_date: FlightDateId,
 )
