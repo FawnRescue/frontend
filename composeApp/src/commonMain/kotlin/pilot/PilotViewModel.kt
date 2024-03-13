@@ -25,6 +25,7 @@ import moe.tlaster.precompose.navigation.Navigator
 import navigation.presentation.NAV
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.mobilenativefoundation.store.store5.StoreReadRequest
 import org.mobilenativefoundation.store.store5.StoreReadResponse
 import org.mobilenativefoundation.store.store5.StoreReadResponse.*
 import pilot.PilotEvent.NoPlan
@@ -34,6 +35,8 @@ import repository.AircraftRepo
 import repository.CommandRepo
 import repository.FlightDateRepo
 import repository.FlightPlanRepo
+import repository.ImageDataKey
+import repository.ImageDataRepo
 import repository.ImageRepo
 import repository.LocationRepo
 import repository.LocationService
@@ -65,6 +68,7 @@ class PilotViewModel : ViewModel(), KoinComponent {
     private val missionRepo by inject<MissionRepo>()
     private val aircraftRepo by inject<AircraftRepo>()
     private val commandRepo by inject<CommandRepo>()
+    private val imageDataRepo by inject<ImageDataRepo>()
     private val imageRepo by inject<ImageRepo>()
     private val locationService by inject<LocationService>()
     private val _state = MutableStateFlow(PilotState(null, null, null, null, null))
@@ -106,28 +110,12 @@ class PilotViewModel : ViewModel(), KoinComponent {
         viewModelScope.launch {
             changeFlow.collect { newRow ->
                 val detection = newRow.decodeRecord<NetworkDetection>().toLocal()
-                viewModelScope.launch {
-                    imageRepo.getImageCached(detection.image).collect { response ->
-                        when (response) {
-                            is Data -> _state.update { s ->
-                                s.copy(
-                                    detections = _state.value.detections.plus(
-                                        response.value.map { DetectionLocation(it.location) })
-                                )
-                            }
-
-                            is Error.Exception -> Napier.e(
-                                "Image loading error",
-                                response.error
-                            )
-
-                            is Error.Message -> Napier.e(response.message)
-                            is Loading -> {}
-                            is NoNewData -> {}
-                            is Error.Custom<*> -> TODO()
-                            Initial -> TODO()
-                        }
-                    }
+                _state.update { s ->
+                    s.copy(
+                        detections = _state.value.detections.plus(
+                            detection
+                        )
+                    )
                 }
             }
         }
@@ -293,6 +281,66 @@ class PilotViewModel : ViewModel(), KoinComponent {
             is PilotEvent.SendCommand -> {
                 viewModelScope.launch {
                     commandRepo.sendCommand(event.command)
+                }
+            }
+
+            is PilotEvent.DetectionSelected -> {
+                // load the corresponding image
+                _state.update {
+                    it.copy(
+                        selectedDetection = event.detection
+                    )
+                }
+                viewModelScope.launch {
+                    imageRepo.getImage(event.detection.image).collect { imageResponse ->
+                        when (imageResponse) {
+                            is Data -> {
+                                if (imageResponse.value.isEmpty()) {
+                                    Napier.e { "No DB Image entry found for detection" }
+                                    return@collect
+                                }
+                                val image = imageResponse.value.first()
+                                if (image.thermal_path == null) {
+                                    Napier.e { "No thermal image found for detection" }
+                                    return@collect
+                                }
+                                // load data
+                                viewModelScope.launch {
+                                    imageDataRepo.store.stream(
+                                        StoreReadRequest.cached(
+                                            ImageDataKey.Read.ByFileName(
+                                                image.thermal_path
+                                            ), false
+                                        )
+                                    ).collect { imageDataResponse ->
+                                        when (imageDataResponse) {
+                                            is Data -> {
+                                                _state.update {
+                                                    it.copy(selectedDetectionImageData = imageDataResponse.value.firstOrNull())
+                                                }
+                                            }
+
+                                            is Error.Custom<*> -> TODO()
+                                            is Error.Exception -> TODO()
+                                            is Error.Message -> TODO()
+                                            Initial -> TODO()
+                                            is Loading -> TODO()
+                                            is NoNewData -> TODO()
+                                        }
+
+                                    }
+                                }
+                            }
+
+                            is Error.Custom<*> -> TODO()
+                            is Error.Exception -> TODO()
+                            is Error.Message -> TODO()
+                            Initial -> TODO()
+                            is Loading -> TODO()
+                            is NoNewData -> TODO()
+                        }
+
+                    }
                 }
             }
         }

@@ -15,6 +15,7 @@ data class NetworkDetection(
     val height: Int,
     val confidence: Float?,
     val flight_date: String,
+    val location: LatLong
 )
 
 fun NetworkDetection.toLocal(): Detection {
@@ -24,6 +25,7 @@ fun NetworkDetection.toLocal(): Detection {
         ImageId(image),
         x, y, width, height, confidence,
         FlightDateId(flight_date),
+        location
     )
 }
 
@@ -37,4 +39,5 @@ data class Detection(
     val height: Int,
     val confidence: Float?,
     val flight_date: FlightDateId,
+    val location: LatLong
 )

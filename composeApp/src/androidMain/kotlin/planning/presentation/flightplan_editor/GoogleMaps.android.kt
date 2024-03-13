@@ -1,5 +1,7 @@
 package planning.presentation.flightplan_editor
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -23,6 +25,7 @@ import pilot.PersonLocation
 import pilot.RescuerRole
 import presentation.maps.LatLong
 import presentation.maps.getCenter
+import repository.domain.Detection
 
 
 fun LatLong.toLatLng(): LatLng {
@@ -46,7 +49,8 @@ actual fun GoogleMaps(
     showPath: Boolean,
     dronePosition: LatLong?,
     personPositions: List<PersonLocation>?,
-    detections: List<LatLong>?
+    detections: List<Detection>?,
+    onDetectionMarkerClick: (Detection) -> Unit,
 ) {
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(currentPosition.toLatLng(), 16f)
@@ -104,15 +108,23 @@ actual fun GoogleMaps(
             Marker(
                 state = MarkerState(position = it.position.toLatLng()),
 
-                title = if(it.role == RescuerRole.RESCUER) "Helper" else "Pilot",
+                title = if (it.role == RescuerRole.RESCUER) "Helper" else "Pilot",
             )
         }
 
-        detections?.map {
+        detections?.map { detection ->
             Marker(
-                state = MarkerState(position = it.toLatLng()),
+                state = MarkerState(position = detection.location.toLatLng()),
+                onClick = {
+                    onDetectionMarkerClick(detection)
+                    true
+                },
                 title = "Detection",
             )
         }
     }
+}
+
+fun convertImageByteArrayToBitmap(imageData: ByteArray): Bitmap {
+    return BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
 }

@@ -1,22 +1,19 @@
 package di
 
-import androidx.compose.runtime.remember
-import dev.icerock.moko.permissions.PermissionsController
-import dev.icerock.moko.permissions.compose.PermissionsControllerFactory
-import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
 import hangar.presentation.discover.BluetoothClient
 import moe.tlaster.precompose.navigation.Navigator
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import repository.AircraftRepo
+import repository.CommandRepo
 import repository.FlightDateRepo
 import repository.FlightPlanRepo
+import repository.ImageDataRepo
+import repository.ImageRepo
+import repository.LocationRepo
+import repository.LocationService
 import repository.MissionRepo
 import repository.UserRepo
-import repository.CommandRepo
-import repository.LocationRepo
-import repository.ImageRepo
-import repository.LocationService
 
 // Provide the dependencies through a Koin module
 val sharedModule = module {
@@ -35,5 +32,6 @@ val sharedModule = module {
     singleOf(::CommandRepo)
     singleOf(::LocationRepo)
     singleOf(::ImageRepo)
+    singleOf(::ImageDataRepo)
     singleOf(::LocationService)
 }

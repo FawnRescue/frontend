@@ -69,7 +69,7 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
         LinearProgressIndicator(Modifier.fillMaxWidth())
         return
     }
-    if(state.isPilot){
+    if (state.isPilot) {
         if (state.plan == null || state.date == null || state.mission == null || state.aircraft == null || state.aircraftStatus == null || state.aircraftStatus.state == NOT_CONNECTED) {
             return PreFlightChecklist(state)
         }
@@ -82,7 +82,7 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
 
     Column {
         OSD(state.aircraftStatus)
-        if(state.isPilot && state.aircraft != null){
+        if (state.isPilot && state.aircraft != null) {
             val command = InsertableCommand(
                 ARM, context = state.date.id, aircraft = state.aircraft.token
             )
@@ -115,7 +115,8 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
                 showPath = true,
                 dronePosition = state.aircraftStatus.location?.toLatLong(),
                 personPositions = state.helperLocations.values.toList(),
-                detections = state.detections.map { it.position }
+                detections = state.detections,
+                onDetectionMarkerClick = { onEvent(DetectionSelected(it)) }
             )
         }
     }

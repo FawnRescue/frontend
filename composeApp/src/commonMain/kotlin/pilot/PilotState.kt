@@ -3,6 +3,7 @@ package pilot
 import hangar.domain.AircraftStatus
 import presentation.maps.LatLong
 import repository.domain.Aircraft
+import repository.domain.Detection
 import repository.domain.NetworkFlightDate
 import repository.domain.FlightPlan
 import repository.domain.Mission
@@ -18,12 +19,10 @@ data class PilotState(
     val loading: Boolean = true, // TODO: granular loading variables for mission, date, path and aircraft
     val planLoading: Boolean = true, // TODO: granular loading variables for mission, date, path and aircraft
     val helperLocations: Map<UserId, PersonLocation> = emptyMap(),
-    val detections: List<DetectionLocation> = emptyList(),
-    val isPilot: Boolean = false
-)
-
-data class DetectionLocation(
-    val position: LatLong,
+    val detections: List<Detection> = emptyList(),
+    val isPilot: Boolean = false,
+    val selectedDetection: Detection? = null,
+    val selectedDetectionImageData: ByteArray? = null
 )
 
 data class PersonLocation(

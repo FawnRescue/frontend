@@ -40,7 +40,7 @@ fun FlightPlanEditorScreen(onEvent: (FlightPlanEditorEvent) -> Unit, state: Flig
         showBoundary = state.showBoundary,
         showCheckpointMarkers = state.showCheckpointMarkers,
         showPath = state.showPath
-    )
+    ) {}
     FloatingActionButton(
         onClick = { onEvent(SaveBoundary) },
     ) {

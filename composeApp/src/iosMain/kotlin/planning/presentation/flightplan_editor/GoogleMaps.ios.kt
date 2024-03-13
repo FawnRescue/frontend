@@ -3,6 +3,7 @@ package planning.presentation.flightplan_editor
 import androidx.compose.runtime.Composable
 import pilot.PersonLocation
 import presentation.maps.LatLong
+import repository.domain.Detection
 
 @Composable
 actual fun GoogleMaps(
@@ -17,6 +18,7 @@ actual fun GoogleMaps(
     showPath: Boolean,
     dronePosition: LatLong?,
     personPositions: List<PersonLocation>?,
-    detections: List<LatLong>?
+    detections: List<Detection>?,
+    onDetectionMarkerClick: (Detection) -> Unit
 ) {
 }
