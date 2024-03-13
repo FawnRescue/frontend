@@ -16,8 +16,7 @@ actual fun GoogleMaps(
     showCheckpointMarkers: Boolean,
     showPath: Boolean,
     dronePosition: LatLong?,
-    pilotPosition: LatLong?,
-    helperPositions: List<PersonLocation>?,
+    personPositions: List<PersonLocation>?,
     detections: List<LatLong>?
 ) {
 }

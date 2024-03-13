@@ -56,7 +56,6 @@ import pilot.RescuerRole.*
 import planning.presentation.flightplan_editor.GoogleMaps
 import presentation.maps.LatLong
 import presentation.maps.getCenter
-import repository.domain.Commands
 import repository.domain.Commands.*
 import repository.domain.InsertableCommand
 
@@ -70,31 +69,40 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
         LinearProgressIndicator(Modifier.fillMaxWidth())
         return
     }
-    if (state.plan == null || state.date == null || state.mission == null || state.aircraft == null || state.aircraftStatus == null || state.aircraftStatus.state == NOT_CONNECTED) {
-        return PreFlightChecklist(state)
+    if(state.isPilot){
+        if (state.plan == null || state.date == null || state.mission == null || state.aircraft == null || state.aircraftStatus == null || state.aircraftStatus.state == NOT_CONNECTED) {
+            return PreFlightChecklist(state)
+        }
+    } else {
+        if (state.plan == null || state.date == null || state.mission == null || state.aircraftStatus == null || state.aircraftStatus.state == NOT_CONNECTED) {
+            return PreFlightChecklist(state)
+        }
     }
-    val command = InsertableCommand(
-        ARM, context = state.date.id, aircraft = state.aircraft.token
-    )
+
 
     Column {
         OSD(state.aircraftStatus)
-        Controls(
-            state.aircraftStatus,
-            onArm = {
-                onEvent(
-                    SendCommand(
-                        command.copy(command = ARM)
+        if(state.isPilot && state.aircraft != null){
+            val command = InsertableCommand(
+                ARM, context = state.date.id, aircraft = state.aircraft.token
+            )
+            Controls(
+                state.aircraftStatus,
+                onArm = {
+                    onEvent(
+                        SendCommand(
+                            command.copy(command = ARM)
+                        )
                     )
-                )
-            },
-            onContinue = { onEvent(SendCommand(command.copy(command = CONTINUE))) },
-            onDisarm = { onEvent(SendCommand(command.copy(command = DISARM))) },
-            onELAND = { onEvent(SendCommand(command.copy(command = ELAND))) },
-            onKill = { onEvent(SendCommand(command.copy(command = KILL))) },
-            onTakeoff = { onEvent(SendCommand(command.copy(command = TAKEOFF))) },
-            onRTH = { onEvent(SendCommand(command.copy(command = RTH))) },
-        )
+                },
+                onContinue = { onEvent(SendCommand(command.copy(command = CONTINUE))) },
+                onDisarm = { onEvent(SendCommand(command.copy(command = DISARM))) },
+                onELAND = { onEvent(SendCommand(command.copy(command = ELAND))) },
+                onKill = { onEvent(SendCommand(command.copy(command = KILL))) },
+                onTakeoff = { onEvent(SendCommand(command.copy(command = TAKEOFF))) },
+                onRTH = { onEvent(SendCommand(command.copy(command = RTH))) },
+            )
+        }
         Card {
             GoogleMaps(state.plan.boundary.getCenter(),
                 onMapClick = {},
@@ -106,10 +114,7 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
                 showCheckpointMarkers = false,
                 showPath = true,
                 dronePosition = state.aircraftStatus.location?.toLatLong(),
-                pilotPosition = if (state.ownLocation?.role == PILOT) state.ownLocation.position else state.helperLocations.map { it.value }
-                    .find { it.role == PILOT }?.position,
-                helperPositions = state.helperLocations.filter { it.value.role == RESCUER }
-                    .map { it.value }
+                personPositions = state.helperLocations.values.toList()
             )
         }
     }

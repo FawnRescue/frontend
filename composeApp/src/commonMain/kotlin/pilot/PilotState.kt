@@ -17,9 +17,9 @@ data class PilotState(
     val aircraftStatus: AircraftStatus?,
     val loading: Boolean = true, // TODO: granular loading variables for mission, date, path and aircraft
     val planLoading: Boolean = true, // TODO: granular loading variables for mission, date, path and aircraft
-    val ownLocation: PersonLocation? = null,
     val helperLocations: Map<UserId, PersonLocation> = emptyMap(),
-    val detections: List<DetectionLocation> = emptyList()
+    val detections: List<DetectionLocation> = emptyList(),
+    val isPilot: Boolean = false
 )
 
 data class DetectionLocation(

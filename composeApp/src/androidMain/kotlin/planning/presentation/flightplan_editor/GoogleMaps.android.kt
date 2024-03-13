@@ -20,6 +20,7 @@ import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import org.fawnrescue.project.R
 import pilot.PersonLocation
+import pilot.RescuerRole
 import presentation.maps.LatLong
 import presentation.maps.getCenter
 
@@ -44,8 +45,7 @@ actual fun GoogleMaps(
     showCheckpointMarkers: Boolean,
     showPath: Boolean,
     dronePosition: LatLong?,
-    pilotPosition: LatLong?,
-    helperPositions: List<PersonLocation>?,
+    personPositions: List<PersonLocation>?,
     detections: List<LatLong>?
 ) {
     println(checkpoints)
@@ -101,17 +101,11 @@ actual fun GoogleMaps(
             )
         }
 
-        if (pilotPosition != null) {
-            Marker(
-                state = MarkerState(position = pilotPosition.toLatLng()),
-                title = "Pilot",
-            )
-        }
-
-        helperPositions?.map {
+        personPositions?.map {
             Marker(
                 state = MarkerState(position = it.position.toLatLng()),
-                title = "Helper",
+
+                title = if(it.role == RescuerRole.RESCUER) "Helper" else "Pilot",
             )
         }
 

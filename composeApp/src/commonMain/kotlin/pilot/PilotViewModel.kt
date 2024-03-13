@@ -8,6 +8,7 @@ import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.filter.FilterOperator
 import io.github.jan.supabase.realtime.PostgresAction
+import io.github.jan.supabase.realtime.PostgresAction.*
 import io.github.jan.supabase.realtime.RealtimeChannel
 import io.github.jan.supabase.realtime.broadcast
 import io.github.jan.supabase.realtime.broadcastFlow
@@ -25,6 +26,7 @@ import navigation.presentation.NAV
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.mobilenativefoundation.store.store5.StoreReadResponse
+import org.mobilenativefoundation.store.store5.StoreReadResponse.*
 import pilot.PilotEvent.NoPlan
 import pilot.RescuerRole.*
 import presentation.maps.LatLong
@@ -74,17 +76,29 @@ class PilotViewModel : ViewModel(), KoinComponent {
             Napier.e("No Date selected")
         } else {
             _state.update { it.copy(date = flightDateRepo.selectedFlightDate.value) }
+            val channel = supabase.channel(date.aircraft)
+
             // TODO Parse date to domain ids instead of casting here
-            loadAircraft(AircraftId(date.aircraft), FlightDateId(date.id))
+            val flightDateId = FlightDateId(date.id)
+
+            val authId = supabase.auth.currentUserOrNull()?.id
+            if(authId != null){
+                val userId = UserId(authId)
+                loadAircraft(AircraftId(date.aircraft), userId)
+                publishOwnLocation(channel, flightDateId,userId)
+            }
+
+            collectDetectionLocations(flightDateId)
             loadMission(MissionId(date.mission))
-            collectDetectionLocations(FlightDateId(date.id))
+            collectAircraftStatus(channel)
+            collectHelperLocations(channel)
         }
     }
 
     private fun collectDetectionLocations(flightDateId: FlightDateId) {
         val detectionChannel = supabase.channel("public:detection")
         val changeFlow =
-            detectionChannel.postgresChangeFlow<PostgresAction.Insert>(schema = "public") {
+            detectionChannel.postgresChangeFlow<Insert>(schema = "public") {
                 table = "detection"
                 filter("flight_date", FilterOperator.EQ, flightDateId)
             }
@@ -93,23 +107,23 @@ class PilotViewModel : ViewModel(), KoinComponent {
                 val detection = newRow.decodeRecord<NetworkDetection>().toLocal()
                 imageRepo.getImage(detection.image).collect { response ->
                     when (response) {
-                        is StoreReadResponse.Data -> _state.update { s ->
+                        is Data -> _state.update { s ->
                             s.copy(
                                 detections = _state.value.detections.plus(
                                     response.value.map { DetectionLocation(it.location) })
                             )
                         }
 
-                        is StoreReadResponse.Error.Exception -> Napier.e(
+                        is Error.Exception -> Napier.e(
                             "Image loading error",
                             response.error
                         )
 
-                        is StoreReadResponse.Error.Message -> Napier.e(response.message)
-                        is StoreReadResponse.Loading -> {}
-                        is StoreReadResponse.NoNewData -> {}
-                        is StoreReadResponse.Error.Custom<*> -> TODO()
-                        StoreReadResponse.Initial -> TODO()
+                        is Error.Message -> Napier.e(response.message)
+                        is Loading -> {}
+                        is NoNewData -> {}
+                        is Error.Custom<*> -> TODO()
+                        Initial -> TODO()
                     }
                 }
             }
@@ -141,16 +155,21 @@ class PilotViewModel : ViewModel(), KoinComponent {
     private fun publishOwnLocation(
         channel: RealtimeChannel,
         flightDateId: FlightDateId,
+        userId: UserId,
     ) {
-        val authId = supabase.auth.currentUserOrNull()?.id ?: return
-        val userId = UserId(authId)
+
         viewModelScope.launch {
             locationService.location().collect { ownLocation ->
                 _state.update {
                     it.copy(
-                        ownLocation = PersonLocation(
-                            ownLocation,
-                            if (state.value.aircraft?.owner == userId) PILOT else RESCUER
+                        helperLocations = it.helperLocations.plus(
+                            Pair(
+                                userId,
+                                PersonLocation(
+                                    ownLocation,
+                                    if (state.value.isPilot) PILOT else RESCUER
+                                )
+                            )
                         )
                     )
                 }
@@ -165,40 +184,42 @@ class PilotViewModel : ViewModel(), KoinComponent {
         }
     }
 
-    private fun loadAircraft(aircraftId: AircraftId, flightDateId: FlightDateId) {
+    private fun loadAircraft(aircraftId: AircraftId, userId: UserId) {
         viewModelScope.launch {
             aircraftRepo.getAircraft(aircraftId)
                 .collect { response ->
                     when (response) {
-                        is StoreReadResponse.Data -> {
+                        is Data -> {
                             if (response.value.isEmpty()) {
                                 _state.update { it.copy(loading = false) }
                                 Napier.e("No Aircraft loaded")
                                 return@collect
                             }
                             val aircraft = response.value[0]
-                            _state.update { it.copy(aircraft = aircraft, loading = false) }
-                            val channel = supabase.channel(aircraft.token.toString())
-                            collectAircraftStatus(channel)
-                            publishOwnLocation(channel, flightDateId)
-                            collectHelperLocations(channel)
+                            _state.update {
+                                it.copy(
+                                    aircraft = aircraft,
+                                    loading = false,
+                                    isPilot = aircraft.owner == userId
+                                )
+                            }
                         }
 
-                        is StoreReadResponse.Error.Custom<*> -> TODO()
-                        is StoreReadResponse.Error.Exception -> {
+                        is Error.Custom<*> -> TODO()
+                        is Error.Exception -> {
                             response.error.message?.let { Napier.e(it) }
                         }
 
-                        is StoreReadResponse.Error.Message -> TODO()
-                        StoreReadResponse.Initial -> TODO()
-                        is StoreReadResponse.Loading -> _state.update { it.copy(loading = true) }
-                        is StoreReadResponse.NoNewData -> _state.update { it.copy(loading = false) }
+                        is Error.Message -> TODO()
+                        Initial -> TODO()
+                        is Loading -> _state.update { it.copy(loading = true) }
+                        is NoNewData -> _state.update { it.copy(loading = false) }
                     }
                 }
         }
     }
 
-    private suspend fun collectAircraftStatus(channel: RealtimeChannel) {
+    private fun collectAircraftStatus(channel: RealtimeChannel) {
         val broadcastFlow =
             channel.broadcastFlow<AircraftStatus>(event = "aircraft_status")
         viewModelScope.launch {
@@ -206,16 +227,16 @@ class PilotViewModel : ViewModel(), KoinComponent {
                 _state.update { it.copy(aircraftStatus = status) }
             }
         }
-        println("Subscribing")
-        channel.subscribe(blockUntilSubscribed = true)
-        println("Subscribed")
+        viewModelScope.launch {
+            channel.subscribe(blockUntilSubscribed = true)
+        }
     }
 
     private fun loadMission(missionId: MissionId) {
         viewModelScope.launch {
             missionRepo.getMission(missionId).collect { response ->
                 when (response) {
-                    is StoreReadResponse.Data -> {
+                    is Data -> {
                         if (response.value.isEmpty()) {
                             _state.update { it.copy(loading = false) }
                             Napier.e("No Mission loaded")
@@ -230,12 +251,12 @@ class PilotViewModel : ViewModel(), KoinComponent {
                         }
                     }
 
-                    is StoreReadResponse.Error.Custom<*> -> TODO()
-                    is StoreReadResponse.Error.Exception -> TODO()
-                    is StoreReadResponse.Error.Message -> TODO()
-                    StoreReadResponse.Initial -> TODO()
-                    is StoreReadResponse.Loading -> _state.update { it.copy(loading = true) }
-                    is StoreReadResponse.NoNewData -> _state.update { it.copy(loading = false) }
+                    is Error.Custom<*> -> TODO()
+                    is Error.Exception -> TODO()
+                    is Error.Message -> TODO()
+                    Initial -> TODO()
+                    is Loading -> _state.update { it.copy(loading = true) }
+                    is NoNewData -> _state.update { it.copy(loading = false) }
                 }
             }
         }
@@ -245,19 +266,19 @@ class PilotViewModel : ViewModel(), KoinComponent {
         viewModelScope.launch {
             flightPlanRepo.getPlan(planId).collect { response ->
                 when (response) {
-                    is StoreReadResponse.Data -> _state.update {
+                    is Data -> _state.update {
                         it.copy(
                             plan = response.value.firstOrNull(),
                             planLoading = false
                         )
                     }
 
-                    is StoreReadResponse.Error.Custom<*> -> TODO()
-                    is StoreReadResponse.Error.Exception -> TODO()
-                    is StoreReadResponse.Error.Message -> TODO()
-                    StoreReadResponse.Initial -> TODO()
-                    is StoreReadResponse.Loading -> _state.update { it.copy(planLoading = true) }
-                    is StoreReadResponse.NoNewData -> TODO()
+                    is Error.Custom<*> -> TODO()
+                    is Error.Exception -> TODO()
+                    is Error.Message -> TODO()
+                    Initial -> TODO()
+                    is Loading -> _state.update { it.copy(planLoading = true) }
+                    is NoNewData -> TODO()
                 }
             }
         }
