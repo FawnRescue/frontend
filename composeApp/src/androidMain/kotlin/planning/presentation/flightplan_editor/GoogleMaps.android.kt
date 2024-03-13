@@ -1,8 +1,6 @@
 package planning.presentation.flightplan_editor
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Flight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,8 +18,8 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polygon
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
-import hangar.domain.Location
 import org.fawnrescue.project.R
+import pilot.PersonLocation
 import presentation.maps.LatLong
 import presentation.maps.getCenter
 
@@ -47,7 +45,7 @@ actual fun GoogleMaps(
     showPath: Boolean,
     dronePosition: LatLong?,
     pilotPosition: LatLong?,
-    helperPositions: List<LatLong>?,
+    helperPositions: List<PersonLocation>?,
     detections: List<LatLong>?
 ) {
     println(checkpoints)
@@ -107,6 +105,20 @@ actual fun GoogleMaps(
             Marker(
                 state = MarkerState(position = pilotPosition.toLatLng()),
                 title = "Pilot",
+            )
+        }
+
+        helperPositions?.map {
+            Marker(
+                state = MarkerState(position = it.position.toLatLng()),
+                title = "Helper",
+            )
+        }
+
+        detections?.map {
+            Marker(
+                state = MarkerState(position = it.toLatLng()),
+                title = "Detection",
             )
         }
     }

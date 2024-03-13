@@ -2,7 +2,6 @@ package pilot
 
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Flight
 import androidx.compose.material.icons.filled.LocationOn
@@ -25,7 +23,6 @@ import androidx.compose.material.icons.filled.Terrain
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -33,12 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -57,18 +49,16 @@ import hangar.domain.AircraftStatus
 import hangar.domain.Location
 import hangar.presentation.components.BatteryIndicator
 import io.ktor.util.date.getTimeMillis
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import pilot.PilotEvent.*
+import pilot.RescuerRole.*
 import planning.presentation.flightplan_editor.GoogleMaps
 import presentation.maps.LatLong
 import presentation.maps.getCenter
 import repository.domain.Commands
+import repository.domain.Commands.*
 import repository.domain.InsertableCommand
-import kotlin.time.Duration
 
 fun Location.toLatLong(): LatLong {
     return LatLong(this.latitude, this.longitude)
@@ -84,9 +74,7 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
         return PreFlightChecklist(state)
     }
     val command = InsertableCommand(
-        Commands.ARM,
-        context = state.date.id,
-        aircraft = state.aircraft.token
+        ARM, context = state.date.id, aircraft = state.aircraft.token
     )
 
     Column {
@@ -95,25 +83,22 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
             state.aircraftStatus,
             onArm = {
                 onEvent(
-                    PilotEvent.SendCommand(
-                        command.copy(command = Commands.ARM)
+                    SendCommand(
+                        command.copy(command = ARM)
                     )
                 )
             },
-            onContinue = { onEvent(PilotEvent.SendCommand(command.copy(command = Commands.CONTINUE))) },
-            onDisarm = { onEvent(PilotEvent.SendCommand(command.copy(command = Commands.DISARM))) },
-            onELAND = { onEvent(PilotEvent.SendCommand(command.copy(command = Commands.ELAND))) },
-            onKill = { onEvent(PilotEvent.SendCommand(command.copy(command = Commands.KILL))) },
-            onTakeoff = { onEvent(PilotEvent.SendCommand(command.copy(command = Commands.TAKEOFF))) },
-            onRTH = { onEvent(PilotEvent.SendCommand(command.copy(command = Commands.RTH))) },
+            onContinue = { onEvent(SendCommand(command.copy(command = CONTINUE))) },
+            onDisarm = { onEvent(SendCommand(command.copy(command = DISARM))) },
+            onELAND = { onEvent(SendCommand(command.copy(command = ELAND))) },
+            onKill = { onEvent(SendCommand(command.copy(command = KILL))) },
+            onTakeoff = { onEvent(SendCommand(command.copy(command = TAKEOFF))) },
+            onRTH = { onEvent(SendCommand(command.copy(command = RTH))) },
         )
         Card {
-            GoogleMaps(
-                state.plan.boundary.getCenter(),
-                onMapClick = {
-                },
-                onMarkerClick = {
-                },
+            GoogleMaps(state.plan.boundary.getCenter(),
+                onMapClick = {},
+                onMarkerClick = {},
                 listOf(),
                 state.plan.checkpoints ?: listOf(),
                 showBoundaryMarkers = false,
@@ -121,9 +106,11 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
                 showCheckpointMarkers = false,
                 showPath = true,
                 dronePosition = state.aircraftStatus.location?.toLatLong(),
-                pilotPosition = state.ownLocation
+                pilotPosition = if (state.ownLocation?.role == PILOT) state.ownLocation.position else state.helperLocations.map { it.value }
+                    .find { it.role == PILOT }?.position,
+                helperPositions = state.helperLocations.filter { it.value.role == RESCUER }
+                    .map { it.value }
             )
-            LatLong
         }
     }
 }
@@ -196,12 +183,10 @@ fun OSD(status: AircraftStatus?) {
         modifier = Modifier.fillMaxWidth().padding(8.dp).zIndex(2f)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.Start
+            modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.Start
         ) {
             BatteryIndicator(
-                batteryPercentage = status.battery?.remainingPercent
-                    ?: 0f,
+                batteryPercentage = status.battery?.remainingPercent ?: 0f,
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -211,8 +196,7 @@ fun OSD(status: AircraftStatus?) {
             }
             Row {
                 Icon(
-                    Icons.Default.LocationOn,
-                    contentDescription = "Location"
+                    Icons.Default.LocationOn, contentDescription = "Location"
                 )
                 Text(" Location: ${status.location?.latitude}, ${status.location?.longitude}")
             }
@@ -220,8 +204,7 @@ fun OSD(status: AircraftStatus?) {
             status.altitude?.let {
                 Row {
                     Icon(
-                        Icons.Default.Terrain,
-                        contentDescription = "Altitude"
+                        Icons.Default.Terrain, contentDescription = "Altitude"
                     )
                     Text(" Altitude: ${it}m")
                 }
@@ -230,8 +213,7 @@ fun OSD(status: AircraftStatus?) {
             status.numSatellites?.let {
                 Row {
                     Icon(
-                        Icons.Default.Satellite,
-                        contentDescription = "Number of Satellites"
+                        Icons.Default.Satellite, contentDescription = "Number of Satellites"
                     )
                     Text(" Satellites: $it")
                 }
@@ -284,13 +266,11 @@ fun Controls(
                         "Continue Mission" -> status.state == ARMED || status.state == IN_FLIGHT
                         else -> true
                     }
-                    Button(
-                        modifier = if (!enabled) Modifier else Modifier.onTouchHeld(onTouchSuccess = {
+                    Button(modifier = if (!enabled) Modifier else Modifier.onTouchHeld(
+                        onTouchSuccess = {
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
                             onClick()
-                        }),
-                        onClick = { },
-                        enabled = enabled
+                        }), onClick = { }, enabled = enabled
                     ) {
                         Text(text)
                     }
@@ -305,7 +285,7 @@ fun Modifier.onTouchHeld(
     successTime: Long = 1000,
     onTouchHeld: (timeElapsed: Long) -> Unit = {},
     onTouchSuccess: () -> Unit = {},
-    onTouchStop: (timeElapsed: Long) -> Unit = {}
+    onTouchStop: (timeElapsed: Long) -> Unit = {},
 ) = composed {
     val scope = rememberCoroutineScope()
     var success = false

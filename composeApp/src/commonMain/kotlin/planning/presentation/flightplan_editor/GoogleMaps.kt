@@ -1,6 +1,7 @@
 package planning.presentation.flightplan_editor
 
 import androidx.compose.runtime.Composable
+import pilot.PersonLocation
 import presentation.maps.LatLong
 
 @Composable
@@ -16,6 +17,6 @@ expect fun GoogleMaps(
     showPath: Boolean,
     dronePosition: LatLong? = null,
     pilotPosition: LatLong? = null,
-    helperPositions: List<LatLong>? = null,
+    helperPositions: List<PersonLocation>? = null,
     detections: List<LatLong>? = null
 )

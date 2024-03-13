@@ -15,6 +15,7 @@ import repository.MissionRepo
 import repository.UserRepo
 import repository.CommandRepo
 import repository.LocationRepo
+import repository.ImageRepo
 import repository.LocationService
 
 // Provide the dependencies through a Koin module
@@ -33,5 +34,6 @@ val sharedModule = module {
     singleOf(::AircraftRepo)
     singleOf(::CommandRepo)
     singleOf(::LocationRepo)
+    singleOf(::ImageRepo)
     singleOf(::LocationService)
 }
