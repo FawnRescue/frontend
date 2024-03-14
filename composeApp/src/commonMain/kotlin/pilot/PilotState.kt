@@ -22,7 +22,8 @@ data class PilotState(
     val detections: List<Detection> = emptyList(),
     val isPilot: Boolean = false,
     val selectedDetection: Detection? = null,
-    val selectedDetectionImageData: ByteArray? = null
+    val selectedDetectionRGBImageData: ByteArray? = null,
+    val selectedDetectionThermalImageData: ByteArray? = null
 )
 
 data class PersonLocation(

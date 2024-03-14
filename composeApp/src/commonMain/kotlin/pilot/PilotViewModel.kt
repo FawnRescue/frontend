@@ -300,47 +300,129 @@ class PilotViewModel : ViewModel(), KoinComponent {
                                     return@collect
                                 }
                                 val image = imageResponse.value.first()
-                                if (image.thermal_path == null) {
-                                    Napier.e { "No thermal image found for detection" }
+                                if (image.thermal_path == null && image.rgb_path == null) {
+                                    Napier.e { "No image found for detection" }
                                     return@collect
                                 }
-                                // load data
-                                viewModelScope.launch {
-                                    imageDataRepo.store.stream(
-                                        StoreReadRequest.cached(
-                                            ImageDataKey.Read.ByFileName(
-                                                image.thermal_path
-                                            ), false
-                                        )
-                                    ).collect { imageDataResponse ->
-                                        when (imageDataResponse) {
-                                            is Data -> {
-                                                _state.update {
-                                                    it.copy(selectedDetectionImageData = imageDataResponse.value.firstOrNull())
+
+                                image.thermal_path?.let {
+                                    viewModelScope.launch {
+                                        imageDataRepo.store.stream(
+                                            StoreReadRequest.cached(
+                                                ImageDataKey.Read.ByFileName(
+                                                    image.thermal_path
+                                                ), false
+                                            )
+                                        ).collect { imageDataResponse ->
+                                            when (imageDataResponse) {
+                                                is Data -> {
+                                                    _state.update {
+                                                        it.copy(selectedDetectionThermalImageData = imageDataResponse.value.firstOrNull())
+                                                    }
                                                 }
+
+                                                is Error.Custom<*> -> TODO()
+                                                is Error.Exception -> {
+                                                    Napier.e(
+                                                        "Image Data loading failed",
+                                                        imageDataResponse.error
+                                                    )
+                                                }
+
+                                                is Error.Message -> {
+                                                    Napier.e(
+                                                        imageDataResponse.message
+                                                    )
+                                                }
+
+                                                Initial -> TODO()
+                                                is Loading -> {
+
+                                                }
+
+                                                is NoNewData -> TODO()
                                             }
 
-                                            is Error.Custom<*> -> TODO()
-                                            is Error.Exception -> TODO()
-                                            is Error.Message -> TODO()
-                                            Initial -> TODO()
-                                            is Loading -> TODO()
-                                            is NoNewData -> TODO()
                                         }
-
                                     }
                                 }
+                                image.rgb_path?.let {
+                                    viewModelScope.launch {
+                                        imageDataRepo.store.stream(
+                                            StoreReadRequest.cached(
+                                                ImageDataKey.Read.ByFileName(
+                                                    image.rgb_path
+                                                ), false
+                                            )
+                                        ).collect { imageDataResponse ->
+                                            when (imageDataResponse) {
+                                                is Data -> {
+                                                    _state.update {
+                                                        it.copy(selectedDetectionRGBImageData = imageDataResponse.value.firstOrNull())
+                                                    }
+                                                }
+
+                                                is Error.Custom<*> -> TODO()
+                                                is Error.Exception -> {
+                                                    Napier.e(
+                                                        "Image Data loading failed",
+                                                        imageDataResponse.error
+                                                    )
+                                                }
+
+                                                is Error.Message -> {
+                                                    Napier.e(
+                                                        imageDataResponse.message
+                                                    )
+                                                }
+
+                                                Initial -> TODO()
+                                                is Loading -> {
+
+                                                }
+
+                                                is NoNewData -> TODO()
+                                            }
+
+                                        }
+                                    }
+                                }
+
                             }
 
                             is Error.Custom<*> -> TODO()
-                            is Error.Exception -> TODO()
-                            is Error.Message -> TODO()
+                            is Error.Exception -> {
+                                Napier.e(
+                                    "Image loading failed",
+                                    imageResponse.error
+                                )
+                            }
+
+                            is Error.Message -> {
+                                Napier.e(
+                                    imageResponse.message
+                                )
+                            }
+
                             Initial -> TODO()
-                            is Loading -> TODO()
+                            is Loading -> {
+
+                            }
+
                             is NoNewData -> TODO()
                         }
 
                     }
+                }
+            }
+
+            PilotEvent.DetectionDeselected -> {
+                _state.update {
+                    it.copy(
+                        selectedDetection = null,
+                        selectedDetectionRGBImageData = null,
+                        selectedDetectionThermalImageData = null
+                    )
                 }
             }
         }

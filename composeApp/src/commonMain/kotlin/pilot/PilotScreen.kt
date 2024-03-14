@@ -1,5 +1,7 @@
 package pilot
 
+import ImageFromByteArray
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
@@ -8,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,6 +27,7 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -35,11 +39,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import hangar.domain.AircraftState.ARMED
 import hangar.domain.AircraftState.IDLE
@@ -57,6 +63,7 @@ import planning.presentation.flightplan_editor.GoogleMaps
 import presentation.maps.LatLong
 import presentation.maps.getCenter
 import repository.domain.Commands.*
+import repository.domain.Detection
 import repository.domain.InsertableCommand
 
 fun Location.toLatLong(): LatLong {
@@ -77,6 +84,14 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
         if (state.plan == null || state.date == null || state.mission == null || state.aircraftStatus == null || state.aircraftStatus.state == NOT_CONNECTED) {
             return PreFlightChecklist(state)
         }
+    }
+
+    if (state.selectedDetection != null) {
+        DetectionDialog(
+            state.selectedDetection,
+            state.selectedDetectionRGBImageData,
+            state.selectedDetectionThermalImageData,
+            onDismiss = { onEvent(DetectionDeselected) })
     }
 
 
@@ -128,6 +143,30 @@ data class ChecklistItem(
     val loaded: Boolean,
     val contentDescriptionPrefix: String = "",
 )
+
+@Composable
+fun DetectionDialog(
+    detection: Detection,
+    rgb: ByteArray?,
+    thermal: ByteArray?,
+    onDismiss: () -> Unit,
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Column {
+            if (rgb == null) {
+                CircularProgressIndicator()
+            } else {
+                ImageFromByteArray(rgb)
+            }
+            if (thermal == null) {
+                CircularProgressIndicator()
+            } else {
+                ImageFromByteArray(thermal)
+            }
+        }
+
+    }
+}
 
 // Composable for a single checklist row
 @Composable

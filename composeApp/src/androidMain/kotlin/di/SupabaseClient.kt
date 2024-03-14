@@ -7,6 +7,7 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.Auth
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.realtime.Realtime
+import io.github.jan.supabase.storage.Storage
 
 actual fun getSupabaseClient() = createSupabaseClient(
     supabaseUrl = "https://irvsopidchmqfxbdpxqt.supabase.co",
@@ -22,5 +23,6 @@ actual fun getSupabaseClient() = createSupabaseClient(
         googleNativeLogin(serverClientId = "38625036643-ifi68503ctjs83vmmbo29lbst3g24mv6.apps.googleusercontent.com")
         appleNativeLogin()
     }
+    install(Storage)
 }
 
