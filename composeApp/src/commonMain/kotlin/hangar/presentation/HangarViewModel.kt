@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import moe.tlaster.precompose.navigation.Navigator
 import navigation.presentation.NAV
 import org.koin.core.component.KoinComponent
@@ -31,6 +32,13 @@ class HangarViewModel : ViewModel(), KoinComponent {
 
     private val _state = MutableStateFlow(HangarState(null, null, null))
     val state = _state.asStateFlow()
+
+    override fun onCleared() {
+        runBlocking {
+            channel?.unsubscribe()
+        }
+        super.onCleared()
+    }
 
     init {
         loadAircrafts()

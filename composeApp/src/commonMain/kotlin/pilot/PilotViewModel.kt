@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import moe.tlaster.precompose.navigation.Navigator
 import navigation.presentation.NAV
@@ -69,6 +70,13 @@ class PilotViewModel : ViewModel(), KoinComponent {
     private val locationService by inject<LocationService>()
     private val _state = MutableStateFlow(PilotState(null, null, null, null, null))
     val state = _state.asStateFlow()
+    var global_channel: RealtimeChannel? = null
+    override fun onCleared() {
+        runBlocking {
+            global_channel?.unsubscribe()
+        }
+        super.onCleared()
+    }
 
     init {
         val date = flightDateRepo.selectedFlightDate.value
@@ -77,6 +85,7 @@ class PilotViewModel : ViewModel(), KoinComponent {
         } else {
             _state.update { it.copy(date = flightDateRepo.selectedFlightDate.value) }
             val channel = supabase.channel(date.aircraft)
+            global_channel = channel
             viewModelScope.launch {
                 channel.subscribe(blockUntilSubscribed = true)
             }
