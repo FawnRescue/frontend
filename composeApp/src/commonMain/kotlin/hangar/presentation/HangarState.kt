@@ -7,5 +7,5 @@ data class HangarState(
     val aircrafts: List<Aircraft>?,
     val selectedAircraft: Aircraft?,
     val aircraftStatus: AircraftStatus?,
-    val loading: Boolean = true
+    val loading: Boolean = true,
 )

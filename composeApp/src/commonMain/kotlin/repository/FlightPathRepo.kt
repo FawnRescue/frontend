@@ -18,9 +18,6 @@ import repository.domain.FlightPlan
 import repository.domain.FlightPlanId
 import repository.domain.InsertableFlightPlan
 import repository.domain.InsertableMission
-import repository.domain.Mission
-import repository.domain.MissionId
-import repository.domain.NetworkFlightDate
 import repository.domain.Tables
 import kotlin.math.PI
 import kotlin.math.atan2

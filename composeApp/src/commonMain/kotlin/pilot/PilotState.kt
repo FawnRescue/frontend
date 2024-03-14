@@ -4,9 +4,9 @@ import hangar.domain.AircraftStatus
 import presentation.maps.LatLong
 import repository.domain.Aircraft
 import repository.domain.Detection
-import repository.domain.NetworkFlightDate
 import repository.domain.FlightPlan
 import repository.domain.Mission
+import repository.domain.NetworkFlightDate
 import repository.domain.UserId
 
 
@@ -23,7 +23,7 @@ data class PilotState(
     val isPilot: Boolean = false,
     val selectedDetection: Detection? = null,
     val selectedDetectionRGBImageData: ByteArray? = null,
-    val selectedDetectionThermalImageData: ByteArray? = null
+    val selectedDetectionThermalImageData: ByteArray? = null,
 )
 
 data class PersonLocation(

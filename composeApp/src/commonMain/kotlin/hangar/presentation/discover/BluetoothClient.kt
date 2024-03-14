@@ -15,6 +15,6 @@ expect class BluetoothClient : KoinComponent {
         address: String,
         email: String,
         otp: String,
-        token: String
+        token: String,
     ): Boolean
 }

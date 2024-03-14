@@ -33,7 +33,7 @@ fun EmailEntryDialog(
     password: String,
     onEvent: (LoginEvent) -> Unit,
     onDismiss: () -> Unit,
-    onEmailEntered: (String, String) -> Unit
+    onEmailEntered: (String, String) -> Unit,
 ) {
     val state = LocalAuthState.current
     Dialog(onDismissRequest = { onDismiss() }) {

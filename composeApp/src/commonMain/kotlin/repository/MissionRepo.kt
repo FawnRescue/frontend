@@ -19,7 +19,6 @@ import repository.domain.Mission
 import repository.domain.MissionId
 import repository.domain.NetworkMission
 import repository.domain.Tables
-import repository.domain.UserId
 import repository.domain.toLocal
 
 

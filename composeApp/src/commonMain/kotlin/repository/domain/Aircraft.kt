@@ -10,7 +10,7 @@ data class Aircraft(
     val name: String,
     val description: String?,
     val created_at: LocalDateTime,
-    val deleted: Boolean
+    val deleted: Boolean,
 )
 
 @Serializable
@@ -20,7 +20,7 @@ data class InsertableAircraft(
     val name: String,
     val description: String? = null,
     val created_at: String? = null,
-    val deleted: Boolean? = null
+    val deleted: Boolean? = null,
 )
 
 @Serializable
@@ -30,7 +30,7 @@ data class NetworkAircraft(
     val name: String,
     val description: String?,
     val created_at: String,
-    val deleted: Boolean
+    val deleted: Boolean,
 )
 
 fun NetworkAircraft.toLocal(): Aircraft {

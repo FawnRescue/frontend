@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import repository.domain.NetworkFlightDate
+
 @Composable
 fun FlightDateListItem(
     flightDate: NetworkFlightDate,
@@ -14,7 +15,7 @@ fun FlightDateListItem(
     modifier: Modifier = Modifier,
 ) {
     ListItem(
-        modifier = if(onClick != null) modifier.clickable { onClick() } else modifier,
+        modifier = if (onClick != null) modifier.clickable { onClick() } else modifier,
         headlineContent = { Text("Flight Date") },
         supportingContent = {
             Text(text = "${flightDate.start_date} - ${flightDate.end_date}")

@@ -11,7 +11,7 @@ data class NetworkCommand(
     val command: Commands,
     val status: CommandStatus,
     val aircraft: String,
-   // val flightDateId: String,
+    // val flightDateId: String,
     val context: String,
 )
 
@@ -60,6 +60,7 @@ enum class Commands {
     TAKEOFF,
     LAND,
     RETURN,
+
     //Unimplemented:
     FLY2CHECKPOINT,
     CAPTURE_IMAGE,

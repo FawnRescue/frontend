@@ -15,7 +15,7 @@ data class NetworkDetection(
     val height: Int,
     val confidence: Float?,
     val flight_date: String,
-    val location: LatLong
+    val location: LatLong,
 )
 
 fun NetworkDetection.toLocal(): Detection {
@@ -39,5 +39,5 @@ data class Detection(
     val height: Int,
     val confidence: Float?,
     val flight_date: FlightDateId,
-    val location: LatLong
+    val location: LatLong,
 )

@@ -34,6 +34,7 @@ value class AircraftId(val id: String) {
         return this.id
     }
 }
+
 @Serializable
 @JvmInline
 value class FlightDateId(val id: String) {

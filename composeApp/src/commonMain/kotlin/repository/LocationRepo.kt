@@ -9,16 +9,16 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import presentation.maps.LatLong
 
-class LocationRepo: KoinComponent {
+class LocationRepo : KoinComponent {
     private val service by inject<LocationService>()
     private val permissionsController by inject<PermissionsController>()
     suspend fun getLocation(): Flow<LatLong> {
         try {
             permissionsController.providePermission(Permission.LOCATION)
             // Permission has been granted successfully.
-        } catch(deniedAlways: DeniedAlwaysException) {
+        } catch (deniedAlways: DeniedAlwaysException) {
             // Permission is always denied.
-        } catch(denied: DeniedException) {
+        } catch (denied: DeniedException) {
             // Permission was denied.
         }
         return service.location()

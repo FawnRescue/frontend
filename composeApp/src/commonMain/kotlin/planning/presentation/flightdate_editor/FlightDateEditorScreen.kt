@@ -174,7 +174,7 @@ fun FlightDateEditorScreen(onEvent: (FlightDateEditorEvent) -> Unit, state: Flig
 @Composable
 fun DatePickerDialogComponent(
     onEvent: (FlightDateEditorEvent) -> Unit,
-    datePickerState: DatePickerState
+    datePickerState: DatePickerState,
 ) {
     val confirmEnabled = remember {
         derivedStateOf { datePickerState.selectedDateMillis != null }
@@ -213,7 +213,7 @@ fun DatePickerDialogComponent(
 @Composable
 fun TimePickerDialogComponent(
     onEvent: (FlightDateEditorEvent) -> Unit,
-    timePickerState: TimePickerState
+    timePickerState: TimePickerState,
 ) {
     Dialog(
         onDismissRequest = {
@@ -232,7 +232,7 @@ fun TimePickerDialogComponent(
                 ) {
 
                     Button(
-                        onClick = { onEvent(FlightDateEditorEvent.CloseTimePicker(null)) }
+                        onClick = { onEvent(CloseTimePicker(null)) }
                     ) {
                         Text("Cancel")
                     }
@@ -255,7 +255,6 @@ fun TimePickerDialogComponent(
         }
     }
 }
-
 
 
 @Composable

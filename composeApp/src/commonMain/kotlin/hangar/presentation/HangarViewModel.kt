@@ -42,7 +42,13 @@ class HangarViewModel : ViewModel(), KoinComponent {
         viewModelScope.launch {
             aircraftRepo.getAircrafts(userId).collect { response ->
                 when (response) {
-                    is StoreReadResponse.Data -> _state.update { it.copy(aircrafts = response.value, loading = false) }
+                    is StoreReadResponse.Data -> _state.update {
+                        it.copy(
+                            aircrafts = response.value,
+                            loading = false
+                        )
+                    }
+
                     is StoreReadResponse.Error.Exception -> Napier.e(
                         "Aircraft loading error",
                         response.error

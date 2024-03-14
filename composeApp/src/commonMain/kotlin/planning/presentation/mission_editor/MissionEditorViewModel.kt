@@ -75,6 +75,7 @@ class MissionEditorViewModel : ViewModel(), KoinComponent {
             }
         }
     }
+
     val state = _state.asStateFlow()
 
     fun onEvent(event: MissionEditorEvent) {
