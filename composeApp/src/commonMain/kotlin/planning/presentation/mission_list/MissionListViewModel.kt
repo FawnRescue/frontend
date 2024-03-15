@@ -11,9 +11,11 @@ import moe.tlaster.precompose.navigation.Navigator
 import navigation.presentation.NAV
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.mobilenativefoundation.store.store5.StoreReadRequest
 import org.mobilenativefoundation.store.store5.StoreReadResponse
 import planning.presentation.mission_list.MissionListEvent.CreateNewMission
 import planning.presentation.mission_list.MissionListEvent.ExistingMissionSelected
+import repository.MissionKey
 import repository.MissionRepo
 import repository.domain.Mission
 
@@ -32,7 +34,11 @@ class MissionListViewModel : ViewModel(), KoinComponent {
 
     private fun loadMissions() {
         viewModelScope.launch {
-            missionRepo.getMissions().collect { response ->
+            missionRepo.store.stream(
+                StoreReadRequest.cached(
+                    MissionKey.Read.ByOwner, true
+                )
+            ).collect { response ->
                 when (response) {
                     is StoreReadResponse.Data -> _state.update {
                         it.copy(missions = response.value, loading = false)

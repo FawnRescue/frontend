@@ -39,7 +39,7 @@ class MissionRepo : KoinComponent {
     }.fromOutputToLocal { it }
         .build()
 
-    private val userMissionStore: Store<MissionKey, List<Mission>> = StoreBuilder.from(
+     val store: Store<MissionKey, List<Mission>> = StoreBuilder.from(
         fetcher = Fetcher.of { key: MissionKey ->
             require(key is MissionKey.Read)
             when (key) {
@@ -64,15 +64,8 @@ class MissionRepo : KoinComponent {
         }
     }
 
-    fun getMissions(): Flow<StoreReadResponse<List<Mission>>> =
-        userMissionStore.stream(
-            StoreReadRequest.cached(
-                MissionKey.Read.ByOwner, true
-            )
-        )
-
     fun getMission(id: MissionId): Flow<StoreReadResponse<List<Mission>>> =
-        userMissionStore.stream(
+        store.stream(
             StoreReadRequest.cached(
                 MissionKey.Read.ByID(
                     id
