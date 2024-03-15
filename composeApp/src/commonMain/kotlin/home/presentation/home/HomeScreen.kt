@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import home.presentation.home.HomeEvent.DateSelected
 import home.presentation.home.HomeEvent.Logout
 import home.presentation.home.HomeEvent.ProfileButton
 import planning.presentation.components.flightdate_list.FlightDateListItem
@@ -75,7 +76,7 @@ fun HomeScreen(onEvent: (HomeEvent) -> Unit, state: HomeState) {
                         item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
                     } else {
                         items(state.dates[entry.key]!!) { date ->
-                            FlightDateListItem(date, {}, modifier = Modifier.offset(10.dp))
+                            FlightDateListItem(date, {onEvent(DateSelected(date))}, modifier = Modifier.offset(10.dp))
                             Spacer(Modifier.height(2.dp))
                         }
                     }

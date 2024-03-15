@@ -1,13 +1,10 @@
 package hangar.presentation
 
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
-import repository.domain.Aircraft
-import hangar.domain.DroneStatus
+import hangar.domain.AircraftStatus
 import io.github.aakira.napier.Napier
 import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.exceptions.HttpRequestException
 import io.github.jan.supabase.gotrue.auth
-import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.realtime.RealtimeChannel
 import io.github.jan.supabase.realtime.broadcastFlow
 import io.github.jan.supabase.realtime.channel
@@ -21,15 +18,15 @@ import navigation.presentation.NAV
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.mobilenativefoundation.store.store5.StoreReadResponse
-import repository.HangarRepo
-import repository.MissionRepo
+import repository.AircraftRepo
+import repository.domain.Aircraft
 import repository.domain.UserId
 
 class HangarViewModel : ViewModel(), KoinComponent {
     private val navigator: Navigator by inject<Navigator>()
     val supabase: SupabaseClient by inject<SupabaseClient>()
     private var channel: RealtimeChannel? = null
-    private val hangarRepo by inject<HangarRepo>()
+    private val aircraftRepo by inject<AircraftRepo>()
 
 
     private val _state = MutableStateFlow(HangarState(null, null, null))
@@ -43,7 +40,7 @@ class HangarViewModel : ViewModel(), KoinComponent {
         val authId = supabase.auth.currentUserOrNull()?.id ?: return
         val userId = UserId(authId)
         viewModelScope.launch {
-            hangarRepo.getAircrafts(userId).collect { response ->
+            aircraftRepo.getAircrafts(userId).collect { response ->
                 when (response) {
                     is StoreReadResponse.Data -> _state.update { it.copy(aircrafts = response.value, loading = false) }
                     is StoreReadResponse.Error.Exception -> Napier.e(
@@ -70,13 +67,13 @@ class HangarViewModel : ViewModel(), KoinComponent {
                 viewModelScope.launch {
                     supabase.realtime.removeChannel(channel!!)
                 }
-                _state.update { it.copy(selectedAircraft = null, droneStatus = null) }
+                _state.update { it.copy(selectedAircraft = null, aircraftStatus = null) }
             }
 
             is HangarEvent.OnSelectAircraft -> viewModelScope.launch { selectAircraft(event.aircraft) }
             HangarEvent.OnDeleteAircraft -> {
                 viewModelScope.launch {
-                    state.value.selectedAircraft?.let { hangarRepo.deleteAircraft(it.token) }
+                    state.value.selectedAircraft?.let { aircraftRepo.deleteAircraft(it.token) }
                     _state.update {
                         it.copy(
                             selectedAircraft = null
@@ -93,10 +90,10 @@ class HangarViewModel : ViewModel(), KoinComponent {
         _state.update { it.copy(selectedAircraft = aircraft) }
         println(aircraft.token)
         channel = supabase.channel(aircraft.token.toString())
-        val broadcastFlow = channel!!.broadcastFlow<DroneStatus>(event = "event")
+        val broadcastFlow = channel!!.broadcastFlow<AircraftStatus>(event = "aircraft_status")
         viewModelScope.launch {
             broadcastFlow.collect { status ->
-                _state.update { it.copy(droneStatus = status) }
+                _state.update { it.copy(aircraftStatus = status) }
             }
         }
         println("Subscribing")

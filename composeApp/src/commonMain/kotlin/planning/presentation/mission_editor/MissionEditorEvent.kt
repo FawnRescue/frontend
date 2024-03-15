@@ -1,6 +1,6 @@
 package planning.presentation.mission_editor
 
-import repository.domain.FlightDate
+import repository.domain.NetworkFlightDate
 import repository.domain.InsertableMission
 
 
@@ -11,5 +11,5 @@ sealed interface MissionEditorEvent {
     data object Cancel : MissionEditorEvent
     data object EditFlightPlan : MissionEditorEvent
     data object AddFlightDate : MissionEditorEvent
-    data class DateSelected(val date: FlightDate) : MissionEditorEvent
+    data class DateSelected(val date: NetworkFlightDate) : MissionEditorEvent
 }

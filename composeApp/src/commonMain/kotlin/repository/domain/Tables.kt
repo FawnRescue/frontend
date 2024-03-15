@@ -5,5 +5,6 @@ enum class Tables(val path: String) {
     FLIGHT_PLAN("flightplan"),
     FLIGHT_DATE("flightdate"),
     USER("user"),
-    AIRCRAFT("aircraft")
+    AIRCRAFT("aircraft"),
+    COMMAND("command"),
 }

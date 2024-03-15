@@ -1,6 +1,9 @@
 package planning.presentation.flightdate_editor
 
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
+import io.github.aakira.napier.Napier
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.gotrue.auth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -13,6 +16,7 @@ import moe.tlaster.precompose.navigation.Navigator
 import navigation.presentation.NAV
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.mobilenativefoundation.store.store5.StoreReadResponse
 import planning.presentation.flightdate_editor.FlightDateEditorEvent.Cancel
 import planning.presentation.flightdate_editor.FlightDateEditorEvent.CloseDatePicker
 import planning.presentation.flightdate_editor.FlightDateEditorEvent.CloseTimePicker
@@ -20,14 +24,19 @@ import planning.presentation.flightdate_editor.FlightDateEditorEvent.OpenDatePic
 import planning.presentation.flightdate_editor.FlightDateEditorEvent.OpenEndTimePicker
 import planning.presentation.flightdate_editor.FlightDateEditorEvent.OpenStartTimePicker
 import planning.presentation.flightdate_editor.FlightDateEditorEvent.Save
+import planning.presentation.flightdate_editor.FlightDateEditorEvent.SelectAircraft
+import repository.AircraftRepo
 import repository.FlightDateRepo
 import repository.MissionRepo
 import repository.domain.InsertableFlightDate
+import repository.domain.UserId
 
 class FlightDateEditorViewModel : ViewModel(), KoinComponent {
     private val navigator: Navigator by inject<Navigator>()
     private val flightDateRepo by inject<FlightDateRepo>()
     private val missionRepo by inject<MissionRepo>()
+    private val aircraftRepo by inject<AircraftRepo>()
+    val supabase: SupabaseClient by inject<SupabaseClient>()
 
     private val _state = MutableStateFlow(
         FlightDateEditorState(
@@ -40,13 +49,47 @@ class FlightDateEditorViewModel : ViewModel(), KoinComponent {
                 TimeZone.currentSystemDefault()
             )?.time,
             endTime = flightDateRepo.selectedFlightDate.value?.end_date?.toLocalDateTime(TimeZone.currentSystemDefault())?.time,
-            isSaveEnabled = false
+            isSaveEnabled = false,
+            aircraftId = null,
         )
     )
     val state = _state.asStateFlow()
 
+    init {
+        loadAircrafts()
+    }
+
+    private fun loadAircrafts() {
+        val authId = supabase.auth.currentUserOrNull()?.id ?: return
+        val userId = UserId(authId)
+        viewModelScope.launch {
+            aircraftRepo.getAircrafts(userId).collect { response ->
+                when (response) {
+                    is StoreReadResponse.Data -> _state.update {
+                        it.copy(
+                            aircrafts = response.value,
+                            loading = false
+                        )
+                    }
+
+                    is StoreReadResponse.Error.Exception -> Napier.e(
+                        "Aircraft loading error",
+                        response.error
+                    )
+
+                    is StoreReadResponse.Error.Message -> Napier.e(response.message)
+                    is StoreReadResponse.Loading -> _state.update { it.copy(loading = true) }
+                    is StoreReadResponse.NoNewData -> _state.update { it.copy(loading = false) }
+
+                    is StoreReadResponse.Error.Custom<*> -> TODO()
+                    StoreReadResponse.Initial -> TODO()
+                }
+            }
+        }
+    }
+
     private fun isSaveEnabled(state: FlightDateEditorState, tz: TimeZone): Boolean {
-        if (state.date == null || state.endTime == null || state.startTime == null) {
+        if (state.date == null || state.endTime == null || state.startTime == null || state.aircraftId == null) {
             // Not all information available
             return false
         }
@@ -61,7 +104,6 @@ class FlightDateEditorViewModel : ViewModel(), KoinComponent {
                 tz
             )
         }
-
     }
 
     private fun MutableStateFlow<FlightDateEditorState>.updateSaveState() {
@@ -76,7 +118,7 @@ class FlightDateEditorViewModel : ViewModel(), KoinComponent {
         when (event) {
             Save -> {
                 with(state.value) {
-                    if (date == null || startTime == null || endTime == null) return
+                    if (date == null || startTime == null || endTime == null || aircraftId == null) return
 
                     val selectedMission = missionRepo.selectedMission.value
                     if (selectedMission == null) {
@@ -93,7 +135,7 @@ class FlightDateEditorViewModel : ViewModel(), KoinComponent {
                         ),
                         id = selectedFlightDate?.id,
                         mission = selectedMission.id,
-                        aircraft = "d20fa9dd-3c8c-41bc-a04a-2cec92c0e965" // TODO after Hangar PR
+                        aircraft = aircraftId.id
                     )
                     viewModelScope.launch { flightDateRepo.upsertFlightDate(insertableFlightDate) }
                         .invokeOnCompletion {
@@ -147,6 +189,15 @@ class FlightDateEditorViewModel : ViewModel(), KoinComponent {
                 _state.update {
                     it.copy(isStartTimePickerOpen = true)
                 }
+            }
+
+            is SelectAircraft -> {
+                _state.update {
+                    it.copy(
+                        aircraftId = event.id
+                    )
+                }
+                _state.updateSaveState()
             }
         }
     }

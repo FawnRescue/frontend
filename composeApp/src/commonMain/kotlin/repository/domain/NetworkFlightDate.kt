@@ -4,7 +4,7 @@ import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class FlightDate(
+data class NetworkFlightDate(
     val id: String,
     val created_at: Instant,
     val mission: String,
@@ -13,7 +13,7 @@ data class FlightDate(
     val aircraft: String,
 )
 
-fun FlightDate.insertable(): InsertableFlightDate {
+fun NetworkFlightDate.insertable(): InsertableFlightDate {
     return InsertableFlightDate(
         this.id,
         MissionId(this.mission),
@@ -23,7 +23,7 @@ fun FlightDate.insertable(): InsertableFlightDate {
     )
 }
 
-fun FlightDate.editable(): EditableFlightDate {
+fun NetworkFlightDate.editable(): EditableFlightDate {
     return EditableFlightDate(
         this.id,
         this.mission,

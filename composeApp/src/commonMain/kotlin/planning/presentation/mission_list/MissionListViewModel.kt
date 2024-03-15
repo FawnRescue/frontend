@@ -16,8 +16,8 @@ import org.mobilenativefoundation.store.store5.StoreReadResponse
 import planning.presentation.mission_list.MissionListEvent.CreateNewMission
 import planning.presentation.mission_list.MissionListEvent.ExistingMissionSelected
 import repository.MissionRepo
-import repository.domain.UserId
 import repository.domain.Mission
+import repository.domain.UserId
 
 class MissionListViewModel : ViewModel(), KoinComponent {
     private val navigator: Navigator by inject<Navigator>()
@@ -33,11 +33,8 @@ class MissionListViewModel : ViewModel(), KoinComponent {
 
 
     private fun loadMissions() {
-        val authId = supabase.auth.currentUserOrNull()?.id ?: return
-        val userId = UserId(authId)
-
         viewModelScope.launch {
-            missionRepo.getMissions(userId).collect { response ->
+            missionRepo.getMissions().collect { response ->
                 when (response) {
                     is StoreReadResponse.Data -> _state.update {
                         it.copy(missions = response.value, loading = false)

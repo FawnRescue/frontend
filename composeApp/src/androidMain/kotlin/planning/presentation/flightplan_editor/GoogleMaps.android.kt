@@ -1,28 +1,14 @@
 package planning.presentation.flightplan_editor
 
-import androidx.compose.foundation.layout.Box
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.PinDrop
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -30,15 +16,16 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerInfoWindow
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polygon
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
+import org.fawnrescue.project.R
+import pilot.PersonLocation
+import pilot.RescuerRole
 import presentation.maps.LatLong
 import presentation.maps.getCenter
-import kotlin.math.atan2
+import repository.domain.Detection
 
 
 fun LatLong.toLatLng(): LatLng {
@@ -56,55 +43,17 @@ actual fun GoogleMaps(
     onMarkerClick: (LatLong) -> Unit,
     markers: List<LatLong>,
     checkpoints: List<LatLong>,
+    showBoundaryMarkers: Boolean,
+    showBoundary: Boolean,
+    showCheckpointMarkers: Boolean,
+    showPath: Boolean,
+    dronePosition: LatLong?,
+    personPositions: List<PersonLocation>?,
+    detections: List<Detection>?,
+    onDetectionMarkerClick: (Detection) -> Unit,
 ) {
-    println(checkpoints)
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(currentPosition.toLatLng(), 16f)
-    }
-    var showBoundaryMarkers by remember { mutableStateOf(true) }
-    var showBoundary by remember { mutableStateOf(true) }
-    var showCheckpointMarkers by remember { mutableStateOf(false) }
-    var showPath by remember { mutableStateOf(true) }
-
-
-    var selectedMarkerIndex by remember {
-        mutableIntStateOf(0)
-    }
-    FloatingActionButton(
-        onClick = { showBoundaryMarkers = !showBoundaryMarkers },
-        modifier = Modifier
-            .offset(100.dp)
-            .zIndex(1f)
-            .alpha(if (showBoundaryMarkers) 1.0f else 0.5f)
-    ) {
-        Text("BMarkers")
-    }
-    FloatingActionButton(
-        onClick = { showCheckpointMarkers = !showCheckpointMarkers },
-        modifier = Modifier
-            .offset(160.dp)
-            .zIndex(1f)
-            .alpha(if (showCheckpointMarkers) 1.0f else 0.5f)
-    ) {
-        Text("CMarkers")
-    }
-    FloatingActionButton(
-        onClick = { showBoundary = !showBoundary },
-        modifier = Modifier
-            .offset(220.dp)
-            .zIndex(1f)
-            .alpha(if (showBoundary) 1.0f else 0.5f)
-    ) {
-        Text("Boundary")
-    }
-    FloatingActionButton(
-        onClick = { showPath = !showPath },
-        modifier = Modifier
-            .offset(280.dp)
-            .zIndex(1f)
-            .alpha(if (showPath) 1.0f else 0.5f)
-    ) {
-        Text("Path")
     }
     GoogleMap(modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
@@ -134,11 +83,48 @@ actual fun GoogleMaps(
             }
         }
         if (markers.isNotEmpty() && showBoundary) {
-            Polygon(points = markers.map(LatLong::toLatLng), fillColor =MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+            Polygon(
+                points = markers.map(LatLong::toLatLng),
+                fillColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+            )
         }
         if (checkpoints.isNotEmpty() && showPath) {
-            Polyline(points = checkpoints.map(LatLong::toLatLng), color= Color.White, zIndex = 3f)
+            Polyline(points = checkpoints.map(LatLong::toLatLng), color = Color.White, zIndex = 3f)
         }
         Marker(state = MarkerState(position = checkpoints.getCenter().toLatLng()), rotation = 180f)
+
+        if (dronePosition != null) {
+            Marker(
+                state = MarkerState(position = dronePosition.toLatLng()),
+                title = "Drone",
+                icon = BitmapDescriptorFactory.fromResource(
+                    R.drawable.drone
+                ),
+                anchor = Offset(0.5f, 0.5f)
+            )
+        }
+
+        personPositions?.map {
+            Marker(
+                state = MarkerState(position = it.position.toLatLng()),
+
+                title = if (it.role == RescuerRole.RESCUER) "Helper" else "Pilot",
+            )
+        }
+
+        detections?.map { detection ->
+            Marker(
+                state = MarkerState(position = detection.location.toLatLng()),
+                onClick = {
+                    onDetectionMarkerClick(detection)
+                    true
+                },
+                title = "Detection",
+            )
+        }
     }
+}
+
+fun convertImageByteArrayToBitmap(imageData: ByteArray): Bitmap {
+    return BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
 }

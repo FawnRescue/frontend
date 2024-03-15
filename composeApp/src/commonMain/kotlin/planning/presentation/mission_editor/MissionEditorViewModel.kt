@@ -1,6 +1,8 @@
 package planning.presentation.mission_editor
 
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.gotrue.auth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -20,14 +22,32 @@ import planning.presentation.mission_editor.MissionEditorEvent.UpdateMission
 import repository.FlightDateRepo
 import repository.MissionRepo
 import repository.domain.InsertableMission
+import repository.domain.UserId
 import repository.domain.insertable
 
 class MissionEditorViewModel : ViewModel(), KoinComponent {
-    private val navigator: Navigator by inject<Navigator>()
-    private val missionRepo: MissionRepo by inject<MissionRepo>()
-    private val flightDateRepo: FlightDateRepo by inject<FlightDateRepo>()
+    private val navigator by inject<Navigator>()
+    private val missionRepo by inject<MissionRepo>()
+    private val flightDateRepo by inject<FlightDateRepo>()
+    private val supabase by inject<SupabaseClient>()
+
+    private val _state = run {
+        val selectedMission = missionRepo.selectedMission.value
+        val editedMission = selectedMission?.let { InsertableMission(it.description, it.id) }
+            ?: InsertableMission("")
+        MutableStateFlow(
+            MissionEditorState(
+                selectedMission, editedMission, emptyList()
+            )
+        )
+    }
 
     init {
+        supabase.auth.currentUserOrNull()?.id?.let { authId ->
+            _state.update {
+                it.copy(editable = missionRepo.selectedMission.value?.owner == UserId(authId))
+            }
+        }
         loadDates()
     }
 
@@ -54,17 +74,6 @@ class MissionEditorViewModel : ViewModel(), KoinComponent {
                 }
             }
         }
-    }
-
-    private val _state = run {
-        val selectedMission = missionRepo.selectedMission.value
-        val editedMission = selectedMission?.let { InsertableMission(it.description, it.id) }
-            ?: InsertableMission("")
-        MutableStateFlow(
-            MissionEditorState(
-                selectedMission, editedMission, emptyList()
-            )
-        )
     }
     val state = _state.asStateFlow()
 

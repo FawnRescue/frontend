@@ -27,8 +27,40 @@ value class FlightPlanId(val id: String) {
     }
 }
 
+@Serializable
 @JvmInline
 value class AircraftId(val id: String) {
+    override fun toString(): String {
+        return this.id
+    }
+}
+@Serializable
+@JvmInline
+value class FlightDateId(val id: String) {
+    override fun toString(): String {
+        return this.id
+    }
+}
+
+@Serializable
+@JvmInline
+value class CommandId(val id: String) {
+    override fun toString(): String {
+        return this.id
+    }
+}
+
+@Serializable
+@JvmInline
+value class ImageId(val id: String) {
+    override fun toString(): String {
+        return this.id
+    }
+}
+
+@Serializable
+@JvmInline
+value class DetectionId(val id: String) {
     override fun toString(): String {
         return this.id
     }

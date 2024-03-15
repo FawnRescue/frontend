@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,7 +26,6 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Flight
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -44,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import hangar.presentation.components.BatteryIndicator
+import pilot.OSD
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -124,54 +123,13 @@ fun HangarScreen(onEvent: (HangarEvent) -> Unit, state: HangarState) {
                         )
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        if (state.droneStatus != null) {
+                        if (state.aircraftStatus != null) {
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(8.dp)
                             ) {
-                                Column(
-                                    modifier = Modifier.padding(16.dp),
-                                    horizontalAlignment = Alignment.Start
-                                ) {
-                                    BatteryIndicator(
-                                        batteryPercentage = state.droneStatus.battery?.remainingPercent
-                                            ?: 0f,
-                                        modifier = Modifier.fillMaxWidth()
-                                    )
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    Row {
-                                        Icon(Icons.Default.Flight, contentDescription = "State")
-                                        Text(" State: ${state.droneStatus.state}")
-                                    }
-                                    Row {
-                                        Icon(
-                                            Icons.Default.LocationOn,
-                                            contentDescription = "Location"
-                                        )
-                                        Text(" Location: ${state.droneStatus.location?.latitude}, ${state.droneStatus.location?.longitude}")
-                                    }
-                                    // Displaying the altitude if available
-                                    state.droneStatus.altitude?.let {
-                                        Row {
-                                            Icon(
-                                                Icons.Default.Terrain,
-                                                contentDescription = "Altitude"
-                                            )
-                                            Text(" Altitude: ${it}m")
-                                        }
-                                    }
-                                    // Displaying the number of satellites if available
-                                    state.droneStatus.numSatellites?.let {
-                                        Row {
-                                            Icon(
-                                                Icons.Default.Satellite,
-                                                contentDescription = "Number of Satellites"
-                                            )
-                                            Text(" Satellites: $it")
-                                        }
-                                    }
-                                }
+                                OSD(state.aircraftStatus)
                             }
                         } else {
                             Text("No Data available")

@@ -8,5 +8,10 @@ data class FlightPlanEditorState(
     val editedBoundary: List<LatLong> = listOf(),
     val editedCheckpoints: List<LatLong>? = listOf(),
     val selectedMission: Mission? = null,
-    val selectedFlightPlan: FlightPlan? = null
+    val selectedFlightPlan: FlightPlan? = null,
+    val showBoundaryMarkers: Boolean = true,
+    val showBoundary: Boolean = true,
+    val showCheckpointMarkers: Boolean = false,
+    val showPath: Boolean = true,
+    val planLoading: Boolean = true
 )
