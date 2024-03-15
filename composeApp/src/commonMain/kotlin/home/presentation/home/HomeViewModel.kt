@@ -18,7 +18,6 @@ import org.mobilenativefoundation.store.store5.StoreReadResponse
 import repository.FlightDateRepo
 import repository.MissionRepo
 import repository.domain.Mission
-import repository.domain.UserId
 
 class HomeViewModel : ViewModel(), KoinComponent {
     private val navigator: Navigator by inject<Navigator>()

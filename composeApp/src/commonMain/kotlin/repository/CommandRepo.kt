@@ -36,7 +36,7 @@ class CommandRepo : KoinComponent {
     }).build()
 
     private suspend fun loadCommands(
-        aircraftId: AircraftId, flightDateId: FlightDateId
+        aircraftId: AircraftId, flightDateId: FlightDateId,
     ): List<Command> = try {
         supabase.from(Tables.COMMAND.path).select {
             filter {

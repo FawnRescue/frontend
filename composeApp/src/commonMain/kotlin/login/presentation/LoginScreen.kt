@@ -41,7 +41,7 @@ import org.koin.compose.koinInject
 @Composable
 fun LoginScreen(
     state: LoginState,
-    onEvent: (LoginEvent) -> Unit
+    onEvent: (LoginEvent) -> Unit,
 ) {
     val supabase = koinInject<SupabaseClient>()
     val nativeLogin =

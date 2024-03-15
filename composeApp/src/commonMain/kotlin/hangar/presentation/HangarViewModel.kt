@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import moe.tlaster.precompose.navigation.Navigator
 import navigation.presentation.NAV
 import org.koin.core.component.KoinComponent
@@ -32,6 +33,13 @@ class HangarViewModel : ViewModel(), KoinComponent {
     private val _state = MutableStateFlow(HangarState(null, null, null))
     val state = _state.asStateFlow()
 
+    override fun onCleared() {
+        runBlocking {
+            channel?.unsubscribe()
+        }
+        super.onCleared()
+    }
+
     init {
         loadAircrafts()
     }
@@ -42,7 +50,13 @@ class HangarViewModel : ViewModel(), KoinComponent {
         viewModelScope.launch {
             aircraftRepo.getAircrafts(userId).collect { response ->
                 when (response) {
-                    is StoreReadResponse.Data -> _state.update { it.copy(aircrafts = response.value, loading = false) }
+                    is StoreReadResponse.Data -> _state.update {
+                        it.copy(
+                            aircrafts = response.value,
+                            loading = false
+                        )
+                    }
+
                     is StoreReadResponse.Error.Exception -> Napier.e(
                         "Aircraft loading error",
                         response.error

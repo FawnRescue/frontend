@@ -5,31 +5,32 @@ import hangar.domain.AircraftStatus
 import io.github.aakira.napier.Napier
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.gotrue.auth
-import io.github.jan.supabase.postgrest.postgrest
-import io.github.jan.supabase.postgrest.query.filter.FilterOperator
-import io.github.jan.supabase.realtime.PostgresAction
-import io.github.jan.supabase.realtime.PostgresAction.*
+import io.github.jan.supabase.realtime.PostgresAction.Insert
 import io.github.jan.supabase.realtime.RealtimeChannel
 import io.github.jan.supabase.realtime.broadcast
 import io.github.jan.supabase.realtime.broadcastFlow
 import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.decodeRecord
 import io.github.jan.supabase.realtime.postgresChangeFlow
-import io.github.jan.supabase.supabaseJson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import moe.tlaster.precompose.navigation.Navigator
 import navigation.presentation.NAV
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.mobilenativefoundation.store.store5.StoreReadRequest
-import org.mobilenativefoundation.store.store5.StoreReadResponse
-import org.mobilenativefoundation.store.store5.StoreReadResponse.*
+import org.mobilenativefoundation.store.store5.StoreReadResponse.Data
+import org.mobilenativefoundation.store.store5.StoreReadResponse.Error
+import org.mobilenativefoundation.store.store5.StoreReadResponse.Initial
+import org.mobilenativefoundation.store.store5.StoreReadResponse.Loading
+import org.mobilenativefoundation.store.store5.StoreReadResponse.NoNewData
 import pilot.PilotEvent.NoPlan
-import pilot.RescuerRole.*
+import pilot.RescuerRole.PILOT
+import pilot.RescuerRole.RESCUER
 import presentation.maps.LatLong
 import repository.AircraftRepo
 import repository.CommandRepo
@@ -38,15 +39,11 @@ import repository.FlightPlanRepo
 import repository.ImageDataKey
 import repository.ImageDataRepo
 import repository.ImageRepo
-import repository.LocationRepo
 import repository.LocationService
 import repository.MissionRepo
-import repository.domain.Aircraft
 import repository.domain.AircraftId
-import repository.domain.Detection
 import repository.domain.FlightDateId
 import repository.domain.FlightPlanId
-import repository.domain.ImageId
 import repository.domain.MissionId
 import repository.domain.NetworkDetection
 import repository.domain.UserId
@@ -73,6 +70,13 @@ class PilotViewModel : ViewModel(), KoinComponent {
     private val locationService by inject<LocationService>()
     private val _state = MutableStateFlow(PilotState(null, null, null, null, null))
     val state = _state.asStateFlow()
+    private var globalChannel: RealtimeChannel? = null
+    override fun onCleared() {
+        runBlocking {
+            globalChannel?.unsubscribe()
+        }
+        super.onCleared()
+    }
 
     init {
         val date = flightDateRepo.selectedFlightDate.value
@@ -81,6 +85,7 @@ class PilotViewModel : ViewModel(), KoinComponent {
         } else {
             _state.update { it.copy(date = flightDateRepo.selectedFlightDate.value) }
             val channel = supabase.channel(date.aircraft)
+            globalChannel = channel
             viewModelScope.launch {
                 channel.subscribe(blockUntilSubscribed = true)
             }

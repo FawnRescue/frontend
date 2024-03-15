@@ -1,15 +1,27 @@
 package home.presentation.home
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Logout
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material3.*
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import home.presentation.home.HomeEvent.DateSelected
@@ -59,7 +71,7 @@ fun HomeScreen(onEvent: (HomeEvent) -> Unit, state: HomeState) {
                     }
                 }
                 state.datesLoading.forEach { entry ->
-                    if(!entry.value && state.dates.containsKey(entry.key) && state.dates[entry.key]!!.isEmpty()){
+                    if (!entry.value && state.dates.containsKey(entry.key) && state.dates[entry.key]!!.isEmpty()) {
                         return@forEach
                     }
                     item {
@@ -76,7 +88,11 @@ fun HomeScreen(onEvent: (HomeEvent) -> Unit, state: HomeState) {
                         item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
                     } else {
                         items(state.dates[entry.key]!!) { date ->
-                            FlightDateListItem(date, {onEvent(DateSelected(date))}, modifier = Modifier.offset(10.dp))
+                            FlightDateListItem(
+                                date,
+                                { onEvent(DateSelected(date)) },
+                                modifier = Modifier.offset(10.dp)
+                            )
                             Spacer(Modifier.height(2.dp))
                         }
                     }

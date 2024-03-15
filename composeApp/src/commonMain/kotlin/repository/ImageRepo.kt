@@ -1,9 +1,8 @@
 package repository
 
 import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.postgrest.*
+import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.mobilenativefoundation.store.store5.Fetcher
@@ -11,8 +10,6 @@ import org.mobilenativefoundation.store.store5.StoreBuilder
 import org.mobilenativefoundation.store.store5.StoreReadRequest
 import org.mobilenativefoundation.store.store5.StoreReadResponse
 import repository.domain.FlightDateId
-import repository.domain.FlightPlan
-import repository.domain.FlightPlanId
 import repository.domain.Image
 import repository.domain.ImageId
 import repository.domain.NetworkImage

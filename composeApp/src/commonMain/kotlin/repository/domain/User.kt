@@ -7,10 +7,10 @@ import kotlinx.serialization.Serializable
 data class User(
     val id: String,
     val created_at: Instant,
-    val name: String
+    val name: String,
 )
 
 @Serializable
 data class InsertableUser(
-    val name: String?
+    val name: String?,
 )

@@ -9,7 +9,7 @@ internal class InternalPrinter {
 
 // This is the Printer we will later expose to Android/iOS and desktop
 class SharedPrinter internal constructor(
-    private val internalPrinter: InternalPrinter
+    private val internalPrinter: InternalPrinter,
 ) {
     fun print(): String {
         return "Shared printer. ${internalPrinter.print()}"

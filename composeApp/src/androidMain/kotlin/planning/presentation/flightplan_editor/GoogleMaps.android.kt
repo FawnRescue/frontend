@@ -124,7 +124,3 @@ actual fun GoogleMaps(
         }
     }
 }
-
-fun convertImageByteArrayToBitmap(imageData: ByteArray): Bitmap {
-    return BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
-}

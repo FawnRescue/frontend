@@ -1,7 +1,6 @@
 package pilot
 
 import ImageFromByteArray
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -39,7 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -57,12 +55,19 @@ import hangar.presentation.components.BatteryIndicator
 import io.ktor.util.date.getTimeMillis
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import pilot.PilotEvent.*
-import pilot.RescuerRole.*
+import pilot.PilotEvent.DetectionDeselected
+import pilot.PilotEvent.DetectionSelected
+import pilot.PilotEvent.SendCommand
 import planning.presentation.flightplan_editor.GoogleMaps
 import presentation.maps.LatLong
 import presentation.maps.getCenter
-import repository.domain.Commands.*
+import repository.domain.Commands.ARM
+import repository.domain.Commands.CONTINUE
+import repository.domain.Commands.DISARM
+import repository.domain.Commands.ELAND
+import repository.domain.Commands.KILL
+import repository.domain.Commands.RTH
+import repository.domain.Commands.TAKEOFF
 import repository.domain.Detection
 import repository.domain.InsertableCommand
 
@@ -219,12 +224,28 @@ fun PreFlightChecklist(state: PilotState) {
     }
 }
 
+enum class OSDRowType(val icon: ImageVector) {
+    STATE(Icons.Default.Flight),
+    LOCATION(Icons.Default.LocationOn),
+    ALTITUDE(Icons.Default.Terrain),
+    SATELLITES(Icons.Default.Satellite)
+}
+
+@Composable
+fun DisplayRow(rowType: OSDRowType, value: String) {
+    Row {
+        Icon(rowType.icon, contentDescription = rowType.name)
+        Text(" ${rowType.name}: $value")
+    }
+}
+
 @Composable
 fun OSD(status: AircraftStatus?) {
-    if (status == null) {
+    status ?: run {
         println("no state for OSD")
         return
     }
+
     Card(
         modifier = Modifier.fillMaxWidth().padding(8.dp).zIndex(2f)
     ) {
@@ -236,34 +257,15 @@ fun OSD(status: AircraftStatus?) {
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Row {
-                Icon(Icons.Default.Flight, contentDescription = "State")
-                Text(" State: ${status.state}")
-            }
-            Row {
-                Icon(
-                    Icons.Default.LocationOn, contentDescription = "Location"
-                )
-                Text(" Location: ${status.location?.latitude}, ${status.location?.longitude}")
-            }
-            // Displaying the altitude if available
-            status.altitude?.let {
-                Row {
-                    Icon(
-                        Icons.Default.Terrain, contentDescription = "Altitude"
-                    )
-                    Text(" Altitude: ${it}m")
-                }
-            }
-            // Displaying the number of satellites if available
-            status.numSatellites?.let {
-                Row {
-                    Icon(
-                        Icons.Default.Satellite, contentDescription = "Number of Satellites"
-                    )
-                    Text(" Satellites: $it")
-                }
-            }
+
+            DisplayRow(OSDRowType.STATE, status.state.name)
+            DisplayRow(
+                OSDRowType.LOCATION,
+                "${status.location?.latitude}, ${status.location?.longitude}"
+            )
+
+            status.altitude?.let { DisplayRow(OSDRowType.ALTITUDE, "${it}m") }
+            status.numSatellites?.let { DisplayRow(OSDRowType.SATELLITES, "$it") }
         }
     }
 }

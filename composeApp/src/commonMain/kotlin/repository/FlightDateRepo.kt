@@ -12,9 +12,9 @@ import org.mobilenativefoundation.store.store5.Fetcher
 import org.mobilenativefoundation.store.store5.StoreBuilder
 import org.mobilenativefoundation.store.store5.StoreReadRequest
 import org.mobilenativefoundation.store.store5.StoreReadResponse
-import repository.domain.NetworkFlightDate
 import repository.domain.InsertableFlightDate
 import repository.domain.MissionId
+import repository.domain.NetworkFlightDate
 import repository.domain.Tables
 
 class FlightDateRepo : KoinComponent {

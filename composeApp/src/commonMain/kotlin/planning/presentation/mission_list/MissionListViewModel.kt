@@ -3,7 +3,6 @@ package planning.presentation.mission_list
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import io.github.aakira.napier.Napier
 import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.gotrue.auth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -17,7 +16,6 @@ import planning.presentation.mission_list.MissionListEvent.CreateNewMission
 import planning.presentation.mission_list.MissionListEvent.ExistingMissionSelected
 import repository.MissionRepo
 import repository.domain.Mission
-import repository.domain.UserId
 
 class MissionListViewModel : ViewModel(), KoinComponent {
     private val navigator: Navigator by inject<Navigator>()

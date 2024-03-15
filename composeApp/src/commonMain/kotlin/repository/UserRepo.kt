@@ -25,7 +25,7 @@ class UserRepo : KoinComponent {
         }.decodeSingleOrNull<User>()
     }
 
-    suspend fun upsertOwnUser(user: InsertableUser): User{
+    suspend fun upsertOwnUser(user: InsertableUser): User {
         return supabase.from(Tables.USER.path)
             .upsert(user) { select() }.decodeSingle()
     }

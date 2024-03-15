@@ -22,7 +22,7 @@ class ProfileEditorViewModel : ViewModel(), KoinComponent {
         loadUser()
     }
 
-    private fun loadUser(){
+    private fun loadUser() {
         viewModelScope.launch {
             _state.update {
                 val user = userRepo.getOwnUser()
@@ -33,16 +33,19 @@ class ProfileEditorViewModel : ViewModel(), KoinComponent {
             }
         }
     }
+
     fun onEvent(event: ProfileEditorEvent) {
         when (event) {
             ProfileEditorEvent.Cancel -> {
                 navigator.goBack()
             }
+
             is ProfileEditorEvent.NameChanged -> {
                 _state.update {
                     it.copy(editedUser = InsertableUser(event.name))
                 }
             }
+
             ProfileEditorEvent.Save -> {
                 viewModelScope.launch {
                     _state.value.editedUser?.let { userRepo.upsertOwnUser(it) }

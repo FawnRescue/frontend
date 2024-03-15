@@ -1,6 +1,3 @@
 package friends.presentation
 
-sealed interface FriendListEvent {
-
-
-}
+sealed interface FriendListEvent

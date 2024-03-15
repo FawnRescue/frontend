@@ -5,5 +5,5 @@ data class DiscoverState(
     val isScanning: Boolean = false,
     val percentTransmitted: Float = 0f,
     val selectedDrone: String? = null,
-    val otp: String = ""
+    val otp: String = "",
 )

@@ -1,7 +1,7 @@
 package planning.presentation.mission_editor
 
-import repository.domain.NetworkFlightDate
 import repository.domain.InsertableMission
+import repository.domain.NetworkFlightDate
 
 
 sealed interface MissionEditorEvent {

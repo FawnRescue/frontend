@@ -19,5 +19,5 @@ expect fun GoogleMaps(
     dronePosition: LatLong? = null,
     personPositions: List<PersonLocation>? = null,
     detections: List<Detection>? = null,
-    onDetectionMarkerClick: (Detection) -> Unit
+    onDetectionMarkerClick: (Detection) -> Unit,
 )
