@@ -34,6 +34,7 @@ import pilot.RescuerRole.RESCUER
 import presentation.maps.LatLong
 import repository.AircraftRepo
 import repository.CommandRepo
+import repository.DetectionRepo
 import repository.FlightDateRepo
 import repository.FlightPlanRepo
 import repository.ImageDataKey
@@ -67,6 +68,7 @@ class PilotViewModel : ViewModel(), KoinComponent {
     private val commandRepo by inject<CommandRepo>()
     private val imageDataRepo by inject<ImageDataRepo>()
     private val imageRepo by inject<ImageRepo>()
+    private val detectionRepo by inject<DetectionRepo>()
     private val locationService by inject<LocationService>()
     private val _state = MutableStateFlow(PilotState(null, null, null, null, null))
     val state = _state.asStateFlow()
@@ -100,9 +102,38 @@ class PilotViewModel : ViewModel(), KoinComponent {
             }
 
             loadMission(MissionId(date.mission))
+            loadDetections(flightDateId)
             collectDetectionLocations(channel)
             collectAircraftStatus(channel)
             collectHelperLocations(channel)
+        }
+    }
+
+    private fun loadDetections(flightDateId: FlightDateId) {
+        viewModelScope.launch {
+            detectionRepo.getDetections(flightDateId).collect { response ->
+                when (response) {
+                    is Data -> {
+                        if (response.value.isEmpty()) {
+                            return@collect
+                        }
+                        _state.update { s ->
+                            s.copy(
+                                detections = _state.value.detections.plus(
+                                    response.value
+                                )
+                            )
+                        }
+                    }
+
+                    is Error.Custom<*> -> TODO()
+                    is Error.Exception -> TODO()
+                    is Error.Message -> TODO()
+                    Initial -> TODO()
+                    is Loading -> {}
+                    is NoNewData -> {}
+                }
+            }
         }
     }
 
