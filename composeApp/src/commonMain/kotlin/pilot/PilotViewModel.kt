@@ -70,10 +70,10 @@ class PilotViewModel : ViewModel(), KoinComponent {
     private val locationService by inject<LocationService>()
     private val _state = MutableStateFlow(PilotState(null, null, null, null, null))
     val state = _state.asStateFlow()
-    var global_channel: RealtimeChannel? = null
+    private var globalChannel: RealtimeChannel? = null
     override fun onCleared() {
         runBlocking {
-            global_channel?.unsubscribe()
+            globalChannel?.unsubscribe()
         }
         super.onCleared()
     }
@@ -85,7 +85,7 @@ class PilotViewModel : ViewModel(), KoinComponent {
         } else {
             _state.update { it.copy(date = flightDateRepo.selectedFlightDate.value) }
             val channel = supabase.channel(date.aircraft)
-            global_channel = channel
+            globalChannel = channel
             viewModelScope.launch {
                 channel.subscribe(blockUntilSubscribed = true)
             }
