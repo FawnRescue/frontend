@@ -10,6 +10,7 @@ data class NetworkImage(
     val created_at: String,
     val rgb_path: String?,
     val thermal_path: String?,
+    val binary_path: String?,
     val location: LatLong,
     val flight_date: String,
     val processed: Boolean,
@@ -22,6 +23,7 @@ fun NetworkImage.toLocal(): Image {
         LocalDateTime.parse(created_at.split("+")[0]), //TODO Fix parsing
         rgb_path,
         thermal_path,
+        binary_path,
         location,
         FlightDateId(flight_date),
         processed,
@@ -34,6 +36,7 @@ data class Image(
     val created_at: LocalDateTime,
     val rgb_path: String?,
     val thermal_path: String?,
+    val binary_path: String?,
     val location: LatLong,
     val flight_date: FlightDateId,
     val processed: Boolean,

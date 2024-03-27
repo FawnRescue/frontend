@@ -1,5 +1,6 @@
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,15 +14,21 @@ import androidx.compose.ui.layout.ContentScale
 @Composable
 actual fun ImageFromByteArray(byteArray: ByteArray, modifier: Modifier, scale: ContentScale) {
     var imageBitmap by remember { mutableStateOf(ImageBitmap(height = 1, width = 1)) }
-    imageBitmap = BitmapFactory.decodeByteArray(
+    println(byteArray)
+    val bitmap = BitmapFactory.decodeByteArray(
         byteArray,
         0,
         byteArray.size
-    ).asImageBitmap()
-    Image(
-        modifier = modifier,
-        bitmap = imageBitmap,
-        contentDescription = "",
-        contentScale = scale
     )
+    if (bitmap != null) {
+        imageBitmap = bitmap.asImageBitmap()
+        Image(
+            modifier = modifier,
+            bitmap = imageBitmap,
+            contentDescription = "",
+            contentScale = scale
+        )
+    } else {
+        Text(text = "Couldn't load Image!")
+    }
 }

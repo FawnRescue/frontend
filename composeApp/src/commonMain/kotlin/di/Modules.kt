@@ -6,6 +6,7 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import repository.AircraftRepo
 import repository.CommandRepo
+import repository.DetectionRepo
 import repository.FlightDateRepo
 import repository.FlightPlanRepo
 import repository.ImageDataRepo
@@ -34,4 +35,5 @@ val sharedModule = module {
     singleOf(::ImageRepo)
     singleOf(::ImageDataRepo)
     singleOf(::LocationService)
+    singleOf(::DetectionRepo)
 }
