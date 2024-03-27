@@ -26,5 +26,6 @@ enum class NAV(
     HANGAR("Hangar", "/hangar", Icons.Rounded.Flight),
     HANGAR_DISCOVER("Discover Aircraft", "/hangar/discover", null, false, false),
     PROFILE("Profile", "/profile", null, false, false),
-    PILOT("Pilot", "/pilot", null, false, false);
+    PILOT("Pilot", "/pilot", null, false, false),
+    FLIGHT_DATE_VIEWER("Flight Date Viewer", "/planning/flight_date_viewer", null, false, false);
 }
