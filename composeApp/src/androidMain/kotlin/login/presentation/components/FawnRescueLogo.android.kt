@@ -10,7 +10,7 @@ import org.fawnrescue.project.R
 actual fun FawnRescueLogo(modifier: Modifier) {
     Image(
         modifier = modifier,
-        painter = painterResource(id = R.mipmap.ic_launcher_foreground),
+        painter = painterResource(id = R.drawable.logo),
         contentDescription = null
     )
 }

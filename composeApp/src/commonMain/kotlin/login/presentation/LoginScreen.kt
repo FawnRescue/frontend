@@ -64,7 +64,7 @@ fun LoginScreen(
     ) {
         Column(
             modifier = Modifier
-                .align(Alignment.Center)
+                .align(Alignment.TopCenter)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -77,7 +77,7 @@ fun LoginScreen(
                 return
             }
 
-            FawnRescueLogo(Modifier.size(250.dp))
+            FawnRescueLogo(Modifier.size(500.dp))
 
             // Error message display
             state.errorLogin?.let { errorMessage ->
