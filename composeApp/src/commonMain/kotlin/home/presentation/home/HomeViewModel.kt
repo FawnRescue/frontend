@@ -14,8 +14,10 @@ import moe.tlaster.precompose.navigation.Navigator
 import navigation.presentation.NAV
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.mobilenativefoundation.store.store5.StoreReadRequest
 import org.mobilenativefoundation.store.store5.StoreReadResponse
 import repository.FlightDateRepo
+import repository.MissionKey
 import repository.MissionRepo
 import repository.domain.Mission
 
@@ -25,27 +27,23 @@ class HomeViewModel : ViewModel(), KoinComponent {
     private val flightDateRepo by inject<FlightDateRepo>()
     private val missionRepo by inject<MissionRepo>()
 
-    private val _state = MutableStateFlow(HomeState(dates = emptyMap(), datesLoading = emptyMap()))
+    private val _state = MutableStateFlow(HomeState(dates = emptyMap()))
     val state = _state.asStateFlow()
 
     init {
-        loadMissions()
+        loadMissions(false)
     }
 
-    private fun loadMissions() {
+    private fun loadMissions(refresh: Boolean) {
         viewModelScope.launch {
-            missionRepo.getMissions().collect { response ->
+            missionRepo.store.stream(
+                StoreReadRequest.cached(
+                    MissionKey.Read.ByOwner, refresh
+                )
+            ).collect { response ->
                 when (response) {
                     is StoreReadResponse.Data -> response.value.map { mission ->
-                        _state.update {
-                            it.copy(
-                                datesLoading = it.datesLoading.plus(
-                                    Pair(mission, true)
-                                ),
-                                loading = false
-                            )
-                        }
-                        loadDates(mission)
+                        loadDates(mission, response.value.size)
                     }
 
                     is StoreReadResponse.Error.Exception -> Napier.e(
@@ -54,14 +52,8 @@ class HomeViewModel : ViewModel(), KoinComponent {
                     )
 
                     is StoreReadResponse.Error.Message -> Napier.e(response.message)
-                    is StoreReadResponse.Loading -> _state.update { state ->
-                        state.copy(loading = true)
-                    }
-
-                    is StoreReadResponse.NoNewData -> _state.update { state ->
-                        state.copy(loading = false)
-                    }
-
+                    is StoreReadResponse.Loading -> {}
+                    is StoreReadResponse.NoNewData -> {}
                     is StoreReadResponse.Error.Custom<*> -> TODO()
                     StoreReadResponse.Initial -> TODO()
                 }
@@ -70,7 +62,7 @@ class HomeViewModel : ViewModel(), KoinComponent {
         }
     }
 
-    private fun loadDates(mission: Mission) {
+    private fun loadDates(mission: Mission, missionAmount: Int) {
         viewModelScope.launch {
             flightDateRepo.getDates(mission.id).collect { dateResponse ->
                 when (dateResponse) {
@@ -79,9 +71,7 @@ class HomeViewModel : ViewModel(), KoinComponent {
                             dates = it.dates.plus(
                                 Pair(mission, dateResponse.value)
                             ),
-                            datesLoading = it.datesLoading.plus(
-                                Pair(mission, false)
-                            )
+                            loading = it.dates.size + 1 == missionAmount
                         )
                     }
 
@@ -89,21 +79,8 @@ class HomeViewModel : ViewModel(), KoinComponent {
                     is StoreReadResponse.Error.Exception -> TODO()
                     is StoreReadResponse.Error.Message -> TODO()
                     StoreReadResponse.Initial -> TODO()
-                    is StoreReadResponse.Loading -> _state.update {
-                        it.copy(
-                            datesLoading = it.datesLoading.plus(
-                                Pair(mission, true)
-                            )
-                        )
-                    }
-
-                    is StoreReadResponse.NoNewData -> _state.update {
-                        it.copy(
-                            datesLoading = it.datesLoading.plus(
-                                Pair(mission, false)
-                            )
-                        )
-                    }
+                    is StoreReadResponse.Loading -> {}
+                    is StoreReadResponse.NoNewData -> {}
                 }
 
             }
@@ -128,6 +105,19 @@ class HomeViewModel : ViewModel(), KoinComponent {
                 .also {
                     navigator.navigate(NAV.PILOT.path)
                 }
+
+            is HomeEvent.NewRefreshDistance -> {
+                _state.update {
+                    it.copy(
+                        refreshCurrentDistance = event.distance
+                    )
+                }
+            }
+
+            HomeEvent.Refresh -> {
+                _state.update { it.copy(loading = true) }
+                loadMissions(true)
+            }
         }
     }
 }
