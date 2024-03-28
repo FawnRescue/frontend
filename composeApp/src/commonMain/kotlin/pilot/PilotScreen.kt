@@ -70,6 +70,7 @@ import repository.domain.Commands.RTH
 import repository.domain.Commands.TAKEOFF
 import repository.domain.Detection
 import repository.domain.InsertableCommand
+import kotlin.math.roundToInt
 
 fun Location.toLatLong(): LatLong {
     return LatLong(this.latitude, this.longitude)
@@ -259,15 +260,17 @@ fun OSD(status: AircraftStatus?) {
             Spacer(modifier = Modifier.height(8.dp))
 
             DisplayRow(OSDRowType.STATE, status.state.name)
-            DisplayRow(
-                OSDRowType.LOCATION,
-                "${status.location?.latitude}, ${status.location?.longitude}"
-            )
-
-            status.altitude?.let { DisplayRow(OSDRowType.ALTITUDE, "${it}m") }
+            status.altitude?.let { DisplayRow(OSDRowType.ALTITUDE, "${it.roundToDecimals(1)}m") }
             status.numSatellites?.let { DisplayRow(OSDRowType.SATELLITES, "$it") }
         }
     }
+}
+
+fun Float.roundToDecimals(decimals: Int): Float {
+    var dotAt = 1
+    repeat(decimals) { dotAt *= 10 }
+    val roundedValue = (this * dotAt).roundToInt()
+    return (roundedValue / dotAt) + (roundedValue % dotAt).toFloat() / dotAt
 }
 
 @Composable
