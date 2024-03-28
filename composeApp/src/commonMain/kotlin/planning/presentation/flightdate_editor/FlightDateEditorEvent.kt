@@ -13,5 +13,6 @@ sealed interface FlightDateEditorEvent {
     data class CloseTimePicker(val time: LocalTime?) : FlightDateEditorEvent
     data object OpenStartTimePicker : FlightDateEditorEvent
     data object OpenEndTimePicker : FlightDateEditorEvent
+    data object GotoFlightDateViewer : FlightDateEditorEvent
 }
 

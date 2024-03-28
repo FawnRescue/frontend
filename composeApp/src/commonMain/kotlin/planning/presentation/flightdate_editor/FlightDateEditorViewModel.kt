@@ -199,6 +199,8 @@ class FlightDateEditorViewModel : ViewModel(), KoinComponent {
                 }
                 _state.updateSaveState()
             }
+
+            FlightDateEditorEvent.GotoFlightDateViewer -> navigator.navigate(NAV.FLIGHT_DATE_VIEWER.path)
         }
     }
 }

@@ -137,6 +137,15 @@ fun FlightDateEditorScreen(onEvent: (FlightDateEditorEvent) -> Unit, state: Flig
 
             Spacer(Modifier.height(padding))
 
+            Button(
+                onClick = { onEvent(FlightDateEditorEvent.GotoFlightDateViewer) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("View Mission Details")
+            }
+
+            Spacer(Modifier.height(padding))
+
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.fillMaxWidth()
@@ -160,6 +169,7 @@ fun FlightDateEditorScreen(onEvent: (FlightDateEditorEvent) -> Unit, state: Flig
             }
         }
     }
+
 
     // Handle DatePicker and TimePicker dialogs outside the Scaffold for better overlay handling
     if (state.isDatePickerOpen) {

@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -158,19 +159,30 @@ fun DetectionDialog(
     onDismiss: () -> Unit,
 ) {
     Dialog(onDismissRequest = onDismiss) {
-        Column {
+        Column(
+            modifier = Modifier.fillMaxWidth(0.8f),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             if (rgb == null) {
                 CircularProgressIndicator()
             } else {
-                ImageFromByteArray(rgb)
+                ImageFromByteArray(
+                    modifier = Modifier.fillMaxWidth(),
+                    byteArray = rgb,
+                    scale = ContentScale.FillWidth
+                )
             }
             if (thermal == null) {
                 CircularProgressIndicator()
             } else {
-                DetectionImageFromByteArray(thermal, detection)
+                DetectionImageFromByteArray(
+                    modifier = Modifier.fillMaxWidth(),
+                    byteArray = thermal,
+                    detection = detection,
+                    scale = ContentScale.FillWidth
+                )
             }
         }
-
     }
 }
 

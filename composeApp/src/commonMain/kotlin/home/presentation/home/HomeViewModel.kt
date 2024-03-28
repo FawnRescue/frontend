@@ -43,7 +43,9 @@ class HomeViewModel : ViewModel(), KoinComponent {
             ).collect { response ->
                 when (response) {
                     is StoreReadResponse.Data -> response.value.map { mission ->
-                        loadDates(mission, response.value.size)
+                        viewModelScope.launch {
+                            loadDates(mission, response.value.size)
+                        }
                     }
 
                     is StoreReadResponse.Error.Exception -> Napier.e(
@@ -65,13 +67,15 @@ class HomeViewModel : ViewModel(), KoinComponent {
     private fun loadDates(mission: Mission, missionAmount: Int) {
         viewModelScope.launch {
             flightDateRepo.getDates(mission.id).collect { dateResponse ->
+                println("${state.value.dates.size + 1} : $missionAmount")
+                println("${state.value.dates.size + 1 == missionAmount}")
                 when (dateResponse) {
                     is StoreReadResponse.Data -> _state.update {
                         it.copy(
                             dates = it.dates.plus(
                                 Pair(mission, dateResponse.value)
                             ),
-                            loading = it.dates.size + 1 == missionAmount
+                            loading = (it.dates.size + 1) < missionAmount
                         )
                     }
 

@@ -44,6 +44,8 @@ import pilot.PilotScreen
 import pilot.PilotViewModel
 import planning.presentation.flightdate_editor.FlightDateEditorScreen
 import planning.presentation.flightdate_editor.FlightDateEditorViewModel
+import planning.presentation.flightdate_viewer.FlightDateViewerScreen
+import planning.presentation.flightdate_viewer.FlightDateViewerViewModel
 import planning.presentation.flightplan_editor.FlightPlanEditorScreen
 import planning.presentation.flightplan_editor.FlightPlanEditorViewModel
 import planning.presentation.mission_editor.MissionEditorScreen
@@ -238,6 +240,20 @@ fun NavigationScreen(
                             val statePilot by viewModel.state.collectAsState()
                             PilotScreen(
                                 state = statePilot, onEvent = viewModel::onEvent
+                            )
+                        }
+
+                        NAV.FLIGHT_DATE_VIEWER -> scene(
+                            route = it.path, navTransition = NavTransition()
+                        ) {
+                            val viewModel = getViewModel(
+                                key = "flight-date-viewer-screen",
+                                factory = viewModelFactory {
+                                    FlightDateViewerViewModel()
+                                })
+                            val stateFlightDateViewer by viewModel.state.collectAsState()
+                            FlightDateViewerScreen(
+                                state = stateFlightDateViewer, onEvent = viewModel::onEvent
                             )
                         }
                     }
