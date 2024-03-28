@@ -1,5 +1,6 @@
 package pilot
 
+import DetectionImageFromByteArray
 import ImageFromByteArray
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -166,7 +167,7 @@ fun DetectionDialog(
             if (thermal == null) {
                 CircularProgressIndicator()
             } else {
-                ImageFromByteArray(thermal)
+                DetectionImageFromByteArray(thermal, detection)
             }
         }
 
