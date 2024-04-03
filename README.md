@@ -18,7 +18,8 @@
   </p>
 </p>
 
-This is a Kotlin Multiplatform project targeting Android, iOS, Desktop.
+## Overview
+This is a Kotlin Multiplatform project for the mobile app of the FawnRescue project targeting Android, iOS, Desktop.
 
 * `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
   It contains several subfolders:
@@ -32,6 +33,15 @@ This is a Kotlin Multiplatform project targeting Android, iOS, Desktop.
 
 
 Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+
+The app allows its users to:
+- Login to FawnRescue
+- Add and edit Missions
+- Add and edit Flight Dates
+- Create Flight Plans for a Mission
+- Connect to a Drone
+- Control a Drone during a active Flight Date
+- View Fawn detections 
 
 # Setup
 if there are problems with the iosX64() library import set `repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)`
