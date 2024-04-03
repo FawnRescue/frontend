@@ -44,6 +44,8 @@ The app allows its users to:
 - View Fawn detections 
 
 # Setup
-if there are problems with the iosX64() library import set `repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)`
-- Set secrets.properties
-- Set debug.keystore in ~/.android/
+1. Configure a supabase project online based on the fawnrescue/backend repository.
+1. Open the project in Android Studio
+3. Create a file `secrets.properties` based on the template
+1. if there are problems with the iosX64() library import set `repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)`
+1. For the Google Maps API to work you need to either use our debug.keystore in ~/.android/ or apply for access yourself
