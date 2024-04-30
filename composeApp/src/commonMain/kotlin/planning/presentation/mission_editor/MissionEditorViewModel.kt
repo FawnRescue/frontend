@@ -45,7 +45,8 @@ class MissionEditorViewModel : ViewModel(), KoinComponent {
     init {
         supabase.auth.currentUserOrNull()?.id?.let { authId ->
             _state.update {
-                it.copy(editable = missionRepo.selectedMission.value?.owner == UserId(authId))
+                val selectedMission = missionRepo.selectedMission.value
+                it.copy(editable = selectedMission == null || selectedMission.owner == UserId(authId))
             }
         }
         loadDates()
