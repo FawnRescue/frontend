@@ -7,10 +7,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Logout
@@ -28,6 +28,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import home.presentation.home.HomeEvent.DateSelected
@@ -46,7 +47,7 @@ fun HomeScreen(onEvent: (HomeEvent) -> Unit, state: HomeState) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            TopAppBar(title = { },
+            TopAppBar(title = {Text("Flight Date Overview")},
                 actions = {
                     IconButton(onClick = { onEvent(ProfileButton) }) {
                         Icon(
@@ -101,17 +102,14 @@ fun HomeScreen(onEvent: (HomeEvent) -> Unit, state: HomeState) {
                 })
         ) {
 
-            Text(
-                "Available Flight Dates:",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Spacer(Modifier.height(8.dp))
             AnimatedVisibility(visible = (state.loading || state.refreshCurrentDistance / threshold > 0)) {
                 if (state.loading) {
                     LinearProgressIndicator(Modifier.fillMaxWidth())
                 } else {
-                    LinearProgressIndicator(state.refreshCurrentDistance / threshold, Modifier.fillMaxWidth())
+                    LinearProgressIndicator(
+                        state.refreshCurrentDistance / threshold,
+                        Modifier.fillMaxWidth()
+                    )
                 }
             }
 
@@ -126,20 +124,21 @@ fun HomeScreen(onEvent: (HomeEvent) -> Unit, state: HomeState) {
                         return@forEach
                     }
                     item {
+                        Divider(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp))
                         Text(
                             text = entry.key.description,
-                            style = MaterialTheme.typography.bodyLarge,
+                            style = MaterialTheme.typography.headlineMedium,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 8.dp)
                         )
-                        Divider(modifier = Modifier.fillMaxWidth())
+                        Divider(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp))
                     }
                     items(entry.value) { date ->
                         FlightDateListItem(
                             date,
                             { onEvent(DateSelected(date)) },
-                            modifier = Modifier.offset(10.dp)
+                            modifier = Modifier.clip(RoundedCornerShape(8.dp, 8.dp, 0.dp, 0.dp))
                         )
                         Spacer(Modifier.height(2.dp))
 

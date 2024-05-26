@@ -1,41 +1,44 @@
 package planning.presentation.components
 
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Flight
+import androidx.compose.material.icons.filled.PinDrop
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import repository.domain.Mission
 
 
 @Composable
-fun MissionListItem(mission: Mission, modifier: Modifier = Modifier) {
-
+fun MissionListItem(
+    mission: Mission,
+    backgroundColor: Color = MaterialTheme.colorScheme.secondaryContainer,
+    modifier: Modifier = Modifier,
+) {
     ListItem(
-        modifier = modifier,
+        colors = ListItemDefaults.colors(
+            containerColor = backgroundColor,
+        ),
+        modifier = modifier.clip(
+            RoundedCornerShape(8.dp)
+        ),
         leadingContent = {
-            // Optional: Icon based on mission's status or other criteria
             Icon(
-                imageVector = Icons.Default.Flight, // Choose an icon relevant to your application
+                imageVector = Icons.Default.PinDrop,
                 contentDescription = "Mission",
                 modifier = Modifier.size(24.dp)
             )
         },
-        overlineContent = {
-            // Displaying the creation date of the mission
-            Text(
-                text = "Created: ${mission.created_at}",
-                style = MaterialTheme.typography.labelSmall
-            )
-        },
         headlineContent = {
-            // Main content: mission description
-            Text(mission.description, style = MaterialTheme.typography.bodyMedium)
+            Text(mission.description, style = MaterialTheme.typography.headlineSmall)
         }
     )
 }

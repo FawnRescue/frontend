@@ -3,6 +3,7 @@ package planning.presentation.mission_list
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import io.github.aakira.napier.Napier
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.gotrue.auth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -18,13 +19,14 @@ import planning.presentation.mission_list.MissionListEvent.ExistingMissionSelect
 import repository.MissionKey
 import repository.MissionRepo
 import repository.domain.Mission
+import repository.domain.UserId
 
 class MissionListViewModel : ViewModel(), KoinComponent {
     private val navigator: Navigator by inject<Navigator>()
     private val missionRepo by inject<MissionRepo>()
     private val supabase by inject<SupabaseClient>()
     private val _state =
-        MutableStateFlow(MissionListState(missions = emptyList()))
+        MutableStateFlow(MissionListState(ownMissions = emptyList(), otherMissions = emptyList()))
     val state = _state.asStateFlow()
 
     init {
@@ -33,6 +35,7 @@ class MissionListViewModel : ViewModel(), KoinComponent {
 
 
     private fun loadMissions() {
+        val userId = supabase.auth.currentUserOrNull()?.id?.let { UserId(it) }
         viewModelScope.launch {
             missionRepo.store.stream(
                 StoreReadRequest.cached(
@@ -41,7 +44,11 @@ class MissionListViewModel : ViewModel(), KoinComponent {
             ).collect { response ->
                 when (response) {
                     is StoreReadResponse.Data -> _state.update {
-                        it.copy(missions = response.value, loading = false)
+                        it.copy(
+                            ownMissions = response.value.filter { mission -> mission.owner == userId },
+                            otherMissions = response.value.filter { mission -> mission.owner != userId },
+                            loading = false
+                        )
                     }
 
                     is StoreReadResponse.Error.Exception -> Napier.e(
