@@ -6,8 +6,8 @@ import repository.domain.NetworkFlightDate
 
 data class MissionEditorState(
     val selectedMission: Mission?,
-    val editedMission: InsertableMission,
-    val dates: List<NetworkFlightDate>,
+    val editedMission: InsertableMission? = null,
+    val dates: List<NetworkFlightDate> = emptyList(),
     val datesLoading: Boolean = true,
     val editable: Boolean = false,
 )
