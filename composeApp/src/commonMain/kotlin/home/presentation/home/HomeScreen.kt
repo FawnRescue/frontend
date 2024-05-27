@@ -129,7 +129,6 @@ fun HomeScreen(onEvent: (HomeEvent) -> Unit, state: HomeState) {
                                 .fillMaxWidth()
                                 .padding(vertical = 8.dp)
                         )
-                        Divider(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp))
                     }
                     items(entry.value) { date ->
                         FlightDateListItem(

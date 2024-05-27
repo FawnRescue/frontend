@@ -92,7 +92,7 @@ fun Maps_preview() {
         getRandomLocation(initialLocation, 0.0005f),
         getRandomLocation(initialLocation, 0.0005f),
     ).sortPolarCoordinates()
-    
+
     val date = LocalDateTime.parse("2015-08-04T10:11:30")
     val detections = listOf(
         Detection(
@@ -131,7 +131,7 @@ fun Maps_preview() {
             getRandomLocation(initialLocation, 0.0005f),
         ),
 
-    )
+        )
 
     val isPlanningMode = false
 
