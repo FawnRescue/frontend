@@ -33,4 +33,8 @@ data class GoogleMapsConfig(
     val showCheckpointMarkers: Boolean = false,
     val showPath: Boolean = false,
     val showHome: Boolean = false,
+    val showDrone: Boolean = false,
+    val showHelper: Boolean = false,
+    val showPilot: Boolean = false,
+    val showDetections: Boolean = false,
 )
