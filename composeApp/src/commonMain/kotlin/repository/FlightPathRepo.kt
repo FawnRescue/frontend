@@ -76,8 +76,8 @@ class FlightPlanRepo : KoinComponent {
 
     fun calculateCheckpoints(
         boundary: List<LatLong>,
-        cameraFOV: Double = 35.0,
-        flightHeight: Double = 10.0,
+        cameraFOV: Double = 60.0,
+        flightHeight: Double = 15.0,
         overlap: Double = 0.1,
     ): List<LatLong> {
         //TODO remove defaults

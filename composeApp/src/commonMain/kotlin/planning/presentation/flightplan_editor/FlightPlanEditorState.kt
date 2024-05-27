@@ -14,4 +14,5 @@ data class FlightPlanEditorState(
     val showCheckpointMarkers: Boolean = false,
     val showPath: Boolean = true,
     val planLoading: Boolean = true,
+    val showLayers: Boolean = false
 )
