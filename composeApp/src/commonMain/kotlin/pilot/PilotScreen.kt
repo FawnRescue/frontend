@@ -37,7 +37,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
@@ -59,6 +58,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import pilot.PilotEvent.DetectionDeselected
 import pilot.PilotEvent.DetectionSelected
+import pilot.PilotEvent.ResetDemo
 import pilot.PilotEvent.SendCommand
 import planning.presentation.flightplan_editor.GoogleMaps
 import presentation.maps.LatLong
@@ -124,6 +124,7 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
                 onKill = { onEvent(SendCommand(command.copy(command = KILL))) },
                 onTakeoff = { onEvent(SendCommand(command.copy(command = TAKEOFF))) },
                 onRTH = { onEvent(SendCommand(command.copy(command = RTH))) },
+                onReset = { onEvent(ResetDemo) }
             )
         }
         Card {
@@ -190,7 +191,7 @@ fun DetectionDialog(
 // Composable for a single checklist row
 @Composable
 fun ChecklistRow(item: ChecklistItem) {
-    val loadedColor = Color.Green
+    val loadedColor = MaterialTheme.colorScheme.primary
     val unloadedColor = MaterialTheme.colorScheme.error
 
     Row {
@@ -296,6 +297,7 @@ fun Controls(
     onELAND: () -> Unit,
     onContinue: () -> Unit,
     onDisarm: () -> Unit,
+    onReset: () -> Unit,
 ) {
     val hapticFeedback = LocalHapticFeedback.current
     Column(modifier = Modifier.padding(8.dp)) {
@@ -320,6 +322,7 @@ fun Controls(
                         "Emergency Land" to onELAND,
                         "Kill" to onKill,
                         "Continue Mission" to onContinue,
+                        "Reset Demo" to onReset,
                     )
                 ) { (text, onClick) ->
                     val enabled = when (text) {
