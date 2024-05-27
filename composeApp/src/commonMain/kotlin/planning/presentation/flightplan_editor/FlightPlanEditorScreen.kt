@@ -1,6 +1,7 @@
 package planning.presentation.flightplan_editor
 
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -83,39 +84,42 @@ fun FlightPlanEditorScreen(onEvent: (FlightPlanEditorEvent) -> Unit, state: Flig
             ) {
                 Icon(RescueIcons.Layers, "Layers")
             }
-            if (state.showLayers) {
-                Spacer(Modifier.height(2.dp))
-                FloatingActionButton(
-                    onClick = { onEvent(ToggleBoundaryMarkers) },
-                    modifier = Modifier.zIndex(1f)
-                        .alpha(if (state.showBoundaryMarkers) 1.0f else 0.5f)
-                ) {
-                    Icon(RescueIcons.LocationOn, "Boundary Marker")
-                }
-                Spacer(Modifier.height(2.dp))
-                FloatingActionButton(
-                    onClick = { onEvent(ToggleCheckpointMarkers) },
-                    modifier = Modifier.zIndex(1f)
-                        .alpha(if (state.showCheckpointMarkers) 1.0f else 0.5f)
-                ) {
-                    Icon(RescueIcons.PhotoCamera, "Checkpoint Marker")
 
-                }
-                Spacer(Modifier.height(2.dp))
-                FloatingActionButton(
-                    onClick = { onEvent(ToggleBoundary) },
-                    modifier = Modifier.zIndex(1f).alpha(if (state.showBoundary) 1.0f else 0.5f)
-                ) {
-                    Icon(RescueIcons.CropSquare, "Boundary")
+            AnimatedVisibility(state.showLayers) {
+                Column {
+                    Spacer(Modifier.height(2.dp))
+                    FloatingActionButton(
+                        onClick = { onEvent(ToggleBoundaryMarkers) },
+                        modifier = Modifier.zIndex(1f)
+                            .alpha(if (state.showBoundaryMarkers) 1.0f else 0.5f)
+                    ) {
+                        Icon(RescueIcons.LocationOn, "Boundary Marker")
+                    }
+                    Spacer(Modifier.height(2.dp))
+                    FloatingActionButton(
+                        onClick = { onEvent(ToggleCheckpointMarkers) },
+                        modifier = Modifier.zIndex(1f)
+                            .alpha(if (state.showCheckpointMarkers) 1.0f else 0.5f)
+                    ) {
+                        Icon(RescueIcons.PhotoCamera, "Checkpoint Marker")
 
-                }
-                Spacer(Modifier.height(2.dp))
-                FloatingActionButton(
-                    onClick = { onEvent(TogglePath) },
-                    modifier = Modifier.zIndex(1f)
-                        .alpha(if (state.showPath) 1.0f else 0.5f)
-                ) {
-                    Icon(RescueIcons.Route, "Path")
+                    }
+                    Spacer(Modifier.height(2.dp))
+                    FloatingActionButton(
+                        onClick = { onEvent(ToggleBoundary) },
+                        modifier = Modifier.zIndex(1f).alpha(if (state.showBoundary) 1.0f else 0.5f)
+                    ) {
+                        Icon(RescueIcons.CropSquare, "Boundary")
+
+                    }
+                    Spacer(Modifier.height(2.dp))
+                    FloatingActionButton(
+                        onClick = { onEvent(TogglePath) },
+                        modifier = Modifier.zIndex(1f)
+                            .alpha(if (state.showPath) 1.0f else 0.5f)
+                    ) {
+                        Icon(RescueIcons.Route, "Path")
+                    }
                 }
             }
         }
