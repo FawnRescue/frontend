@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Flight
 import androidx.compose.material3.Button
@@ -36,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import core.utils.RescueIcons
 import pilot.OSD
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,7 +49,7 @@ fun HangarScreen(onEvent: (HangarEvent) -> Unit, state: HangarState) {
             shape = RoundedCornerShape(20.dp)
         ) {
             Icon(
-                imageVector = Icons.Rounded.Add,
+                imageVector = RescueIcons.Add,
                 contentDescription = "Add aircraft"
             )
         }
@@ -84,7 +84,7 @@ fun HangarScreen(onEvent: (HangarEvent) -> Unit, state: HangarState) {
                         headlineContent = { Text(text = aircraft.name) },
                         leadingContent = {
                             Icon(
-                                imageVector = Icons.Rounded.Flight,
+                                imageVector = RescueIcons.Flight,
                                 contentDescription = aircraft.name,
                                 modifier = Modifier.size(25.dp),
                                 tint = MaterialTheme.colorScheme.onSecondaryContainer

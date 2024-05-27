@@ -7,17 +7,30 @@ import repository.domain.Detection
 
 @Composable
 expect fun GoogleMaps(
-    currentPosition: LatLong,
-    onMapClick: (LatLong) -> Unit,
-    onMarkerClick: (LatLong) -> Unit,
-    markers: List<LatLong>,
-    checkpoints: List<LatLong>,
-    showBoundaryMarkers: Boolean,
-    showBoundary: Boolean,
-    showCheckpointMarkers: Boolean,
-    showPath: Boolean,
-    dronePosition: LatLong? = null,
-    personPositions: List<PersonLocation>? = null,
-    detections: List<Detection>? = null,
-    onDetectionMarkerClick: (Detection) -> Unit,
+    config: GoogleMapsConfig,
+    data: GoogleMapsData,
+    functions: GoogleMapsFunctions,
+    )
+
+data class GoogleMapsFunctions(
+    val onMapClick: (LatLong) -> Unit = {},
+    val onMarkerClick: (LatLong) -> Unit = {},
+    val onDetectionMarkerClick: (Detection) -> Unit = {},
+)
+
+data class GoogleMapsData(
+    val initialPosition: LatLong,
+    val drone: LatLong? = null,
+    val boundary: List<LatLong> = listOf(),
+    val checkpoints: List<LatLong> = listOf(),
+    val personPositions: List<PersonLocation> = listOf(),
+    val detections: List<Detection> = listOf(),
+)
+
+data class GoogleMapsConfig(
+    val showBoundaryMarkers: Boolean = false,
+    val showBoundary: Boolean = false,
+    val showCheckpointMarkers: Boolean = false,
+    val showPath: Boolean = false,
+    val showHome: Boolean = false,
 )

@@ -3,18 +3,14 @@ package login.presentation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -25,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import core.utils.RescueIcons
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.compose.auth.composable.NativeSignInResult
@@ -92,7 +89,7 @@ fun LoginScreen(
             }
             Button(onClick = { onEvent(LoginEvent.OnShowEmailDialog(true)) }) {
                 Icon(
-                    Icons.Rounded.Email, "SignIn with Email", Modifier.size(
+                    RescueIcons.Email, "SignIn with Email", Modifier.size(
                         24.dp
                     )
                 )
@@ -111,7 +108,7 @@ fun LoginScreen(
                 )
             }) {
                 Icon(
-                    Icons.Rounded.Email, "SignUp with Email", Modifier.size(
+                    RescueIcons.Email, "SignUp with Email", Modifier.size(
                         24.dp
                     )
                 )

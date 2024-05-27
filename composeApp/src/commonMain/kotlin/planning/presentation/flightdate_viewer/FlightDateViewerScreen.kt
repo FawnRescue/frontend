@@ -2,9 +2,7 @@ package planning.presentation.flightdate_viewer
 
 
 import androidx.compose.foundation.layout.offset
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Cancel
-import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -13,19 +11,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import core.utils.RescueIcons
 import pilot.DetectionDialog
-import pilot.PilotEvent
-import planning.presentation.flightplan_editor.FlightPlanEditorEvent.MarkerAdded
-import planning.presentation.flightplan_editor.FlightPlanEditorEvent.MarkerRemoved
-import planning.presentation.flightplan_editor.FlightPlanEditorEvent.SaveBoundary
-import planning.presentation.flightplan_editor.FlightPlanEditorEvent.ToggleBoundary
-import planning.presentation.flightplan_editor.FlightPlanEditorEvent.ToggleBoundaryMarkers
-import planning.presentation.flightplan_editor.FlightPlanEditorEvent.ToggleCheckpointMarkers
-import planning.presentation.flightplan_editor.FlightPlanEditorEvent.TogglePath
 import planning.presentation.flightplan_editor.GoogleMaps
+import planning.presentation.flightplan_editor.GoogleMapsConfig
+import planning.presentation.flightplan_editor.GoogleMapsData
+import planning.presentation.flightplan_editor.GoogleMapsFunctions
 import presentation.maps.LatLong
 import presentation.maps.getCenter
-import repository.domain.Detection
 
 @Composable
 fun FlightDateViewerScreen(onEvent: (FlightDateViewerEvent) -> Unit, state: FlightDateViewerState) {
@@ -40,22 +33,27 @@ fun FlightDateViewerScreen(onEvent: (FlightDateViewerEvent) -> Unit, state: Flig
     }
 
     GoogleMaps(
-        if (state.selectedFlightPlan != null) state.selectedFlightPlan.boundary.getCenter() else testLocation,
-        onMapClick = {},
-        onMarkerClick = {},
-        state.boundary,
-        state.checkpoints ?: listOf(),
-        showBoundaryMarkers = state.showBoundaryMarkers,
-        showBoundary = state.showBoundary,
-        showCheckpointMarkers = state.showCheckpointMarkers,
-        showPath = state.showPath,
-        detections = if (state.showDetectionMarkers) state.detections else emptyList(),
-        onDetectionMarkerClick = { onEvent(FlightDateViewerEvent.DetectionSelected(it)) }
+        data = GoogleMapsData(
+            initialPosition = if (state.selectedFlightPlan != null) state.selectedFlightPlan.boundary.getCenter() else testLocation,
+            boundary = state.boundary,
+            checkpoints = state.checkpoints ?: listOf(),
+            detections = if (state.showDetectionMarkers) state.detections else emptyList(),
+
+            ),
+        config = GoogleMapsConfig(
+            showBoundaryMarkers = state.showBoundaryMarkers,
+            showBoundary = state.showBoundary,
+            showCheckpointMarkers = state.showCheckpointMarkers,
+            showPath = state.showPath,
+        ),
+        functions = GoogleMapsFunctions(
+            onDetectionMarkerClick = { onEvent(FlightDateViewerEvent.DetectionSelected(it)) }
+        ),
     )
     FloatingActionButton(
         onClick = { onEvent(FlightDateViewerEvent.Cancel) },
     ) {
-        Icon(Icons.Rounded.Cancel, "Save")
+        Icon(RescueIcons.Cancel, "Save")
     }
     FloatingActionButton(
         onClick = { onEvent(FlightDateViewerEvent.ToggleBoundaryMarkers) },

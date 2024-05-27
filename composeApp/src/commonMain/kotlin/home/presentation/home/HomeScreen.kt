@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Logout
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -31,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import core.utils.RescueIcons
 import home.presentation.home.HomeEvent.DateSelected
 import home.presentation.home.HomeEvent.Logout
 import home.presentation.home.HomeEvent.ProfileButton
@@ -50,14 +50,11 @@ fun HomeScreen(onEvent: (HomeEvent) -> Unit, state: HomeState) {
             TopAppBar(title = {Text("Flight Date Overview")},
                 actions = {
                     IconButton(onClick = { onEvent(ProfileButton) }) {
-                        Icon(
-                            imageVector = Icons.Rounded.Person,
-                            contentDescription = "Profile"
-                        )
+                        Icon(imageVector = RescueIcons.Person, contentDescription = "Profile")
                     }
                     IconButton(onClick = { onEvent(Logout) }) {
                         Icon(
-                            Icons.Rounded.Logout,
+                            RescueIcons.Logout,
                             contentDescription = "Logout"
                         )
                     }

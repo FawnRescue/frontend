@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -24,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import core.utils.RescueIcons
 import planning.presentation.components.MissionListItem
 import planning.presentation.mission_list.MissionListEvent.CreateNewMission
 import planning.presentation.mission_list.MissionListEvent.ExistingMissionSelected
@@ -32,7 +32,7 @@ import planning.presentation.mission_list.MissionListEvent.ExistingMissionSelect
 fun MissionListScreen(onEvent: (MissionListEvent) -> Unit, state: MissionListState) {
     Scaffold(modifier = Modifier.fillMaxSize(), floatingActionButton = {
         FloatingActionButton(onClick = { onEvent(CreateNewMission) }) {
-            Icon(Icons.Rounded.Add, contentDescription = "Add Mission")
+            Icon(RescueIcons.Add, contentDescription = "Add Mission")
         }
     }) {
         Box(modifier = Modifier.padding(it)) {

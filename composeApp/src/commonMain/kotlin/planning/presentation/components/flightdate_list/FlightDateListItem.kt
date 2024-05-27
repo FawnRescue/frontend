@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -29,12 +30,13 @@ fun formatDate(date: LocalDateTime): String {
 fun FlightDateListItem(
     flightDate: NetworkFlightDate,
     onClick: (() -> Unit)?,
+    backgroundColor: Color = MaterialTheme.colorScheme.secondaryContainer,
     modifier: Modifier = Modifier,
 ) {
     val date = flightDate.start_date.toLocalDateTime(TimeZone.currentSystemDefault())
     ListItem(
         colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            containerColor = backgroundColor,
         ),
         modifier = if (onClick != null) modifier.clickable { onClick() } else modifier,
         leadingContent = {
