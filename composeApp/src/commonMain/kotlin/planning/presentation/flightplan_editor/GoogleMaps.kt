@@ -22,6 +22,7 @@ data class GoogleMapsData(
     val initialPosition: LatLong,
     val homePosition: LatLong? = null,
     val drone: LatLong? = null,
+    val droneRotation: Double? = null,
     val boundary: List<LatLong> = listOf(),
     val checkpoints: List<LatLong> = listOf(),
     val personPositions: List<PersonLocation> = listOf(),

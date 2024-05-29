@@ -234,8 +234,9 @@ actual fun GoogleMaps(
         if (config.showHome) {
             MarkerComposable(
                 state = MarkerState(
-                    position = data.homePosition?.toLatLng() ?: if (data.checkpoints.isNotEmpty()) data.checkpoints.getCenter()
-                        .toLatLng() else data.initialPosition.toLatLng()
+                    position = data.homePosition?.toLatLng()
+                        ?: if (data.checkpoints.isNotEmpty()) data.checkpoints.getCenter()
+                            .toLatLng() else data.initialPosition.toLatLng()
                 ),
                 title = "Home Point",
                 anchor = Offset(0.5f, 0.5f)
@@ -258,7 +259,8 @@ actual fun GoogleMaps(
                 icon = BitmapDescriptorFactory.fromResource(
                     R.drawable.drone
                 ),
-                anchor = Offset(0.5f, 0.5f)
+                anchor = Offset(0.5f, 0.5f),
+                rotation = data.droneRotation?.toFloat() ?: 0f
             )
         }
 
@@ -267,7 +269,7 @@ actual fun GoogleMaps(
                 MarkerComposable(
                     state = MarkerState(position = it.position.toLatLng()),
                     title = "Pilot",
-                    anchor = Offset(0.5f, 0.5f)
+                    anchor = Offset(0.5f, 0.5f),
                 ) {
                     Icon(
                         imageVector = RescueIcons.Person,

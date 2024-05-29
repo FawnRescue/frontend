@@ -18,4 +18,5 @@ data class AircraftStatus(
     val numSatellites: Int?,
     val currentMissionItem: Int?,
     val numMissionItems: Int?,
+    val heading: Double?,
 )

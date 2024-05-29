@@ -109,7 +109,6 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
 
 
     Column {
-        println(state.aircraftStatus.location)
         OSD(state.aircraftStatus)
         if (state.isPilot && state.aircraft != null) {
             val command = InsertableCommand(
@@ -141,6 +140,7 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
                     checkpoints = state.plan.checkpoints ?: listOf(),
                     personPositions = state.helperLocations.values.toList(),
                     detections = state.detections,
+                    droneRotation = state.aircraftStatus.heading
                 ),
                 config = GoogleMapsConfig(
                     showBoundaryMarkers = false,
