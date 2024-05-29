@@ -234,7 +234,7 @@ actual fun GoogleMaps(
         if (config.showHome) {
             MarkerComposable(
                 state = MarkerState(
-                    position = if (data.checkpoints.isNotEmpty()) data.checkpoints.getCenter()
+                    position = data.homePosition?.toLatLng() ?: if (data.checkpoints.isNotEmpty()) data.checkpoints.getCenter()
                         .toLatLng() else data.initialPosition.toLatLng()
                 ),
                 title = "Home Point",
@@ -254,6 +254,7 @@ actual fun GoogleMaps(
             Marker(
                 state = MarkerState(position = data.drone.toLatLng()),
                 title = "Drone",
+                zIndex = 1f,
                 icon = BitmapDescriptorFactory.fromResource(
                     R.drawable.drone
                 ),

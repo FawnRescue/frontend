@@ -13,6 +13,9 @@ data class AircraftStatus(
     val state: AircraftState,
     val battery: Battery?,
     val location: Location?,
+    val homeLocation: Location?,
     val altitude: Float?,
     val numSatellites: Int?,
+    val currentMissionItem: Int?,
+    val numMissionItems: Int?,
 )

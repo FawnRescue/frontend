@@ -20,6 +20,7 @@ data class GoogleMapsFunctions(
 
 data class GoogleMapsData(
     val initialPosition: LatLong,
+    val homePosition: LatLong? = null,
     val drone: LatLong? = null,
     val boundary: List<LatLong> = listOf(),
     val checkpoints: List<LatLong> = listOf(),

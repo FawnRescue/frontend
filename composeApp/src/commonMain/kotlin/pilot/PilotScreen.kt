@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Flight
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.NextPlan
 import androidx.compose.material.icons.filled.Satellite
 import androidx.compose.material.icons.filled.Terrain
 import androidx.compose.material.icons.rounded.Check
@@ -108,6 +109,7 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
 
 
     Column {
+        println(state.aircraftStatus.location)
         OSD(state.aircraftStatus)
         if (state.isPilot && state.aircraft != null) {
             val command = InsertableCommand(
@@ -134,6 +136,7 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
             GoogleMaps(
                 data = GoogleMapsData(
                     initialPosition = state.plan.boundary.getCenter(),
+                    homePosition = state.aircraftStatus.homeLocation?.toLatLong(),
                     drone = state.aircraftStatus.location?.toLatLong(),
                     checkpoints = state.plan.checkpoints ?: listOf(),
                     personPositions = state.helperLocations.values.toList(),
@@ -144,6 +147,11 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
                     showBoundary = false,
                     showCheckpointMarkers = false,
                     showPath = true,
+                    showDrone = true,
+                    showPilot = true,
+                    showHelper = true,
+                    showDetections = true,
+                    showHome = true
                 ),
                 functions = GoogleMapsFunctions(
                     onDetectionMarkerClick = { onEvent(DetectionSelected(it)) }
@@ -250,7 +258,8 @@ enum class OSDRowType(val icon: ImageVector) {
     STATE(Icons.Default.Flight),
     LOCATION(Icons.Default.LocationOn),
     ALTITUDE(Icons.Default.Terrain),
-    SATELLITES(Icons.Default.Satellite)
+    SATELLITES(Icons.Default.Satellite),
+    MISSION_PROGRESS(Icons.Default.NextPlan)
 }
 
 @Composable
@@ -283,6 +292,14 @@ fun OSD(status: AircraftStatus?) {
             DisplayRow(OSDRowType.STATE, status.state.name)
             status.altitude?.let { DisplayRow(OSDRowType.ALTITUDE, "${it.roundToDecimals(1)}m") }
             status.numSatellites?.let { DisplayRow(OSDRowType.SATELLITES, "$it") }
+            status.currentMissionItem?.let { currentMissionItem ->
+                status.numMissionItems?.let { numMissionItems ->
+                    DisplayRow(
+                        OSDRowType.MISSION_PROGRESS,
+                        "$currentMissionItem/$numMissionItems"
+                    )
+                }
+            }
         }
     }
 }
