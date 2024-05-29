@@ -98,7 +98,7 @@ class FlightPlanEditorViewModel : ViewModel(), KoinComponent {
                             checkpoints = flightPlanRepo.calculateCheckpoints(_state.value.editedBoundary)
                         )
                     ).also {
-                        navigator.navigate(NAV.PLANNING.path)
+                        navigator.navigate(NAV.MISSION_EDITOR.path)
                     }
                 }
             }
@@ -117,6 +117,7 @@ class FlightPlanEditorViewModel : ViewModel(), KoinComponent {
             }
 
             FlightPlanEditorEvent.TogglePath -> _state.update { it.copy(showPath = !it.showPath) }
+            FlightPlanEditorEvent.ToggleLayers -> _state.update { it.copy(showLayers = !it.showLayers) }
         }
     }
 }

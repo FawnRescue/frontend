@@ -47,6 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
+import core.utils.RescueIcons
 import hangar.domain.AircraftState.ARMED
 import hangar.domain.AircraftState.IDLE
 import hangar.domain.AircraftState.IN_FLIGHT
@@ -61,6 +62,9 @@ import pilot.PilotEvent.DetectionDeselected
 import pilot.PilotEvent.DetectionSelected
 import pilot.PilotEvent.SendCommand
 import planning.presentation.flightplan_editor.GoogleMaps
+import planning.presentation.flightplan_editor.GoogleMapsConfig
+import planning.presentation.flightplan_editor.GoogleMapsData
+import planning.presentation.flightplan_editor.GoogleMapsFunctions
 import presentation.maps.LatLong
 import presentation.maps.getCenter
 import repository.domain.Commands.ARM
@@ -127,19 +131,23 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
             )
         }
         Card {
-            GoogleMaps(state.plan.boundary.getCenter(),
-                onMapClick = {},
-                onMarkerClick = {},
-                listOf(),
-                state.plan.checkpoints ?: listOf(),
-                showBoundaryMarkers = false,
-                showBoundary = false,
-                showCheckpointMarkers = false,
-                showPath = true,
-                dronePosition = state.aircraftStatus.location?.toLatLong(),
-                personPositions = state.helperLocations.values.toList(),
-                detections = state.detections,
-                onDetectionMarkerClick = { onEvent(DetectionSelected(it)) }
+            GoogleMaps(
+                data = GoogleMapsData(
+                    initialPosition = state.plan.boundary.getCenter(),
+                    drone = state.aircraftStatus.location?.toLatLong(),
+                    checkpoints = state.plan.checkpoints ?: listOf(),
+                    personPositions = state.helperLocations.values.toList(),
+                    detections = state.detections,
+                ),
+                config = GoogleMapsConfig(
+                    showBoundaryMarkers = false,
+                    showBoundary = false,
+                    showCheckpointMarkers = false,
+                    showPath = true,
+                ),
+                functions = GoogleMapsFunctions(
+                    onDetectionMarkerClick = { onEvent(DetectionSelected(it)) }
+                ),
             )
         }
     }
@@ -195,7 +203,7 @@ fun ChecklistRow(item: ChecklistItem) {
 
     Row {
         Icon(
-            imageVector = if (item.loaded) Icons.Rounded.Check else Icons.Rounded.Close,
+            imageVector = if (item.loaded) RescueIcons.Check else RescueIcons.Close,
             contentDescription = "${item.contentDescriptionPrefix} ${if (item.loaded) "loaded" else "not loaded"}",
             modifier = Modifier.size(25.dp),
             tint = if (item.loaded) loadedColor else unloadedColor
