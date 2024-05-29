@@ -111,7 +111,11 @@ class MissionEditorViewModel : ViewModel(), KoinComponent {
             }
 
             EditFlightPlan -> navigator.navigate(NAV.FLIGHT_PLAN_EDITOR.path)
-            AddFlightDate -> navigator.navigate(NAV.FLIGHT_DATE_EDITOR.path)
+            AddFlightDate -> {
+                flightDateRepo.selectedFlightDate.update { null }
+                navigator.navigate(NAV.FLIGHT_DATE_EDITOR.path)
+            }
+
             is DateSelected -> {
                 flightDateRepo.selectedFlightDate.update {
                     event.date

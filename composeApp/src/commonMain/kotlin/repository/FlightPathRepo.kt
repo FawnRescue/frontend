@@ -82,6 +82,9 @@ class FlightPlanRepo : KoinComponent {
     ): List<LatLong> {
         //TODO remove defaults
 
+        //TODO Have a flightplan for each flight date instead of for each mission
+
+        //TODO Error Handling
         // Check 0 < FOV <= 360
         require(cameraFOV > 0 && cameraFOV <= 360) { "Invalid camera FOV" }
 

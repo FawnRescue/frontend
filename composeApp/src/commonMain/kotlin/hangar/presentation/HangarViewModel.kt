@@ -21,6 +21,7 @@ import org.koin.core.component.inject
 import org.mobilenativefoundation.store.store5.StoreReadResponse
 import repository.AircraftRepo
 import repository.domain.Aircraft
+import repository.domain.InsertableAircraft
 import repository.domain.UserId
 
 class HangarViewModel : ViewModel(), KoinComponent {
@@ -30,7 +31,7 @@ class HangarViewModel : ViewModel(), KoinComponent {
     private val aircraftRepo by inject<AircraftRepo>()
 
 
-    private val _state = MutableStateFlow(HangarState(null, null, null))
+    private val _state = MutableStateFlow(HangarState(null, null, null, null))
     val state = _state.asStateFlow()
 
     override fun onCleared() {
@@ -96,12 +97,61 @@ class HangarViewModel : ViewModel(), KoinComponent {
                 }
 
             }
+
+            is HangarEvent.OnFOVChange -> _state.update {
+                it.copy(
+                    editableAircraft = state.value.editableAircraft?.copy(cameraFOV = event.fov)
+                )
+            }
+
+            HangarEvent.OnEditAircraft -> _state.update {
+                it.copy(
+                    editableAircraft = state.value.selectedAircraft
+                )
+            }
+
+            HangarEvent.OnSaveAircraft -> {
+                val aircraft = state.value.editableAircraft
+                if (!state.value.editable || aircraft == null) return
+                viewModelScope.launch {
+                    with(aircraft) {
+                        val updatedAircraft = aircraftRepo.upsertAircraft(
+                            InsertableAircraft(
+                                token.id,
+                                owner.id,
+                                name,
+                                description,
+                                created_at.toString(),
+                                deleted,
+                                cameraFOV,
+                                flightHeight
+                            )
+                        )
+                        selectAircraft(updatedAircraft)
+                        loadAircrafts()
+                    }
+                }
+            }
+
+            is HangarEvent.OnFlightHeightChange -> _state.update {
+                it.copy(
+                    editableAircraft = state.value.editableAircraft?.copy(flightHeight = event.height)
+                )
+            }
         }
     }
 
 
     private suspend fun selectAircraft(aircraft: Aircraft) {
-        _state.update { it.copy(selectedAircraft = aircraft) }
+        val authId = supabase.auth.currentUserOrNull()?.id ?: return
+        val userId = UserId(authId)
+        _state.update {
+            it.copy(
+                selectedAircraft = aircraft,
+                editableAircraft = null,
+                editable = aircraft.owner == userId
+            )
+        }
         println(aircraft.token)
         channel = supabase.channel(aircraft.token.toString())
         val broadcastFlow = channel!!.broadcastFlow<AircraftStatus>(event = "aircraft_status")

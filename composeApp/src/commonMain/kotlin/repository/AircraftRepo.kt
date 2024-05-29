@@ -15,6 +15,7 @@ import org.mobilenativefoundation.store.store5.StoreReadRequest
 import org.mobilenativefoundation.store.store5.StoreReadResponse
 import repository.domain.Aircraft
 import repository.domain.AircraftId
+import repository.domain.InsertableAircraft
 import repository.domain.NetworkAircraft
 import repository.domain.Tables
 import repository.domain.UserId
@@ -103,4 +104,8 @@ class AircraftRepo : KoinComponent {
             }
         }
     }
+
+    suspend fun upsertAircraft(aircraft: InsertableAircraft): Aircraft =
+        converter.fromNetworkToLocal(supabase.from(Tables.AIRCRAFT.path).upsert(aircraft) { select() }
+            .decodeSingle<NetworkAircraft>())
 }

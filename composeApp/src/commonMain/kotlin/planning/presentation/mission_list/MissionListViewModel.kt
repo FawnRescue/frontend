@@ -30,6 +30,7 @@ class MissionListViewModel : ViewModel(), KoinComponent {
     val state = _state.asStateFlow()
 
     init {
+        missionRepo.selectedMission.value = null
         loadMissions()
     }
 
