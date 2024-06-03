@@ -7,7 +7,7 @@ import repository.domain.NetworkFlightDate
 sealed interface MissionEditorEvent {
     data class UpdateMission(val mission: InsertableMission) : MissionEditorEvent
     data object SaveMission : MissionEditorEvent
-    data object ResetMission : MissionEditorEvent
+    data object EditMission : MissionEditorEvent
     data object Cancel : MissionEditorEvent
     data object EditFlightPlan : MissionEditorEvent
     data object AddFlightDate : MissionEditorEvent

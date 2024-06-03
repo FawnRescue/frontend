@@ -1,7 +1,6 @@
 package hangar.presentation.components
 
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Battery0Bar
 import androidx.compose.material.icons.rounded.Battery1Bar
 import androidx.compose.material.icons.rounded.Battery2Bar
@@ -16,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import core.utils.RescueIcons
 
 @Composable
 fun BatteryIndicator(batteryPercentage: Float?, modifier: Modifier = Modifier) {
@@ -24,20 +24,20 @@ fun BatteryIndicator(batteryPercentage: Float?, modifier: Modifier = Modifier) {
             Text("${(batteryPercentage).toInt()}%")
             Icon(
                 imageVector = when {
-                    batteryPercentage < 12.5 -> Icons.Rounded.Battery0Bar
-                    batteryPercentage < 25 -> Icons.Rounded.Battery1Bar
-                    batteryPercentage < 37.5 -> Icons.Rounded.Battery2Bar
-                    batteryPercentage < 50 -> Icons.Rounded.Battery3Bar
-                    batteryPercentage < 62.5 -> Icons.Rounded.Battery4Bar
-                    batteryPercentage < 75 -> Icons.Rounded.Battery5Bar
-                    batteryPercentage < 87.5 -> Icons.Rounded.Battery6Bar
-                    else -> Icons.Rounded.BatteryFull
+                    batteryPercentage < 12.5 -> RescueIcons.Battery0Bar
+                    batteryPercentage < 25 -> RescueIcons.Battery1Bar
+                    batteryPercentage < 37.5 -> RescueIcons.Battery2Bar
+                    batteryPercentage < 50 -> RescueIcons.Battery3Bar
+                    batteryPercentage < 62.5 -> RescueIcons.Battery4Bar
+                    batteryPercentage < 75 -> RescueIcons.Battery5Bar
+                    batteryPercentage < 87.5 -> RescueIcons.Battery6Bar
+                    else -> RescueIcons.BatteryFull
                 },
                 contentDescription = "Battery"
             )
         } else {
             Text("?%")
-            Icon(Icons.Rounded.BatteryUnknown, contentDescription = "Battery Unknown")
+            Icon(RescueIcons.BatteryUnknown, contentDescription = "Battery Unknown")
         }
     }
 }

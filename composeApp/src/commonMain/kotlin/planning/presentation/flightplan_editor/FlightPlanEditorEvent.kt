@@ -10,4 +10,5 @@ sealed interface FlightPlanEditorEvent {
     data object ToggleCheckpointMarkers : FlightPlanEditorEvent
     data object TogglePath : FlightPlanEditorEvent
     data object SaveBoundary : FlightPlanEditorEvent
+    data object ToggleLayers : FlightPlanEditorEvent
 }

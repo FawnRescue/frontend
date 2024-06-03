@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -14,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import core.utils.RescueIcons
 import repository.domain.User
 
 @Composable
@@ -29,7 +29,7 @@ fun FriendPhoto(
         contentAlignment = Alignment.Center
     ) {
         Icon(
-            imageVector = Icons.Rounded.Person,
+            imageVector = RescueIcons.Person,
             contentDescription = friend?.name,
             modifier = Modifier.size(iconSize),
             tint = MaterialTheme.colorScheme.onSecondaryContainer

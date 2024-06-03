@@ -1,27 +1,18 @@
 package hangar.presentation
 
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Flight
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -30,15 +21,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import core.utils.RescueIcons
 import pilot.OSD
+import hangar.presentation.components.DroneDetailDialog
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HangarScreen(onEvent: (HangarEvent) -> Unit, state: HangarState) {
     Scaffold(floatingActionButton = {
@@ -49,7 +39,7 @@ fun HangarScreen(onEvent: (HangarEvent) -> Unit, state: HangarState) {
             shape = RoundedCornerShape(20.dp)
         ) {
             Icon(
-                imageVector = Icons.Rounded.Add,
+                imageVector = RescueIcons.Add,
                 contentDescription = "Add aircraft"
             )
         }
@@ -84,7 +74,7 @@ fun HangarScreen(onEvent: (HangarEvent) -> Unit, state: HangarState) {
                         headlineContent = { Text(text = aircraft.name) },
                         leadingContent = {
                             Icon(
-                                imageVector = Icons.Rounded.Flight,
+                                imageVector = RescueIcons.Flight,
                                 contentDescription = aircraft.name,
                                 modifier = Modifier.size(25.dp),
                                 tint = MaterialTheme.colorScheme.onSecondaryContainer
@@ -98,46 +88,18 @@ fun HangarScreen(onEvent: (HangarEvent) -> Unit, state: HangarState) {
         }
 
         if (state.selectedAircraft != null) {
-            Dialog(onDismissRequest = { onEvent(HangarEvent.OnDismissDialog) }) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(10))
-                        .background(MaterialTheme.colorScheme.background)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = state.selectedAircraft.name,
-                            style = MaterialTheme.typography.headlineSmall
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        if (state.aircraftStatus != null) {
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp)
-                            ) {
-                                OSD(state.aircraftStatus)
-                            }
-                        } else {
-                            Text("No Data available")
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(
-                            onClick = { onEvent(HangarEvent.OnDeleteAircraft) },
-                            modifier = Modifier.align(Alignment.CenterHorizontally)
-                        ) {
-                            Text("Delete aircraft")
-                        }
-                    }
-                }
-            }
+            DroneDetailDialog(
+                state.selectedAircraft,
+                state.editableAircraft,
+                state.aircraftStatus,
+                onDismissRequest = { onEvent(HangarEvent.OnDismissDialog) },
+                onDeleteAircraft = { onEvent(HangarEvent.OnDeleteAircraft) },
+                onFOVChange = { fov -> onEvent(HangarEvent.OnFOVChange(fov))},
+                onFlightHeightChange = { height -> onEvent(HangarEvent.OnFlightHeightChange(height))},
+                onEditAircraft = {onEvent(HangarEvent.OnEditAircraft)},
+                onSaveAircraft = {onEvent(HangarEvent.OnSaveAircraft)},
+                editable = state.editable
+            )
 
         }
 
