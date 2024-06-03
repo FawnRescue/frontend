@@ -2,11 +2,14 @@ package planning.presentation.flightplan_editor
 
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.rounded.CropSquare
 import androidx.compose.material.icons.rounded.Layers
@@ -14,10 +17,12 @@ import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.PhotoCamera
 import androidx.compose.material.icons.rounded.Route
 import androidx.compose.material.icons.rounded.Save
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,12 +40,11 @@ import planning.presentation.flightplan_editor.FlightPlanEditorEvent.ToggleCheck
 import planning.presentation.flightplan_editor.FlightPlanEditorEvent.ToggleLayers
 import planning.presentation.flightplan_editor.FlightPlanEditorEvent.TogglePath
 import presentation.maps.LatLong
-import presentation.maps.getCenter
 
 
 @Composable
 fun FlightPlanEditorScreen(onEvent: (FlightPlanEditorEvent) -> Unit, state: FlightPlanEditorState) {
-    val testLocation = LatLong(51.5534005, 9.9746353)
+    val testLocation = LatLong(51.5534005, 9.9746353) // TODO: use device position
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
@@ -51,9 +55,23 @@ fun FlightPlanEditorScreen(onEvent: (FlightPlanEditorEvent) -> Unit, state: Flig
         },
         floatingActionButtonPosition = FabPosition.Center
     ) {
+        if (state.planLoading) {
+            Column(
+                Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.width(64.dp),
+                    color = MaterialTheme.colorScheme.secondary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                )
+            }
+            return@Scaffold
+        }
         GoogleMaps(
             data = GoogleMapsData(
-                initialPosition = if (state.selectedFlightPlan != null) state.selectedFlightPlan.boundary.getCenter() else testLocation,
+                initialPosition = if (state.selectedFlightPlan != null) state.selectedFlightPlan.location else testLocation,
                 boundary = state.editedBoundary,
                 checkpoints = state.editedCheckpoints ?: listOf(),
             ),

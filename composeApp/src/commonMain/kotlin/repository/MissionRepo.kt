@@ -3,6 +3,7 @@ package repository
 import io.github.aakira.napier.Napier
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.exceptions.HttpRequestException
+import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -56,8 +57,12 @@ class MissionRepo : KoinComponent {
 
 
     private suspend fun loadMissions(): List<NetworkMission> {
+        // Filter missions
+        val userid = supabase.auth.currentUserOrNull()
         return try {
-            supabase.from(Tables.MISSION.path).select().decodeList<NetworkMission>()
+            supabase.from(Tables.MISSION.path).select().decodeList<NetworkMission>().filter {
+                it.owner == userid?.id
+            }
         } catch (e: HttpRequestException) {
             Napier.e("Loading missions for userid failed", e)
             emptyList()
