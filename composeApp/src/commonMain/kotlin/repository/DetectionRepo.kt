@@ -23,7 +23,7 @@ class DetectionRepo : KoinComponent {
     }).build()
 
     private suspend fun loadDetectionsByFlightDate(flightDateId: FlightDateId): List<Detection> {
-        return supabase.from("detection")
+        return supabase.from(Tables.DETECTION.path)
             .select {
                 filter {
                     eq("flight_date", flightDateId)
@@ -36,7 +36,7 @@ class DetectionRepo : KoinComponent {
     }
 
     suspend fun deleteDetections(flightDateId: FlightDateId){
-        supabase.from(Tables.AIRCRAFT.path).delete {
+        supabase.from(Tables.DETECTION.path).delete {
             filter {
                 eq("flight_date", flightDateId.id)
             }

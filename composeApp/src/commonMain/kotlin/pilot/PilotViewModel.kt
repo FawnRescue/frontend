@@ -317,8 +317,11 @@ class PilotViewModel : ViewModel(), KoinComponent {
             }
 
             is PilotEvent.SendCommand -> {
+                _state.update { it.copy(isExecutingCommand = true) }
                 viewModelScope.launch {
                     commandRepo.sendCommand(event.command)
+                }.invokeOnCompletion {
+                    _state.update { it.copy(isExecutingCommand = false) }
                 }
             }
 
@@ -469,6 +472,9 @@ class PilotViewModel : ViewModel(), KoinComponent {
                 val token = state.value.aircraft?.token
                 if (date == null || token == null) {
                     return
+                }
+                _state.update {
+                    it.copy(detections = listOf())
                 }
                 viewModelScope.launch {
                     detectionRepo.deleteDetections(FlightDateId(date.id))

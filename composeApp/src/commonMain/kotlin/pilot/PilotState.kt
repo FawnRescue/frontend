@@ -24,7 +24,9 @@ data class PilotState(
     val selectedDetection: Detection? = null,
     val selectedDetectionRGBImageData: ByteArray? = null,
     val selectedDetectionThermalImageData: ByteArray? = null,
-)
+    val isExecutingCommand: Boolean = false
+) {
+}
 
 data class PersonLocation(
     val position: LatLong,
