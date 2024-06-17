@@ -7,4 +7,5 @@ enum class Tables(val path: String) {
     USER("user"),
     AIRCRAFT("aircraft"),
     COMMAND("command"),
+    DETECTION("detection"),
 }

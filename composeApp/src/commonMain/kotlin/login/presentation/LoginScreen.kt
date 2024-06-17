@@ -1,6 +1,7 @@
 package login.presentation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -40,6 +41,8 @@ fun LoginScreen(
     state: LoginState,
     onEvent: (LoginEvent) -> Unit,
 ) {
+    //TODO(): do not password requirements on login
+    //TODO(): center progress indicator
     val supabase = koinInject<SupabaseClient>()
     val nativeLogin =
         supabase.composeAuth.rememberSignInWithGoogle(fallback = { onEvent(LoginEvent.OnSignInGoogle) },
@@ -66,12 +69,18 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (!state.sessionChecked) {
-                CircularProgressIndicator(
-                    modifier = Modifier.width(64.dp),
-                    color = MaterialTheme.colorScheme.secondary,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                )
-                return
+                Column(
+                    Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.width(64.dp),
+                        color = MaterialTheme.colorScheme.secondary,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    )
+                }
+                return@Box
             }
 
             FawnRescueLogo(Modifier.size(500.dp))

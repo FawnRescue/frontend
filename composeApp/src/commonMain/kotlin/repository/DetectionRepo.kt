@@ -11,9 +11,8 @@ import org.mobilenativefoundation.store.store5.StoreReadRequest
 import org.mobilenativefoundation.store.store5.StoreReadResponse
 import repository.domain.Detection
 import repository.domain.FlightDateId
-import repository.domain.Image
 import repository.domain.NetworkDetection
-import repository.domain.NetworkImage
+import repository.domain.Tables
 import repository.domain.toLocal
 
 class DetectionRepo : KoinComponent {
@@ -24,7 +23,7 @@ class DetectionRepo : KoinComponent {
     }).build()
 
     private suspend fun loadDetectionsByFlightDate(flightDateId: FlightDateId): List<Detection> {
-        return supabase.from("detection")
+        return supabase.from(Tables.DETECTION.path)
             .select {
                 filter {
                     eq("flight_date", flightDateId)
@@ -34,5 +33,13 @@ class DetectionRepo : KoinComponent {
 
     fun getDetections(flightDateId: FlightDateId): Flow<StoreReadResponse<List<Detection>>> {
         return store.stream(StoreReadRequest.cached(flightDateId, true))
+    }
+
+    suspend fun deleteDetections(flightDateId: FlightDateId){
+        supabase.from(Tables.DETECTION.path).delete {
+            filter {
+                eq("flight_date", flightDateId.id)
+            }
+        }
     }
 }

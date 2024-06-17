@@ -43,8 +43,10 @@ import repository.ImageRepo
 import repository.LocationService
 import repository.MissionRepo
 import repository.domain.AircraftId
+import repository.domain.Commands
 import repository.domain.FlightDateId
 import repository.domain.FlightPlanId
+import repository.domain.InsertableCommand
 import repository.domain.MissionId
 import repository.domain.NetworkDetection
 import repository.domain.UserId
@@ -315,8 +317,11 @@ class PilotViewModel : ViewModel(), KoinComponent {
             }
 
             is PilotEvent.SendCommand -> {
+                _state.update { it.copy(isExecutingCommand = true) }
                 viewModelScope.launch {
                     commandRepo.sendCommand(event.command)
+                }.invokeOnCompletion {
+                    _state.update { it.copy(isExecutingCommand = false) }
                 }
             }
 
@@ -460,6 +465,29 @@ class PilotViewModel : ViewModel(), KoinComponent {
                         selectedDetectionThermalImageData = null
                     )
                 }
+            }
+
+            PilotEvent.ResetDemo -> {
+                val date = state.value.date
+                val token = state.value.aircraft?.token
+                if (date == null || token == null) {
+                    return
+                }
+                _state.update {
+                    it.copy(detections = listOf())
+                }
+                viewModelScope.launch {
+                    detectionRepo.deleteDetections(FlightDateId(date.id))
+                }
+                onEvent(
+                    PilotEvent.SendCommand(
+                        InsertableCommand(
+                            Commands.RTH,
+                            context = date.id,
+                            aircraft = token
+                        )
+                    )
+                )
             }
         }
     }
