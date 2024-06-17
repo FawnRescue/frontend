@@ -169,6 +169,7 @@ actual fun GoogleMaps(
     data: GoogleMapsData,
     functions: GoogleMapsFunctions,
 ) {
+    // TODO request permissions
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(data.initialPosition.toLatLng(), 16f)
     }
@@ -179,7 +180,9 @@ actual fun GoogleMaps(
             zoomGesturesEnabled = true,
         ),
         properties = MapProperties(
-            mapType = MapType.SATELLITE
+            mapType = MapType.HYBRID,
+            isMyLocationEnabled = true,
+
         ),
         onMapClick = { functions.onMapClick(it.toLatLong()) }) {
         if (config.showBoundaryMarkers) {

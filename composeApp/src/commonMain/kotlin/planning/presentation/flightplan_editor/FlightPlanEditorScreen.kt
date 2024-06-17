@@ -55,7 +55,7 @@ fun FlightPlanEditorScreen(onEvent: (FlightPlanEditorEvent) -> Unit, state: Flig
         },
         floatingActionButtonPosition = FabPosition.Center
     ) {
-        if (state.planLoading) {
+        if (state.selectedMission?.plan != null && state.planLoading) {
             Column(
                 Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,

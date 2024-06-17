@@ -31,8 +31,6 @@ fun Controls_preview() {
             onKill = { /*TODO*/ },
             onELAND = { /*TODO*/ },
             onContinue = { /*TODO*/ },
-            onDisarm = { /*TODO*/ }) {
-
-        }
+            onDisarm = { /*TODO*/ })
     }
 }

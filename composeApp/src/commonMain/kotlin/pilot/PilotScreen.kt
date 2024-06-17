@@ -19,7 +19,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import pilot.PilotEvent.DetectionDeselected
 import pilot.PilotEvent.DetectionSelected
-import pilot.PilotEvent.ResetDemo
 import pilot.PilotEvent.SendCommand
 import planning.presentation.flightplan_editor.GoogleMaps
 import planning.presentation.flightplan_editor.GoogleMapsConfig
@@ -88,7 +87,6 @@ fun PilotScreen(onEvent: (PilotEvent) -> Unit, state: PilotState) {
                 onKill = { onEvent(SendCommand(command.copy(command = KILL))) },
                 onTakeoff = { onEvent(SendCommand(command.copy(command = TAKEOFF))) },
                 onRTH = { onEvent(SendCommand(command.copy(command = RTH))) },
-                onReset = { onEvent(ResetDemo) }
             )
         }
         Card {

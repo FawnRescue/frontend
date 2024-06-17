@@ -33,7 +33,6 @@ fun Controls(
     onELAND: () -> Unit,
     onContinue: () -> Unit,
     onDisarm: () -> Unit,
-    onReset: () -> Unit,
 ) {
     val hapticFeedback = LocalHapticFeedback.current
     Column(modifier = Modifier.padding(8.dp)) {
@@ -61,7 +60,6 @@ fun Controls(
                         "Return to Home" to onRTH,
                         "Emergency Land" to onELAND,
                         "Kill" to onKill,
-                        "Reset Demo" to onReset,
                     )
                 ) { (text, onClick) ->
                     val enabled = when (text) {
